@@ -1,0 +1,199 @@
+
+C:\nexa_store\src\app\compare\page.tsx
+   52:82  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-explicit-any
+   52:93  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-explicit-any
+  115:37  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @next/next/no-img-element
+  115:37  warning  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           jsx-a11y/alt-text
+  147:37  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @next/next/no-img-element
+  147:37  warning  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           jsx-a11y/alt-text
+  185:38  error    Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\nexa_store\src\app\compare\page.tsx:185:38
+  183 |                                 </div>
+  184 |                                 <div>
+> 185 |                                     <ComparisonRow
+      |                                      ^^^^^^^^^^^^^ This component is created during render
+  186 |                                         label="Expert Rating"
+  187 |                                         valA={<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}><Star size={16} fill="#fbbf24" color="#fbbf24" /> {appA.editorial_rating || '4.0'}</div>}
+  188 |                                         valB={<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}><Star size={16} fill="#fbbf24" color="#fbbf24" /> {appB.editorial_rating || '4.0'}</div>}
+
+C:\nexa_store\src\app\compare\page.tsx:52:27
+  50 |     );
+  51 |
+> 52 |     const ComparisonRow = ({ label, valA, valB, winner }: { label: string, valA: any, valB: any, winner?: 'a' | 'b' | null }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 53 |         <div
+     | ^^^^^^^^^^^^
+> 54 |             className="ultra-glass hw-accel"
+     ΓÇª
+     | ^^^^^^^^^^^^
+> 91 |         </div>
+     | ^^^^^^^^^^^^
+> 92 |     );
+     | ^^^^^^ The component is created during render here
+  93 |
+  94 |     return (
+  95 |         <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', color: 'white', paddingBottom: '7rem', position: 'relative', overflow: 'hidden' }}>                 react-hooks/static-components
+  191:38  error    Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\nexa_store\src\app\compare\page.tsx:191:38
+  189 |                                         winner={getWinner(appA.editorial_rating || 4, appB.editorial_rating || 4)}
+  190 |                                     />
+> 191 |                                     <ComparisonRow
+      |                                      ^^^^^^^^^^^^^ This component is created during render
+  192 |                                         label="Verdict"
+  193 |                                         valA={<div style={{ fontSize: '0.75rem', lineHeight: '1.4', opacity: 0.8 }}>{appA.editors_verdict || 'Highly recommended dynamic experience.'}</div>}
+  194 |                                         valB={<div style={{ fontSize: '0.75rem', lineHeight: '1.4', opacity: 0.8 }}>{appB.editors_verdict || 'Solid performance with core features.'}</div>}
+
+C:\nexa_store\src\app\compare\page.tsx:52:27
+  50 |     );
+  51 |
+> 52 |     const ComparisonRow = ({ label, valA, valB, winner }: { label: string, valA: any, valB: any, winner?: 'a' | 'b' | null }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 53 |         <div
+     | ^^^^^^^^^^^^
+> 54 |             className="ultra-glass hw-accel"
+     ΓÇª
+     | ^^^^^^^^^^^^
+> 91 |         </div>
+     | ^^^^^^^^^^^^
+> 92 |     );
+     | ^^^^^^ The component is created during render here
+  93 |
+  94 |     return (
+  95 |         <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', color: 'white', paddingBottom: '7rem', position: 'relative', overflow: 'hidden' }}>                         react-hooks/static-components
+  208:38  error    Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\nexa_store\src\app\compare\page.tsx:208:38
+  206 |                                 </div>
+  207 |                                 <div>
+> 208 |                                     <ComparisonRow
+      |                                      ^^^^^^^^^^^^^ This component is created during render
+  209 |                                         label="User Score"
+  210 |                                         valA={<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>{appA.rating} <Star size={14} fill="rgba(255,255,255,0.2)" color="rgba(255,255,255,0.2)" /></div>}
+  211 |                                         valB={<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>{appB.rating} <Star size={14} fill="rgba(255,255,255,0.2)" color="rgba(255,255,255,0.2)" /></div>}
+
+C:\nexa_store\src\app\compare\page.tsx:52:27
+  50 |     );
+  51 |
+> 52 |     const ComparisonRow = ({ label, valA, valB, winner }: { label: string, valA: any, valB: any, winner?: 'a' | 'b' | null }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 53 |         <div
+     | ^^^^^^^^^^^^
+> 54 |             className="ultra-glass hw-accel"
+     ΓÇª
+     | ^^^^^^^^^^^^
+> 91 |         </div>
+     | ^^^^^^^^^^^^
+> 92 |     );
+     | ^^^^^^ The component is created during render here
+  93 |
+  94 |     return (
+  95 |         <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', color: 'white', paddingBottom: '7rem', position: 'relative', overflow: 'hidden' }}>  react-hooks/static-components
+  214:38  error    Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\nexa_store\src\app\compare\page.tsx:214:38
+  212 |                                         winner={getWinner(appA.rating, appB.rating)}
+  213 |                                     />
+> 214 |                                     <ComparisonRow
+      |                                      ^^^^^^^^^^^^^ This component is created during render
+  215 |                                         label="Popularity"
+  216 |                                         valA={appA.downloads}
+  217 |                                         valB={appB.downloads}
+
+C:\nexa_store\src\app\compare\page.tsx:52:27
+  50 |     );
+  51 |
+> 52 |     const ComparisonRow = ({ label, valA, valB, winner }: { label: string, valA: any, valB: any, winner?: 'a' | 'b' | null }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 53 |         <div
+     | ^^^^^^^^^^^^
+> 54 |             className="ultra-glass hw-accel"
+     ΓÇª
+     | ^^^^^^^^^^^^
+> 91 |         </div>
+     | ^^^^^^^^^^^^
+> 92 |     );
+     | ^^^^^^ The component is created during render here
+  93 |
+  94 |     return (
+  95 |         <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', color: 'white', paddingBottom: '7rem', position: 'relative', overflow: 'hidden' }}>                                                                                                                                                                                                                                                                                                                   react-hooks/static-components
+  232:38  error    Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\nexa_store\src\app\compare\page.tsx:232:38
+  230 |                                 </div>
+  231 |                                 <div style={{ borderRadius: '24px', overflow: 'hidden' }}>
+> 232 |                                     <ComparisonRow
+      |                                      ^^^^^^^^^^^^^ This component is created during render
+  233 |                                         label="ID"
+  234 |                                         valA={<span style={{ fontSize: '0.65rem', opacity: 0.5, fontFamily: 'monospace' }}>{appA.package_name || 'com.nexa.app'}</span>}
+  235 |                                         valB={<span style={{ fontSize: '0.65rem', opacity: 0.5, fontFamily: 'monospace' }}>{appB.package_name || 'com.nexa.target'}</span>}
+
+C:\nexa_store\src\app\compare\page.tsx:52:27
+  50 |     );
+  51 |
+> 52 |     const ComparisonRow = ({ label, valA, valB, winner }: { label: string, valA: any, valB: any, winner?: 'a' | 'b' | null }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 53 |         <div
+     | ^^^^^^^^^^^^
+> 54 |             className="ultra-glass hw-accel"
+     ΓÇª
+     | ^^^^^^^^^^^^
+> 91 |         </div>
+     | ^^^^^^^^^^^^
+> 92 |     );
+     | ^^^^^^ The component is created during render here
+  93 |
+  94 |     return (
+  95 |         <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', color: 'white', paddingBottom: '7rem', position: 'relative', overflow: 'hidden' }}>                                                                                            react-hooks/static-components
+  237:38  error    Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\nexa_store\src\app\compare\page.tsx:237:38
+  235 |                                         valB={<span style={{ fontSize: '0.65rem', opacity: 0.5, fontFamily: 'monospace' }}>{appB.package_name || 'com.nexa.target'}</span>}
+  236 |                                     />
+> 237 |                                     <ComparisonRow
+      |                                      ^^^^^^^^^^^^^ This component is created during render
+  238 |                                         label="Root Access"
+  239 |                                         valA={appA.tags?.includes('root') ? <Zap size={16} color="#ef4444" style={{ margin: '0 auto' }} /> : 'NO'}
+  240 |                                         valB={appB.tags?.includes('root') ? <Zap size={16} color="#ef4444" style={{ margin: '0 auto' }} /> : 'NO'}
+
+C:\nexa_store\src\app\compare\page.tsx:52:27
+  50 |     );
+  51 |
+> 52 |     const ComparisonRow = ({ label, valA, valB, winner }: { label: string, valA: any, valB: any, winner?: 'a' | 'b' | null }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 53 |         <div
+     | ^^^^^^^^^^^^
+> 54 |             className="ultra-glass hw-accel"
+     ΓÇª
+     | ^^^^^^^^^^^^
+> 91 |         </div>
+     | ^^^^^^^^^^^^
+> 92 |     );
+     | ^^^^^^ The component is created during render here
+  93 |
+  94 |     return (
+  95 |         <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', color: 'white', paddingBottom: '7rem', position: 'relative', overflow: 'hidden' }}>                                                 react-hooks/static-components
+  310:41  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @next/next/no-img-element
+  310:41  warning  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           jsx-a11y/alt-text
+
+C:\nexa_store\src\app\search\page.tsx
+   4:8   warning  'Link' is defined but never used             @typescript-eslint/no-unused-vars
+   6:54  warning  'Clock' is defined but never used            @typescript-eslint/no-unused-vars
+   6:66  warning  'Star' is defined but never used             @typescript-eslint/no-unused-vars
+  10:18  warning  'AnimatePresence' is defined but never used  @typescript-eslint/no-unused-vars
+
+Γ£û 18 problems (8 errors, 10 warnings)
+

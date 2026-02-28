@@ -1,27 +1,38 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  /* Color Palette - Premium Sapphire Dark Theme */
+  --bg-primary: #000000;
+  /* Deepest Sapphire Black */
+  --bg-secondary: #a9bcf0;
+  --bg-tertiary: #527ece;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+  --accent-primary: #007AFF;
+  /* Authentic iOS Blue */
+  --accent-secondary: #0056b3;
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
+  /* Dynamic Accent */
+  --dynamic-accent: linear-gradient(135deg, #007AFF, #5856D6);
+  /* Blue to Indigo */
+  --dynamic-accent-glow: rgba(0, 122, 255, 0.4);
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  /* Premium Texture Variables */
+  --glass-noise: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+
+  /* Gaming Platform Colors */
+  --xbox-green: #107c10;
+  --ps-blue: #0070d1;
+  --steam-navy: #1b2838;
+  --ios-blue: #007aff;
+  --android-green: #3ddc84;
+
+  --io-radius: 24px;
+  --glass-bg: rgba(15, 17, 21, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.12);
+
+  --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 * {
@@ -30,13 +41,1112 @@ body {
   margin: 0;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+html,
+body {
+  max-width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Outfit', sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+/* FIX: Ensure no underlines on ANY links unless explicitly added */
+a {
+  color: inherit;
+  text-decoration: none !important;
+  transition: var(--transition-smooth);
+}
+
+body {
+  background: var(--bg-primary);
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(circle at 50% -20%, var(--dynamic-ambient-aura, rgba(0, 122, 255, 0.25)) 0%, transparent 70%),
+    radial-gradient(circle at 100% 100%, var(--dynamic-ambient-aura, rgba(0, 122, 255, 0.1)) 0%, transparent 60%),
+    #010205;
+  /* Removed background-attachment: fixed — causes repaint on every scroll frame */
+  z-index: -2;
+  pointer-events: none;
+  transform: translateZ(0);
+}
+
+/* Removed body::after beamRotate — continuous 200%x200% rotation is a GPU killer on low-end devices */
+
+/* --- Nexa Design System (iOS-Grade) --- */
+.ultra-glass {
+  background: rgba(10, 20, 45, 0.3);
+  backdrop-filter: blur(40px) saturate(210%) contrast(105%);
+  -webkit-backdrop-filter: blur(40px) saturate(210%) contrast(105%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 10px 40px -10px rgba(0, 0, 0, 0.6),
+    inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  transform: translateZ(0);
+}
+
+.glass {
+  background: rgba(0, 122, 255, 0.04);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border-radius: 32px;
+}
+
+/* New Deep Liquid Morphic Style */
+.liquid-glass {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  backdrop-filter: blur(50px) saturate(300%) contrast(105%);
+  -webkit-backdrop-filter: blur(50px) saturate(300%) contrast(105%);
+  border-top: 1px solid rgba(255, 255, 255, 0.35);
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow:
+    0 24px 60px -12px rgba(0, 0, 0, 0.6),
+    inset 0 0 20px rgba(255, 255, 255, 0.05);
+}
+
+.ios-squircle {
+  border-radius: 32% !important;
+  /* maximum squircle curvature */
+  overflow: hidden;
+  mask-image: paint(squircle);
+  -webkit-mask-image: paint(squircle);
+}
+
+.ios-card-shadow {
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+.ios-text-gradient {
+  background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.7) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.platform-badge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 100px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  /* Removed backdrop-filter from small UI elements for perf */
+}
+
+.ios-btn-haptic:active {
+  transform: scale(0.96);
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-noise {
+  position: relative;
+}
+
+.glass-noise::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: var(--glass-noise);
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: overlay;
+}
+
+.btn-haptic:active {
+  transform: scale(0.95);
+}
+
+/* Animations */
+@keyframes navEntry {
+  from {
+    transform: translate(-50%, 100px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes holographic {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes glowPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+.float-nav {
+  animation: navEntry 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Liquid Glass Button */
+.btn-liquid {
+  position: relative;
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 0.85rem;
+  overflow: hidden;
+  transition: var(--transition-smooth);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 1;
+}
+
+/* iOS Style Get Button */
+.btn-get-ios {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--accent-primary);
+  font-weight: 800;
+  padding: 0.5rem 1.6rem;
+  border-radius: 40px;
+  /* Highly rounded pills */
+  text-transform: uppercase;
+  font-size: 0.82rem;
+  border: none;
+  transition: var(--transition-smooth);
+  cursor: pointer;
+  letter-spacing: 0.5px;
+}
+
+.btn-liquid::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: 0.5s;
+}
+
+.btn-liquid:hover::before {
+  left: 100%;
+}
+
+.btn-liquid:hover {
+  background: var(--dynamic-accent);
+  border-color: transparent;
+  box-shadow: 0 0 20px var(--dynamic-accent-glow);
+  transform: translateY(-2px);
+}
+
+/* Holographic Badge — static gradient for perf (removed infinite animation) */
+.badge-holo {
+  background: linear-gradient(135deg, #ff0080, #7928ca, #4299e1);
+  color: white;
+  font-size: 0.65rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 100px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 10px rgba(121, 40, 202, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Nav Item States */
+.nav-item {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: var(--transition-smooth);
+  color: var(--text-secondary);
+}
+
+.nav-item.active {
+  color: white;
+  background: var(--dynamic-accent);
+  box-shadow: 0 0 30px var(--dynamic-accent-glow);
+}
+
+/* Sticky Download Bar (iOS Style) */
+.sticky-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 0.75rem 1.5rem;
+  border-top: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 10000;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.75rem);
+}
+
+.sticky-bar.visible {
+  transform: translateY(0);
+}
+
+.btn-get-ios:hover {
+  background: var(--accent-primary);
+  color: white;
+  box-shadow: 0 0 15px var(--dynamic-accent-glow);
+}
+
+/* Bento Grid (iOS Touch) */
+.bento-row {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+  scrollbar-width: none;
+}
+
+.bento-box {
+  flex: 0 0 105px;
+  background: rgba(0, 122, 255, 0.08);
+  /* Removed heavy backdrop-filter for perf */
+  padding: 1.25rem 0.75rem;
+  border-radius: 40px;
+  border: 1px solid rgba(0, 122, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  contain: content;
+}
+
+.bento-box-label {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.bento-box-value {
+  font-size: 1rem;
+  font-weight: 800;
+  color: white;
+}
+
+/* Time Machine Timeline */
+.time-machine {
+  position: relative;
+  padding-left: 2rem;
+  border-left: 2px dashed rgba(255, 255, 255, 0.1);
+  margin-left: 0.5rem;
+}
+
+.version-node {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.version-node::before {
+  content: "";
+  position: absolute;
+  left: -2.35rem;
+  top: 0.25rem;
+  width: 10px;
+  height: 10px;
+  background: var(--accent-primary);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--dynamic-accent-glow);
+}
+
+/* Haptic Squeeze Effect */
+.btn-haptic {
+  transition: transform 0.1s ease;
+}
+
+/* Screenshot Carousel */
+.screenshot-carousel {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+  scroll-snap-type: x mandatory;
+}
+
+.screenshot-item {
+  flex: 0 0 200px;
+  aspect-ratio: 9/16;
+  border-radius: 16px;
+  background: var(--bg-tertiary);
+  scroll-snap-align: start;
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+}
+
+.screenshot-item-elite {
+  border-radius: 2rem !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.markdown-content {
+  color: var(--text-secondary);
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3 {
+  color: white;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.markdown-content p {
+  margin-bottom: 1rem;
+}
+
+.markdown-content code {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+}
+
+.markdown-content pre {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1rem;
+  border-radius: 12px;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+/* Responsive Utilities */
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-only {
+    display: flex !important;
+  }
+
+  .screenshot-item {
+    flex: 0 0 75%;
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Liquid Border for Search Input */
+@keyframes liquidBorder {
+  0% {
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0px transparent;
+  }
+
+  50% {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 20px var(--dynamic-accent-glow);
+  }
+
+  100% {
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0px transparent;
+  }
+}
+
+.btn-premium-glow {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.btn-premium-glow:hover {
+  animation: liquidBorder 1.5s ease-in-out infinite;
+  transform: scale(1.02) translateY(-2px);
+  border-color: var(--accent-primary) !important;
+}
+
+.btn-premium-glow:active {
+  transform: scale(0.98);
+}
+
+.search-liquid:focus-within {
+  animation: liquidBorder 2s ease-in-out infinite;
+}
+
+/* AppCard — simplified, removed 3D perspective for perf */
+.app-card {
+  transition: transform 0.15s ease;
+  contain: content;
+}
+
+.app-card:active {
+  transform: scale(0.98);
+}
+
+/* Removed section:hover h2 translateX — causes reflow on scroll */
+
+/* Elite Home Page - Bento Featured */
+.bento-grid {
+  display: grid;
+  grid-template-areas:
+    "main main side"
+    "main main side2";
+  gap: 1.5rem;
+}
+
+.bento-card {
+  position: relative;
+  border-radius: 28px;
+  overflow: hidden;
+  contain: content;
+}
+
+.bento-card-main {
+  grid-area: main;
+  min-height: 380px;
+}
+
+.bento-card-side {
+  grid-area: side;
+  min-height: 110px;
+}
+
+.bento-card-side2 {
+  grid-area: side2;
+  min-height: 110px;
+}
+
+.bento-card-overlay {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, transparent 60%);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+}
+
+/* Removed heavy hover transform + scale — causes layout reflow */
+
+/* Ambient Aura (Home) — reduced blur for perf */
+.aura-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  background:
+    radial-gradient(circle at 0% 0%, var(--dynamic-accent-glow) 0%, transparent 40%),
+    radial-gradient(circle at 100% 100%, rgba(139, 92, 246, 0.1) 0%, transparent 40%);
+  pointer-events: none;
+  filter: blur(40px);
+}
+
+/* Premium Typography Tools */
+.text-gradient {
+  background: linear-gradient(to right, #fff, var(--text-secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-accent-gradient {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Ranked Chart Decorations */
+.rank-number {
+  font-size: 2.5rem;
+  font-weight: 900;
+  opacity: 0.08;
+  font-style: italic;
+  position: absolute;
+  left: 0.5rem;
+  /* Moved to left */
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Play Store UI Elements */
+.play-tabs-container {
+  display: flex;
+  gap: 2rem;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--glass-border);
+  margin-bottom: 2rem;
+  padding-bottom: 0.5rem;
+}
+
+.play-tab {
+  color: var(--text-secondary);
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.5rem 0;
+  white-space: nowrap;
+  position: relative;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.play-tab.active {
+  color: var(--accent-primary);
+}
+
+.play-tab.active::after {
+  content: "";
+  position: absolute;
+  bottom: -0.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  background: var(--accent-primary);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--accent-primary);
+}
+
+/* iOS 26 Glass Capsule */
+.glass-capsule {
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.01));
+  backdrop-filter: blur(35px) saturate(220%);
+  -webkit-backdrop-filter: blur(35px) saturate(220%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.1);
+}
+
+.tab-pill {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 100px;
+  padding: 0.4rem 1rem;
+}
+
+.tab-pill.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: white !important;
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+.play-banner-card {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 2rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--glass-border);
+}
+
+.play-banner-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 2rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, transparent 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+/* Play List Chart */
+.play-list-item {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.play-rank-num {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+  width: 24px;
+  text-align: center;
+}
+
+.play-app-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.play-btn-outline {
+  border: 1px solid var(--glass-border);
+  padding: 0.5rem 1.5rem;
+  border-radius: 100px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+  background: transparent;
+}
+
+/* Hide scrollbars but keep functionality */
+.play-tabs-container::-webkit-scrollbar {
+  display: none;
+}
+
+.search-pill-container:focus-within {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: var(--accent-primary) !important;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.05) !important;
+  transform: scale(1.01);
+}
+
+/* Scroll Snapping */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+[style*="scroll-snap-type: x mandatory"] {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Header Row Adjustments */
+header {
+  box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 600px) {
+  .play-banner-card {
+    height: 200px !important;
+  }
+}
+
+.search-pill-container:active {
+  transform: scale(0.98);
+}
+
+/* Responsive Scaling for Gaming Portal */
+@media (max-width: 768px) {
+  .game-hero-container {
+    height: 320px !important;
+    border-radius: 28px !important;
+    margin-bottom: 2rem !important;
+  }
+
+  .game-hero-content {
+    bottom: 1.5rem !important;
+    left: 1.5rem !important;
+    right: 1.5rem !important;
+    gap: 1rem !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  .game-hero-title {
+    font-size: 2rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .game-hero-desc {
+    font-size: 0.85rem !important;
+    line-height: 1.3 !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+
+  .game-hero-btn {
+    padding: 0.75rem 2rem !important;
+    font-size: 0.9rem !important;
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .game-hero-info-btn {
+    display: none !important;
+  }
+
+  .game-card-width {
+    flex: 0 0 200px !important;
+  }
+
+  .game-card-img-container {
+    border-radius: 20px !important;
+    aspect-ratio: 16/11 !important;
+  }
+
+  .game-row-title {
+    font-size: 1.4rem !important;
+  }
+
+  .platform-filter-row {
+    overflow-x: hidden !important;
+    justify-content: space-between !important;
+    gap: 0.5rem !important;
+  }
+
+  .platform-filter-pill {
+    padding: 0.6rem 0.4rem !important;
+    font-size: 0.65rem !important;
+    flex: 1 !important;
+    border-radius: 16px !important;
+    gap: 0.3rem !important;
+    min-width: 0 !important;
+    justify-content: center !important;
+  }
+
+  .platform-filter-pill div {
+    flex-shrink: 0 !important;
+  }
+}
+
+/* Cinematic Utilities */
+.cinematic-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.cinematic-glow::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150%;
+  height: 150%;
+  background: radial-gradient(circle at center, var(--accent-primary) 0%, transparent 60%);
+  transform: translate(-50%, -50%);
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.snap-x-mandatory {
+  scroll-snap-type: x mandatory !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+.snap-align-center {
+  scroll-snap-align: center !important;
+}
+
+.snap-align-start {
+  scroll-snap-align: start !important;
+}
+
+/* Floating Pill Nav Enhancements — reduced blur */
+.floating-pill-nav {
+  backdrop-filter: blur(12px) saturate(160%) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.haptic-scale {
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.haptic-scale:active {
+  transform: scale(0.95) !important;
+}
+
+.btn-glow-primary {
+  box-shadow: 0 10px 30px -5px rgba(59, 130, 246, 0.5) !important;
+}
+
+.btn-glow-green {
+  box-shadow: 0 10px 30px -5px rgba(16, 185, 129, 0.5) !important;
+}
+
+.btn-glow-amber {
+  box-shadow: 0 10px 30px -5px rgba(245, 158, 11, 0.5) !important;
+}
+
+/* Edge-to-Edge Helpers */
+.mobile-edge-to-edge {
+  margin-left: -1.5rem !important;
+  margin-right: -1.5rem !important;
+  width: calc(100% + 3rem) !important;
+}
+
+@media (max-width: 768px) {
+  .mobile-edge-to-edge {
+    margin-left: -1rem !important;
+    margin-right: -1rem !important;
+    width: calc(100% + 2rem) !important;
+  }
+}
+
+/* Carousel & Slide Animations */
+.hero-slide-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.hero-slide-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hero-slide-exit {
+  opacity: 0;
+}
+
+@keyframes hero-zoom {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.08);
+  }
+}
+
+/* Removed hero-zoom infinite animation for perf */
+
+/* Hardware Acceleration */
+.hw-accel {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Mesh gradient — static version (removed 15s infinite animation) */
+.mesh-gradient-bg {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 30% 30%, rgba(59, 130, 246, 0.3) 0%, transparent 40%),
+    radial-gradient(circle at 70% 70%, rgba(139, 92, 246, 0.3) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 1) 0%, transparent 100%);
+  z-index: 0;
+}
+
+@keyframes btn-pulse-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+  }
+
+  70% {
+    box-shadow: 0 0 0 15px rgba(59, 130, 246, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+/* Pulse glow animation — apply only on explicit interaction, not by default */
+
+/* Sliding indicator style */
+.nav-indicator-pill {
+  position: absolute;
+  bottom: 8px;
+  height: 4px;
+  background: white;
+  border-radius: 10px;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Neon Glows for Platform Filters */
+.neon-border-blue {
+  border: 1.5px solid rgba(59, 130, 246, 1) !important;
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.4) !important;
+}
+
+.neon-border-green {
+  border: 1.5px solid rgba(16, 185, 129, 1) !important;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.4) !important;
+}
+
+.neon-border-amber {
+  border: 1.5px solid rgba(245, 158, 11, 1) !important;
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.4) !important;
+}
+
+/* Accessibility & Performance: Disable animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.15s !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Font display swap — prevents invisible text during font load */
+@font-face {
+  font-family: 'Outfit';
+  font-display: swap;
+  src: local('Outfit');
+}
+
+/* Elite Reflections & Pulses */
+.glass-reflection {
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-reflection::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent);
+  transform: skewX(-25deg);
+  transition: 0.75s ease;
+}
+
+.glass-reflection:hover::after {
+  left: 150%;
+}
+
+@keyframes softPulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.pulse-soft {
+  animation: softPulse 2s infinite ease-in-out;
+}
+
+/* ── Tools Page — iOS 26 Glass Effects ── */
+.tools-glass-search {
+  position: relative;
+}
+
+.tools-glass-search::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.03) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.tools-card {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.tools-card:hover {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 8px 32px -8px rgba(0, 0, 0, 0.5) !important;
+}
+
+.tools-card:active {
+  transform: scale(0.98) !important;
+  transition: transform 0.1s ease !important;
+}
+
+@keyframes toolsGlow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 122, 255, 0);
+  }
+
+  50% {
+    box-shadow: 0 0 20px 4px rgba(0, 122, 255, 0.15);
   }
 }
