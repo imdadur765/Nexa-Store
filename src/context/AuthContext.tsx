@@ -29,9 +29,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         // Fetch active session on mount
         const getSession = async () => {
             try {
-                const { data: { session } } = await supabase.auth.getSession();
-                setSession(session);
-                setUser(session?.user ?? null);
+                const { data: { session }, error } = await supabase.auth.getSession();
+                if (error) {
+                    // If refresh token is invalid/expired, clear session gracefully
+                    if (error.message?.includes('Refresh Token') || error.message?.includes('refresh_token')) {
+                        console.warn("Session expired, signing out gracefully.");
+                        await supabase.auth.signOut();
+                        setSession(null);
+                        setUser(null);
+                    } else {
+                        console.error("Auth error:", error.message);
+                    }
+                } else {
+                    setSession(session);
+                    setUser(session?.user ?? null);
+                }
             } catch (error) {
                 console.error("Error fetching session:", error);
             } finally {
@@ -43,9 +55,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
-            (_event, session) => {
-                setSession(session);
-                setUser(session?.user ?? null);
+            async (_event, session) => {
+                if (_event === 'TOKEN_REFRESHED' && !session) {
+                    // Token refresh failed, clear session
+                    console.warn("Token refresh failed, clearing session.");
+                    await supabase.auth.signOut();
+                    setSession(null);
+                    setUser(null);
+                } else {
+                    setSession(session);
+                    setUser(session?.user ?? null);
+                }
                 setLoading(false);
             }
         );

@@ -190,7 +190,7 @@ export function useApps() {
                         gradient: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
                         tags: safeParseTags(item.tags, item.category),
                         isTopChart: item.is_featured || false,
-                        ...(item.icon_url && { iconUrl: item.icon_url }),
+                        ...((item.icon_url || item.icon_url_external) && { iconUrl: item.icon_url || item.icon_url_external }),
                         ...(item.download_url && { downloadUrl: item.download_url }),
                         ...(item.developer && { developer: item.developer }),
                         ...(item.screenshots && { screenshots: safeParseScreenshots(item.screenshots) }),
