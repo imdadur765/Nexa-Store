@@ -75,7 +75,7 @@ export default function AppEntertainmentPage() {
                                     position: 'relative'
                                 }}>
                                     <img
-                                        src={app.iconUrl || `/icons/${app.iconId}.png`}
+                                        src={app.iconUrl || app.icon_url_external || `/icons/${app.iconId}.png`}
                                         alt={app.name}
                                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                     />

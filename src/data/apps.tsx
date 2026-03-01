@@ -55,6 +55,9 @@ export interface AppEntry {
     editors_verdict?: string;
     pros?: string[];
     cons?: string[];
+    // External Data Overrides
+    icon_url_external?: string;
+    screenshots_external?: string;
 }
 
 export const appsData: AppEntry[] = [];

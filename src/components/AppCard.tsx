@@ -79,7 +79,7 @@ function AppCardInner({ app, isLoading }: { app: AppEntry; isLoading?: boolean }
                 <div className="ios-squircle ios-card-shadow" style={{
                     width: '60px',
                     height: '60px',
-                    background: app.iconUrl ? 'transparent' : app.gradient,
+                    background: (app.iconUrl || app.icon_url_external) ? 'transparent' : app.gradient,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -88,8 +88,8 @@ function AppCardInner({ app, isLoading }: { app: AppEntry; isLoading?: boolean }
                     position: 'relative',
                     pointerEvents: 'none'
                 }}>
-                    {isValidUrl(app.iconUrl) ? (
-                        <Image src={app.iconUrl as string} alt={app.name} width={60} height={60} style={{ objectFit: 'cover' }} loading="lazy" />
+                    {isValidUrl(app.iconUrl || app.icon_url_external) ? (
+                        <Image src={(app.iconUrl || app.icon_url_external) as string} alt={app.name} width={60} height={60} style={{ objectFit: 'cover' }} loading="lazy" />
                     ) : (
                         <div style={{ color: 'white', opacity: 0.95 }}>
                             {IconMap[app.iconId]}

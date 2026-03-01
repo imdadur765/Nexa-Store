@@ -74,7 +74,7 @@ export const GameHero: React.FC<GameHeroProps> = ({ games }) => {
                     }}>
                         <Image
                             src={isValidUrl(g.heroImage) ? (g.heroImage as string) :
-                                isValidUrl(g.iconUrl) ? (g.iconUrl as string) :
+                                isValidUrl(g.iconUrl || g.icon_url_external) ? ((g.iconUrl || g.icon_url_external) as string) :
                                     'https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=1200'}
                             alt={g.name}
                             fill

@@ -58,7 +58,7 @@ export default function TrendingPage() {
                                 boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3)'
                             }}>
                                 {isValidUrl(app.iconUrl) ? (
-                                    <img src={app.iconUrl} alt={app.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    <img src={(app.iconUrl || app.icon_url_external)} alt={app.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 ) : (
                                     <Flame size={32} color="white" fill="white" />
                                 )}

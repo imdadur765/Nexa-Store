@@ -110,7 +110,7 @@ export default function AppDetails({ params }: Props) {
     }, [app, setTheme, resetAccent]);
 
     // Wait for data to load before showing 404
-    if (appsLoading && !app) {
+    if (!app && appsLoading) {
         return (
             <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-primary)' }}>
                 <p style={{ color: 'var(--text-muted)' }}>Loading...</p>
@@ -249,15 +249,15 @@ export default function AppDetails({ params }: Props) {
                 <div className="ios-squircle ios-card-shadow" style={{
                     width: '110px',
                     height: '110px',
-                    background: app.iconUrl ? 'transparent' : app.gradient,
+                    background: (app.iconUrl || app.icon_url_external) ? 'transparent' : app.gradient,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0,
                     overflow: 'hidden'
                 }}>
-                    {app.iconUrl ? (
-                        <img src={app.iconUrl} alt={app.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    {(app.iconUrl || app.icon_url_external) ? (
+                        <img src={app.iconUrl || app.icon_url_external || ''} alt={app.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
                         IconMap[app.iconId]
                     )}

@@ -309,7 +309,7 @@ function ComparisonContent() {
                                         }}
                                         style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', textAlign: 'left', color: 'inherit' }}
                                     >
-                                        <img src={app.iconUrl} alt={app.name} style={{ width: '40px', height: '40px', borderRadius: '10px' }} />
+                                        <img src={(app.iconUrl || app.icon_url_external)} alt={app.name} style={{ width: '40px', height: '40px', borderRadius: '10px' }} />
                                         <div style={{ flex: 1 }}>
                                             <div style={{ fontWeight: '700', fontSize: '0.9rem' }}>{app.name}</div>
                                             <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>{app.category}</div>
