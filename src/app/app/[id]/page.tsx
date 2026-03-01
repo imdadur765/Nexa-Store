@@ -249,15 +249,15 @@ export default function AppDetails({ params }: Props) {
                 <div className="ios-squircle ios-card-shadow" style={{
                     width: '110px',
                     height: '110px',
-                    background: (app.iconUrl || app.icon_url_external) ? 'transparent' : app.gradient,
+                    background: isValidUrl(app.iconUrl || app.icon_url_external || '') ? 'transparent' : app.gradient,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0,
                     overflow: 'hidden'
                 }}>
-                    {(app.iconUrl || app.icon_url_external) ? (
-                        <img src={app.iconUrl || app.icon_url_external || ''} alt={app.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    {isValidUrl(app.iconUrl || app.icon_url_external || '') ? (
+                        <img src={(app.iconUrl || app.icon_url_external)!} alt={app.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '22%' }} />
                     ) : (
                         IconMap[app.iconId]
                     )}
@@ -456,7 +456,7 @@ export default function AppDetails({ params }: Props) {
                                 <Star key={s} size={14} fill={s <= Math.floor(app.rating) ? "var(--accent-primary)" : "none"} color={s <= Math.floor(app.rating) ? "var(--accent-primary)" : "rgba(255,255,255,0.2)"} />
                             ))}
                         </div>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '700' }}>{Math.floor(Math.random() * 500) + 100} RATINGS</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '700' }}>{((app.id * 7 + 13) % 500) + 100} RATINGS</div>
                     </div>
 
                     <div style={{ flex: 1, minWidth: '200px', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
@@ -607,7 +607,7 @@ export default function AppDetails({ params }: Props) {
                             <div className="ios-squircle" style={{
                                 width: '48px',
                                 height: '48px',
-                                background: (app.iconUrl || app.icon_url_external) ? 'transparent' : app.gradient,
+                                background: isValidUrl(app.iconUrl || app.icon_url_external || '') ? 'transparent' : app.gradient,
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -615,8 +615,8 @@ export default function AppDetails({ params }: Props) {
                                 flexShrink: 0,
                                 overflow: 'hidden'
                             }}>
-                                {(app.iconUrl || app.icon_url_external) ? (
-                                    <img src={app.iconUrl || app.icon_url_external || ''} alt={app.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                {isValidUrl(app.iconUrl || app.icon_url_external || '') ? (
+                                    <img src={(app.iconUrl || app.icon_url_external)!} alt={app.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 ) : (
                                     <div style={{ transform: 'scale(0.6)', color: 'white' }}>{SmallIconMap[app.iconId]}</div>
                                 )}
