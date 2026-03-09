@@ -258,7 +258,7 @@ export default function AppDetails({ params }: Props) {
                     display: 'flex',
                     flexWrap: 'wrap' as const,
                     gap: '1rem',
-                    marginTop: '0.75rem',
+                    marginTop: '1.75rem',
                     marginBottom: '2.5rem',
                     opacity: headerOpacity,
                     transform: `translateY(${scrollY * 0.1}px)`,
