@@ -1291,16 +1291,6 @@ header {
     padding: 1rem !important;
   }
 
-  /* ── Nav Items ── */
-  .nav-item {
-    width: 40px !important;
-    height: 40px !important;
-  }
-
-  /* ── Floating Nav ── */
-  .floating-pill-nav {
-    padding: 0.3rem 0.6rem !important;
-  }
 
   /* ── Markdown Content ── */
   .markdown-content pre {
