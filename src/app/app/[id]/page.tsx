@@ -257,9 +257,9 @@ export default function AppDetails({ params }: Props) {
                 style={{
                     display: 'flex',
                     flexWrap: 'wrap' as const,
-                    gap: '1rem',
-                    marginTop: '1.75rem',
-                    marginBottom: '2.5rem',
+                    gap: '2rem',
+                    marginTop: '3.75rem',
+                    marginBottom: '1.5rem',
                     opacity: headerOpacity,
                     transform: `translateY(${scrollY * 0.1}px)`,
                     transition: 'opacity 0.2s ease, transform 0.1s linear'
