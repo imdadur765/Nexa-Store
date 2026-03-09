@@ -48,16 +48,16 @@ export function AuthHint() {
                     }}
                 >
                     <div style={{
-                        background: 'rgba(15, 23, 42, 0.85)',
-                        backdropFilter: 'blur(20px) saturate(180%)',
-                        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        background: 'rgba(10, 15, 30, 0.65)',
+                        backdropFilter: 'blur(30px) saturate(200%)',
+                        WebkitBackdropFilter: 'blur(30px) saturate(200%)',
+                        border: '1px solid rgba(255, 255, 255, 0.12)',
                         borderRadius: '100px',
                         padding: '0.5rem 0.5rem 0.5rem 1rem',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '0.75rem',
-                        boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 122, 255, 0.15)'
+                        boxShadow: '0 12px 40px 0 rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 122, 255, 0.1), inset 0 1px 0 rgba(255,255,255,0.1)'
                     }}>
 
                         {/* Interactive Link Area */}

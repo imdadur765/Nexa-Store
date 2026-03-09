@@ -73,7 +73,21 @@ export default function AppDetails({ params }: Props) {
     const [loading, setLoading] = useState(false);
     const [activeScreenshot, setActiveScreenshot] = useState<string | null>(null);
     const [iconError, setIconError] = useState(false);
+    const [downloading, setDownloading] = useState(false);
     const appIconUrl = app?.iconUrl || app?.icon_url_external;
+
+    const handleDownload = () => {
+        const url = latestRelease?.assets?.[0]?.browser_download_url || app?.downloadUrl || app?.githubUrl;
+        if (url) {
+            setDownloading(true);
+            setTimeout(() => {
+                window.open(url, '_blank');
+                setTimeout(() => setDownloading(false), 2000);
+            }, 800);
+        } else {
+            alert('Download link not available yet.');
+        }
+    };
 
     useEffect(() => {
         if (!app) return;
@@ -244,6 +258,7 @@ export default function AppDetails({ params }: Props) {
                     display: 'flex',
                     flexWrap: 'wrap' as const,
                     gap: '1rem',
+                    marginTop: '0.75rem',
                     marginBottom: '2.5rem',
                     opacity: headerOpacity,
                     transform: `translateY(${scrollY * 0.1}px)`,
@@ -267,27 +282,28 @@ export default function AppDetails({ params }: Props) {
                 </div>
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '0.75rem' }}>
                     <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' as const }}>
-                            <h1 className="ios-text-gradient" style={{ fontSize: 'clamp(1.4rem, 5vw, 2.2rem)', fontWeight: '800', lineHeight: '1.1', letterSpacing: '-0.5px' }}>{app.name}</h1>
+                        <div>
+                            <h1 className="ios-text-gradient" style={{ fontSize: 'clamp(1.5rem, 5.5vw, 2.4rem)', fontWeight: '900', lineHeight: '1.1', letterSpacing: '-0.5px' }}>{app.name}</h1>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.4rem', flexWrap: 'wrap' as const }}>
+                            <p style={{ color: 'var(--accent-primary)', fontSize: '1rem', fontWeight: '700', opacity: 0.9, margin: 0 }}>
+                                {app.category}
+                            </p>
                             <Link href="/services/safety" style={{ textDecoration: 'none' }}>
                                 <motion.div
                                     whileHover={{ scale: 1.05, background: 'rgba(61, 220, 132, 0.15)' }}
                                     style={{
-                                        display: 'flex', alignItems: 'center', gap: '0.4rem',
-                                        padding: '0.35rem 0.8rem', background: 'rgba(61, 220, 132, 0.1)',
-                                        borderRadius: '12px', border: '1px solid rgba(61, 220, 132, 0.2)',
-                                        cursor: 'pointer', flexShrink: 0,
-                                        boxShadow: '0 4px 12px rgba(61, 220, 132, 0.1)'
+                                        display: 'flex', alignItems: 'center', gap: '0.3rem',
+                                        padding: '0.25rem 0.6rem', background: 'rgba(61, 220, 132, 0.1)',
+                                        borderRadius: '10px', border: '1px solid rgba(61, 220, 132, 0.2)',
+                                        cursor: 'pointer', flexShrink: 0
                                     }}
                                 >
-                                    <ShieldCheck size={14} color="#3ddc84" fill="#3ddc84" fillOpacity={0.2} />
-                                    <span style={{ fontSize: '0.7rem', fontWeight: '900', color: '#3ddc84', letterSpacing: '0.5px' }}>SAFETY VERIFIED</span>
+                                    <ShieldCheck size={12} color="#3ddc84" fill="#3ddc84" fillOpacity={0.2} />
+                                    <span style={{ fontSize: '0.6rem', fontWeight: '900', color: '#3ddc84', letterSpacing: '0.5px' }}>VERIFIED</span>
                                 </motion.div>
                             </Link>
                         </div>
-                        <p style={{ color: 'var(--accent-primary)', fontSize: '1.1rem', fontWeight: '700', marginTop: '0.5rem', opacity: 0.9 }}>
-                            {app.category}
-                        </p>
                     </div>
                     <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' as const }}>
                         <Link
@@ -316,26 +332,34 @@ export default function AppDetails({ params }: Props) {
                                         app.storeSource?.includes('appstore') ? '#007AFF' :
                                             'var(--accent-primary)',
                                 color: 'white',
-                                padding: '0.65rem 2.8rem',
-                                fontSize: '1.05rem',
+                                padding: '0.7rem 3.5rem',
+                                fontSize: '1.1rem',
                                 border: 'none',
-                                boxShadow: `0 8px 20px -5px ${app.storeSource?.includes('playstore') ? '#34A853' :
-                                    app.storeSource?.includes('steam') ? '#171a21' :
-                                        app.storeSource?.includes('appstore') ? '#007AFF' :
-                                            'var(--accent-primary)'}`
+                                boxShadow: `0 12px 30px -8px ${app.storeSource?.includes('playstore') ? 'rgba(52,168,83,0.5)' :
+                                    app.storeSource?.includes('steam') ? 'rgba(23,26,33,0.5)' :
+                                        app.storeSource?.includes('appstore') ? 'rgba(0,122,255,0.4)' :
+                                            'rgba(0,122,255,0.35)'}`,
+                                transition: 'all 0.3s ease',
+                                minWidth: '140px'
                             }}
-                            onClick={() => {
-                                const url = latestRelease?.assets?.[0]?.browser_download_url || app.downloadUrl || app.githubUrl;
-                                if (url) window.open(url, '_blank');
-                                else alert('Download link not available yet.');
-                            }}
+                            onClick={handleDownload}
+                            disabled={downloading}
                         >
-                            {loading ? "..." : (app.storeSource?.includes('steam') ? "PLAY" : "GET")}
+                            {downloading ? (
+                                <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
+                                    <motion.span
+                                        animate={{ rotate: 360 }}
+                                        transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
+                                        style={{ display: 'inline-block', width: '16px', height: '16px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: 'white', borderRadius: '50%' }}
+                                    />
+                                    Loading...
+                                </span>
+                            ) : loading ? "..." : (app.storeSource?.includes('steam') ? "PLAY" : "GET")}
                         </button>
-                        <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>
-                            {githubData ? `${githubData.stargazers_count} Stars` : "Offers In-App"}
-                        </p>
                     </div>
+                    <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', textAlign: 'center', marginTop: '-0.25rem' }}>
+                        {githubData ? `${githubData.stargazers_count} Stars` : "Offers In-App"}
+                    </p>
                 </div>
             </motion.header>
 
@@ -379,30 +403,40 @@ export default function AppDetails({ params }: Props) {
             )}
 
             {/* Bento Stats Grid */}
-            <div className="bento-row no-scrollbar" style={{ marginBottom: '3rem', padding: '0 0.5rem' }}>
+            <div className="bento-row no-scrollbar" style={{ marginBottom: '3rem', padding: '0 0.5rem', display: 'flex', justifyContent: 'space-between' }}>
                 {[
                     { label: 'Stars', value: githubData ? (githubData.stargazers_count / 1000).toFixed(1) + 'K' : app.rating, sub: githubData ? 'GitHub Community' : 'User Rating', icon: <Star size={14} fill="currentColor" /> },
                     { label: 'Version', value: latestRelease ? latestRelease.tag_name : app.version, sub: 'Latest Release' },
                     { label: 'Age', value: app.ageRating || '4+', sub: 'Age Rating' },
-                    { label: 'Size', value: latestRelease?.assets?.[0] ? (latestRelease.assets[0].size / (1024 * 1024)).toFixed(1) + 'MB' : (app.packageSize || '45MB'), sub: 'Package Size' },
-                    { label: 'Dev', value: githubData ? githubData.owner.login : (app.developer || 'NexaLabs'), sub: 'Verified Repo' }
-                ].map((stat, idx) => (
-                    <motion.div
-                        key={idx}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: idx * 0.05 }}
-                        whileHover={{ y: -5, background: 'rgba(255,255,255,0.08)' }}
-                        className="bento-box liquid-glass"
-                    >
-                        <span className="bento-box-label">{stat.label}</span>
-                        <span className="bento-box-value" style={{ fontSize: String(stat.value).length > 8 ? '0.8rem' : '1.1rem' }}>
-                            {stat.value}
-                            {stat.icon && <span style={{ marginLeft: '4px', verticalAlign: 'middle' }}>{stat.icon}</span>}
-                        </span>
-                        <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)' }}>{stat.sub}</span>
-                    </motion.div>
+                    { label: 'Size', value: latestRelease?.assets?.[0] ? (latestRelease.assets[0].size / (1024 * 1024)).toFixed(1) + 'MB' : (app.packageSize || '45MB'), sub: 'Package Size' }
+                ].map((stat, idx, arr) => (
+                    <div key={idx} style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: idx * 0.05 }}
+                            style={{
+                                flex: 1,
+                                padding: '1rem 0.5rem',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                gap: '0.3rem',
+                                textAlign: 'center'
+                            }}
+                        >
+                            <span className="bento-box-label">{stat.label}</span>
+                            <span className="bento-box-value" style={{ fontSize: String(stat.value).length > 8 ? '0.75rem' : '1.05rem' }}>
+                                {stat.value}
+                                {stat.icon && <span style={{ marginLeft: '4px', verticalAlign: 'middle' }}>{stat.icon}</span>}
+                            </span>
+                            <span style={{ fontSize: '0.55rem', color: 'var(--text-muted)' }}>{stat.sub}</span>
+                        </motion.div>
+                        {idx < arr.length - 1 && (
+                            <div style={{ width: '1px', height: '40px', background: 'rgba(255,255,255,0.08)', flexShrink: 0 }} />
+                        )}
+                    </div>
                 ))}
             </div>
 
@@ -428,13 +462,14 @@ export default function AppDetails({ params }: Props) {
                                 onClick={() => setActiveScreenshot(src)}
                                 style={{
                                     minWidth: '220px', height: '400px',
-                                    borderRadius: '20px', overflow: 'hidden',
+                                    borderRadius: '24px', overflow: 'hidden',
                                     position: 'relative',
                                     flexShrink: 0,
-                                    cursor: 'pointer'
+                                    cursor: 'pointer',
+                                    boxShadow: '0 8px 30px -8px rgba(0,0,0,0.6)'
                                 }}
                             >
-                                <Image src={src} alt={`Screenshot ${i + 1}`} fill style={{ objectFit: 'cover' }} />
+                                <Image src={src} alt={`Screenshot ${i + 1}`} fill style={{ objectFit: 'cover', borderRadius: '24px' }} />
                             </motion.div>
                         ))}
                     </div>
