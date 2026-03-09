@@ -72,6 +72,8 @@ export default function AppDetails({ params }: Props) {
     const [readmeContent, setReadmeContent] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [activeScreenshot, setActiveScreenshot] = useState<string | null>(null);
+    const [iconError, setIconError] = useState(false);
+    const appIconUrl = app?.iconUrl || app?.icon_url_external;
 
     useEffect(() => {
         if (!app) return;
@@ -128,7 +130,7 @@ export default function AppDetails({ params }: Props) {
     const headerOpacity = Math.max(0, 1 - scrollY / 300);
 
     return (
-        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '1rem 1rem 10rem 1rem', position: 'relative' }}>
+        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '1rem 1rem 10rem 1rem', position: 'relative', overflowX: 'hidden' }}>
 
             {/* Dynamic Radial Backdrop */}
             <div style={{
@@ -240,7 +242,8 @@ export default function AppDetails({ params }: Props) {
                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                 style={{
                     display: 'flex',
-                    gap: '1.5rem',
+                    flexWrap: 'wrap' as const,
+                    gap: '1rem',
                     marginBottom: '2.5rem',
                     opacity: headerOpacity,
                     transform: `translateY(${scrollY * 0.1}px)`,
@@ -249,23 +252,23 @@ export default function AppDetails({ params }: Props) {
                 <div className="ios-squircle ios-card-shadow" style={{
                     width: '110px',
                     height: '110px',
-                    background: isValidUrl(app.iconUrl || app.icon_url_external || '') ? 'transparent' : app.gradient,
+                    background: (isValidUrl(appIconUrl) && !iconError) ? 'transparent' : app.gradient,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0,
                     overflow: 'hidden'
                 }}>
-                    {isValidUrl(app.iconUrl || app.icon_url_external || '') ? (
-                        <img src={(app.iconUrl || app.icon_url_external)!} alt={app.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '22%' }} />
+                    {(isValidUrl(appIconUrl) && !iconError) ? (
+                        <img src={appIconUrl!} alt={app.name} onError={() => setIconError(true)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
-                        IconMap[app.iconId]
+                        <div style={{ color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{IconMap[app.iconId] || <Zap size={48} />}</div>
                     )}
                 </div>
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '0.75rem' }}>
                     <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <h1 className="ios-text-gradient" style={{ fontSize: '2.2rem', fontWeight: '800', lineHeight: '1', letterSpacing: '-0.5px' }}>{app.name}</h1>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' as const }}>
+                            <h1 className="ios-text-gradient" style={{ fontSize: 'clamp(1.4rem, 5vw, 2.2rem)', fontWeight: '800', lineHeight: '1.1', letterSpacing: '-0.5px' }}>{app.name}</h1>
                             <Link href="/services/safety" style={{ textDecoration: 'none' }}>
                                 <motion.div
                                     whileHover={{ scale: 1.05, background: 'rgba(61, 220, 132, 0.15)' }}
@@ -286,7 +289,7 @@ export default function AppDetails({ params }: Props) {
                             {app.category}
                         </p>
                     </div>
-                    <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' as const }}>
                         <Link
                             href={`/compare?a=${app.id}`}
                             className="ios-btn-haptic ultra-glass"
@@ -344,18 +347,20 @@ export default function AppDetails({ params }: Props) {
                     viewport={{ once: true }}
                     style={{ marginBottom: '2.5rem' }}>
                     <div className="liquid-glass hw-accel" style={{
-                        padding: '1rem 1.5rem',
+                        padding: '1rem 1.25rem',
                         borderRadius: '24px',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'space-between'
+                        justifyContent: 'space-between',
+                        flexWrap: 'wrap' as const,
+                        gap: '0.5rem'
                     }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' as const }}>
                             <div style={{ fontSize: '0.8rem', fontWeight: '800', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '1px' }}>
                                 Available On
                             </div>
                             <div style={{ height: '20px', width: '1px', background: 'rgba(255,255,255,0.1)' }} />
-                            <div style={{ display: 'flex', gap: '0.75rem' }}>
+                            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' as const }}>
                                 {app.storeSource.map(source => (
                                     <div key={source} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.05)', padding: '0.4rem 0.75rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
                                         {source === 'playstore' && <Image src="/platforms/playstore_logo.png" width={18} height={18} style={{ objectFit: 'contain' }} alt="Play Store" />}
@@ -607,7 +612,7 @@ export default function AppDetails({ params }: Props) {
                             <div className="ios-squircle" style={{
                                 width: '48px',
                                 height: '48px',
-                                background: isValidUrl(app.iconUrl || app.icon_url_external || '') ? 'transparent' : app.gradient,
+                                background: (isValidUrl(appIconUrl) && !iconError) ? 'transparent' : app.gradient,
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -615,10 +620,10 @@ export default function AppDetails({ params }: Props) {
                                 flexShrink: 0,
                                 overflow: 'hidden'
                             }}>
-                                {isValidUrl(app.iconUrl || app.icon_url_external || '') ? (
-                                    <img src={(app.iconUrl || app.icon_url_external)!} alt={app.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                {(isValidUrl(appIconUrl) && !iconError) ? (
+                                    <img src={appIconUrl!} alt={app.name} onError={() => setIconError(true)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 ) : (
-                                    <div style={{ transform: 'scale(0.6)', color: 'white' }}>{SmallIconMap[app.iconId]}</div>
+                                    <div style={{ transform: 'scale(0.6)', color: 'white' }}>{SmallIconMap[app.iconId] || <Zap size={20} />}</div>
                                 )}
                             </div>
                             <div>
