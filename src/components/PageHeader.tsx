@@ -62,7 +62,11 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
                             fontSize: '0.9rem',
                             color: 'white',
                             cursor: 'pointer',
-                            background: 'none'
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            backdropFilter: 'blur(40px) saturate(150%)',
+                            WebkitBackdropFilter: 'blur(40px) saturate(150%)',
+                            border: '1px solid rgba(255, 255, 255, 0.15)',
+                            boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
                         }}
                     >
                         <ArrowLeft size={16} />
@@ -76,7 +80,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
                     gap: '0.75rem'
                 }}>
                     {rightElement}
-                    <div className="liquid-glass" style={{
+                    <div className="liquid-glass hw-accel" style={{
                         display: 'flex',
                         alignItems: 'center',
                         gap: '0.35rem',
@@ -84,7 +88,12 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
                         borderRadius: '100px',
                         fontSize: '0.75rem',
                         fontWeight: '800',
-                        color: 'white'
+                        color: 'white',
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        backdropFilter: 'blur(40px) saturate(150%)',
+                        WebkitBackdropFilter: 'blur(40px) saturate(150%)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
                     }}>
                         {icon} {title}
                     </div>
@@ -94,15 +103,19 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             {showSearch && (
                 <Link
                     href={searchHref}
-                    className="search-pill-container liquid-glass"
+                    className="search-pill-container hw-accel"
                     style={{
                         width: '100%',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '0.75rem',
-                        padding: '0.65rem 1.25rem',
+                        padding: '0.75rem 1.25rem',
                         borderRadius: '100px',
-                        boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.3)',
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        backdropFilter: 'blur(40px) saturate(150%)',
+                        WebkitBackdropFilter: 'blur(40px) saturate(150%)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        boxShadow: '0 12px 30px -10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
                         transition: 'var(--transition-smooth)',
                         cursor: 'text',
                         textDecoration: 'none'
