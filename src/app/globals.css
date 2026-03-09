@@ -1155,22 +1155,6 @@ header {
 /* ═══ MOBILE 20:9 RESPONSIVE (360-430px width) ═══ */
 /* ═══════════════════════════════════════════════════ */
 
-/* Global overflow prevention */
-*,
-*::before,
-*::after {
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
-img,
-video,
-iframe,
-svg {
-  max-width: 100%;
-  height: auto;
-}
-
 @media (max-width: 480px) {
 
   /* ── Global Layout ── */
@@ -1179,13 +1163,6 @@ svg {
     -webkit-text-size-adjust: 100%;
   }
 
-  /* ── App Details Page Header ── */
-  /* Stack icon + text vertically on small screens */
-  motion\.header,
-  header,
-  [style*="display: flex"][style*="gap: 1.5rem"] {
-    flex-wrap: wrap !important;
-  }
 
   /* ── Squircle Icon Sizing ── */
   .ios-squircle.ios-card-shadow {
@@ -1336,11 +1313,5 @@ svg {
     max-width: 100% !important;
   }
 
-  /* ── General text overflow ── */
-  p,
-  span,
-  div {
-    word-break: break-word;
-    overflow-wrap: break-word;
-  }
+
 }
