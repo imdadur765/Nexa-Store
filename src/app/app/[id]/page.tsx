@@ -18,7 +18,7 @@ import { useTheme } from "@/context/ThemeContext";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useRouter } from "next/navigation";
-import { isValidUrl } from "@/lib/utils";
+import { isValidUrl, getProxiedImageUrl } from "@/lib/utils";
 import { SectionHeader } from "@/components/SectionHeader";
 import { Skeleton } from "@/components/Skeleton";
 import { motion, AnimatePresence } from "framer-motion";
@@ -76,9 +76,7 @@ export default function AppDetails({ params }: Props) {
     const [downloading, setDownloading] = useState(false);
 
     // Auto-upgrade HTTP to HTTPS, then run it through our proxy so external servers don't block Vercel
-    const rawIconUrl = app?.iconUrl || app?.icon_url_external;
-    const httpsUrl = rawIconUrl ? rawIconUrl.replace(/^http:\/\//i, 'https://') : null;
-    const appIconUrl = httpsUrl ? `/api/image-proxy?url=${encodeURIComponent(httpsUrl)}` : null;
+    const appIconUrl = getProxiedImageUrl(app?.iconUrl || app?.icon_url_external);
 
     const handleDownload = () => {
         const url = latestRelease?.assets?.[0]?.browser_download_url || app?.downloadUrl || app?.githubUrl;

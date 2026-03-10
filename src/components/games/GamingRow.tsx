@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Star, ArrowRight, Download, Globe, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { isValidUrl } from '@/lib/utils';
+import { isValidUrl, getProxiedImageUrl } from '@/lib/utils';
 import { SectionHeader } from '../SectionHeader';
 
 interface GamingRowProps {
@@ -47,9 +47,10 @@ const GamingItem = ({ game, index = 0 }: { game: AppEntry, index?: number }) => 
             }}>
                 <Image
                     src={imgError ? 'https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80' :
-                        (isValidUrl(game.heroImage) ? (game.heroImage as string) :
-                            isValidUrl(game.iconUrl) ? (game.iconUrl as string) :
-                                'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=600')}
+                        (getProxiedImageUrl(game.slider_image_url) ||
+                            getProxiedImageUrl(game.heroImage) ||
+                            getProxiedImageUrl(game.iconUrl) ||
+                            'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=600')}
                     alt={game.name}
                     fill
                     sizes="220px"

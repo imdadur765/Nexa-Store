@@ -4,7 +4,7 @@ import { AppEntry } from '@/data/apps';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Star, ArrowRight, Download, Globe, Zap } from 'lucide-react';
-import { isValidUrl } from '@/lib/utils';
+import { isValidUrl, getProxiedImageUrl } from '@/lib/utils';
 import { SectionHeader } from '../SectionHeader';
 
 interface GamingGridProps {
@@ -44,9 +44,10 @@ const GamingGridItem = ({ game }: { game: AppEntry }) => {
             }}>
                 <Image
                     src={imgError ? 'https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80' :
-                        (isValidUrl(game.iconUrl) ? (game.iconUrl as string) :
-                            isValidUrl(game.heroImage) ? (game.heroImage as string) :
-                                `https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=200`)}
+                        (getProxiedImageUrl(game.iconUrl) ||
+                            getProxiedImageUrl(game.slider_image_url) ||
+                            getProxiedImageUrl(game.heroImage) ||
+                            `https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=200`)}
                     alt={game.name}
                     fill
                     sizes="80px"

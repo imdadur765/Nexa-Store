@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Download, Info, Zap, Shield, Flame, Terminal, Rocket, Globe } from 'lucide-react';
 import { AppEntry, IconType } from '@/data/apps';
 import Link from 'next/link';
-import { isValidUrl } from '@/lib/utils';
+import { isValidUrl, getProxiedImageUrl } from '@/lib/utils';
 
 interface AppHeroProps {
     apps: AppEntry[];
@@ -86,9 +86,10 @@ export const AppHero: React.FC<AppHeroProps> = ({ apps }) => {
                         zIndex: 0
                     }}>
                         <Image
-                            src={isValidUrl(a.heroImage) ? (a.heroImage as string) :
-                                isValidUrl(a.iconUrl) ? (a.iconUrl as string) :
-                                    'https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=1200'}
+                            src={getProxiedImageUrl(a.slider_image_url) ||
+                                getProxiedImageUrl(a.heroImage) ||
+                                getProxiedImageUrl(a.iconUrl) ||
+                                'https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=1200'}
                             alt={a.name}
                             fill
                             sizes="(max-width: 768px) 100vw, 1200px"

@@ -30,3 +30,14 @@ export const getAvatarUrl = (email?: string, metadataAvatarUrl?: string): string
 
     return `https://ui-avatars.com/api/?name=User&background=3b82f6&color=fff&size=200`;
 };
+
+/**
+ * Wraps an external image URL in the local proxy to bypass hotlink protection.
+ */
+export const getProxiedImageUrl = (url: string | undefined | null): string | undefined => {
+    if (!url || !isValidUrl(url)) return undefined;
+    if (url.startsWith('/') || url.includes('localhost') || url.includes('supabase.co')) return url;
+
+    const httpsUrl = url.replace(/^http:\/\//i, 'https://');
+    return `/api/image-proxy?url=${encodeURIComponent(httpsUrl)}`;
+};

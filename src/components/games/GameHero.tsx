@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Play, Info, Globe } from 'lucide-react';
 import { AppEntry } from '@/data/apps';
 import Link from 'next/link';
-import { isValidUrl } from '@/lib/utils';
+import { isValidUrl, getProxiedImageUrl } from '@/lib/utils';
 
 interface GameHeroProps {
     games: AppEntry[];
@@ -73,9 +73,10 @@ export const GameHero: React.FC<GameHeroProps> = ({ games }) => {
                         zIndex: 0
                     }}>
                         <Image
-                            src={isValidUrl(g.heroImage) ? (g.heroImage as string) :
-                                isValidUrl(g.iconUrl || g.icon_url_external) ? ((g.iconUrl || g.icon_url_external) as string) :
-                                    'https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=1200'}
+                            src={getProxiedImageUrl(g.slider_image_url) ||
+                                getProxiedImageUrl(g.heroImage) ||
+                                getProxiedImageUrl(g.iconUrl || g.icon_url_external) ||
+                                'https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=1200'}
                             alt={g.name}
                             fill
                             sizes="(max-width: 768px) 100vw, 1200px"

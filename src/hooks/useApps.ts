@@ -42,6 +42,7 @@ interface SupabaseAppRow {
     older_versions?: any;
     icon_url_external?: string;
     screenshots_external?: string;
+    slider_image_url?: string;
 }
 
 // Helper to safely parse screenshots
@@ -217,6 +218,7 @@ export function useApps() {
                         older_versions: Array.isArray(item.older_versions) ? item.older_versions : [],
                         icon_url_external: item.icon_url_external,
                         screenshots_external: item.screenshots_external,
+                        slider_image_url: item.slider_image_url,
                         created_at: (item as any).created_at,
                     }));
 

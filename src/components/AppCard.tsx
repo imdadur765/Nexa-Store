@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Star, Download, Zap, Shield, Flame, Terminal, Rocket, Globe, MessageCircle, Play, Music, Camera, ShoppingBag, Gamepad2 } from "lucide-react";
 import { AppEntry, IconType } from "@/data/apps";
 import { useTheme } from "@/context/ThemeContext";
-import { isValidUrl } from "@/lib/utils";
+import { isValidUrl, getProxiedImageUrl } from "@/lib/utils";
 
 const IconMap: Record<IconType, React.ReactNode> = {
     zap: <Zap size={32} color="#3b82f6" />,
@@ -88,8 +88,8 @@ function AppCardInner({ app, isLoading }: { app: AppEntry; isLoading?: boolean }
                     position: 'relative',
                     pointerEvents: 'none'
                 }}>
-                    {isValidUrl(app.iconUrl || app.icon_url_external) ? (
-                        <Image src={(app.iconUrl || app.icon_url_external) as string} alt={app.name} width={60} height={60} style={{ objectFit: 'cover' }} loading="lazy" />
+                    {getProxiedImageUrl(app.iconUrl || app.icon_url_external) ? (
+                        <Image src={getProxiedImageUrl(app.iconUrl || app.icon_url_external)!} alt={app.name} width={60} height={60} style={{ objectFit: 'cover' }} loading="lazy" unoptimized={true} />
                     ) : (
                         <div style={{ color: 'white', opacity: 0.95 }}>
                             {IconMap[app.iconId]}

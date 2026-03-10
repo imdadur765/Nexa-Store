@@ -58,6 +58,7 @@ export interface AppEntry {
     // External Data Overrides
     icon_url_external?: string;
     screenshots_external?: string;
+    slider_image_url?: string;
 }
 
 export const appsData: AppEntry[] = [];
