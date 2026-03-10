@@ -74,7 +74,10 @@ export default function AppDetails({ params }: Props) {
     const [activeScreenshot, setActiveScreenshot] = useState<string | null>(null);
     const [iconError, setIconError] = useState(false);
     const [downloading, setDownloading] = useState(false);
-    const appIconUrl = app?.iconUrl || app?.icon_url_external;
+
+    // Auto-upgrade HTTP to HTTPS to prevent Mixed Content blocking in Vercel
+    const rawIconUrl = app?.iconUrl || app?.icon_url_external;
+    const appIconUrl = rawIconUrl ? rawIconUrl.replace(/^http:\/\//i, 'https://') : null;
 
     const handleDownload = () => {
         const url = latestRelease?.assets?.[0]?.browser_download_url || app?.downloadUrl || app?.githubUrl;
@@ -275,7 +278,7 @@ export default function AppDetails({ params }: Props) {
                     overflow: 'hidden'
                 }}>
                     {(isValidUrl(appIconUrl) && !iconError) ? (
-                        <img src={appIconUrl!} alt={app.name} onError={() => setIconError(true)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        <img src={appIconUrl!} alt={app.name} onError={() => setIconError(true)} referrerPolicy="no-referrer" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
                         <div style={{ color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{IconMap[app.iconId] || <Zap size={48} />}</div>
                     )}
@@ -656,7 +659,7 @@ export default function AppDetails({ params }: Props) {
                                 overflow: 'hidden'
                             }}>
                                 {(isValidUrl(appIconUrl) && !iconError) ? (
-                                    <img src={appIconUrl!} alt={app.name} onError={() => setIconError(true)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    <img src={appIconUrl!} alt={app.name} onError={() => setIconError(true)} referrerPolicy="no-referrer" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 ) : (
                                     <div style={{ transform: 'scale(0.6)', color: 'white' }}>{SmallIconMap[app.iconId] || <Zap size={20} />}</div>
                                 )}
