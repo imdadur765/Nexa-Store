@@ -61,7 +61,8 @@ export default function AddGamePage() {
         pros: '',
         cons: '',
         editorial_rating: '4.8',
-        is_safety_verified: true
+        is_safety_verified: true,
+        slider_image_url: ''
     });
     const [iconFile, setIconFile] = useState<File | null>(null);
     const [iconPreview, setIconPreview] = useState<string | null>(null);
@@ -219,7 +220,8 @@ export default function AddGamePage() {
                     pros: formData.pros ? formData.pros.split(',').map(s => s.trim()) : [],
                     cons: formData.cons ? formData.cons.split(',').map(s => s.trim()) : [],
                     editorial_rating: parseFloat(formData.editorial_rating) || 4.8,
-                    is_safety_verified: formData.is_safety_verified
+                    is_safety_verified: formData.is_safety_verified,
+                    slider_image_url: formData.slider_image_url
                 }]);
 
             if (error) throw error;
@@ -333,11 +335,30 @@ export default function AddGamePage() {
                                 style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.9rem', borderRadius: '16px', color: 'white', outline: 'none' }} />
                         </div>
                     </div>
+
+                    <div>
+                        <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', marginBottom: '0.5rem', fontSize: '0.8rem', fontWeight: '700' }}>MAIN DOWNLOAD URL</label>
+                        <input type="url" name="download_url" value={formData.download_url} onChange={handleInputChange} placeholder="Direct APK link, Play Store, etc."
+                            style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.9rem', borderRadius: '16px', color: '#8b5cf6', outline: 'none', fontWeight: '600' }} />
+                    </div>
                 </div>
 
                 {/* ── Hero & Marketing ── */}
                 <div className="glass" style={{ padding: '1.5rem', borderRadius: '32px', display: 'flex', flexDirection: 'column', gap: '1.5rem', border: '1px solid rgba(245, 158, 11, 0.2)' }}>
                     <h3 style={{ fontSize: '0.9rem', fontWeight: '900', color: '#f59e0b', letterSpacing: '1px', textTransform: 'uppercase' }}>Hero Marketing</h3>
+
+                    <div>
+                        <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', marginBottom: '0.8rem', fontSize: '0.75rem', fontWeight: '800' }}>HOMEPAGE SLIDER IMAGE (16:9 BANNER)</label>
+                        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                            <input type="url" name="slider_image_url" value={formData.slider_image_url} onChange={handleInputChange} placeholder="GitHub/Imgur banner link..."
+                                style={{ flex: 1, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.9rem', borderRadius: '16px', color: '#f59e0b', fontWeight: '700', outline: 'none' }} />
+                            {formData.slider_image_url && (
+                                <div style={{ width: '80px', height: '45px', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)' }}>
+                                    <img src={formData.slider_image_url} alt="Slider" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => (e.currentTarget.src = 'https://via.placeholder.com/80x45?text=Error')} />
+                                </div>
+                            )}
+                        </div>
+                    </div>
 
                     <div className="glass" style={{ padding: '1rem', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>

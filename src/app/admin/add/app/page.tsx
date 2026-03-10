@@ -71,7 +71,8 @@ export default function AddGeneralAppPage() {
         pros: '',
         cons: '',
         editorial_rating: '4.8',
-        is_safety_verified: true
+        is_safety_verified: true,
+        slider_image_url: ''
     });
 
     const [iconFile, setIconFile] = useState<File | null>(null);
@@ -224,7 +225,8 @@ export default function AddGeneralAppPage() {
                     pros: formData.pros ? formData.pros.split(',').map(s => s.trim()) : [],
                     cons: formData.cons ? formData.cons.split(',').map(s => s.trim()) : [],
                     editorial_rating: parseFloat(formData.editorial_rating) || 4.8,
-                    is_safety_verified: formData.is_safety_verified
+                    is_safety_verified: formData.is_safety_verified,
+                    slider_image_url: formData.slider_image_url
                 }]);
 
             if (error) throw error;
@@ -322,6 +324,19 @@ export default function AddGeneralAppPage() {
                                 style={{ width: '45px', height: '24px', borderRadius: '100px', border: 'none', background: formData.is_hero ? '#10b981' : 'rgba(255,255,255,0.1)', cursor: 'pointer', position: 'relative', transition: '0.3s' }}>
                                 <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'white', position: 'absolute', top: '3px', left: formData.is_hero ? '24px' : '3px', transition: '0.3s' }} />
                             </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', marginBottom: '0.8rem', fontSize: '0.75rem', fontWeight: '800' }}>HOMEPAGE SLIDER IMAGE (16:9 BANNER)</label>
+                        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                            <input type="url" name="slider_image_url" value={formData.slider_image_url} onChange={handleInputChange} placeholder="GitHub/Imgur banner link..."
+                                style={{ flex: 1, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.9rem', borderRadius: '16px', color: '#10b981', fontWeight: '700', outline: 'none' }} />
+                            {formData.slider_image_url && (
+                                <div style={{ width: '80px', height: '45px', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)' }}>
+                                    <img src={formData.slider_image_url} alt="Slider" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => (e.currentTarget.src = 'https://via.placeholder.com/80x45?text=Error')} />
+                                </div>
+                            )}
                         </div>
                     </div>
 
