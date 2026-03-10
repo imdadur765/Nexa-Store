@@ -75,9 +75,10 @@ export default function AppDetails({ params }: Props) {
     const [iconError, setIconError] = useState(false);
     const [downloading, setDownloading] = useState(false);
 
-    // Auto-upgrade HTTP to HTTPS to prevent Mixed Content blocking in Vercel
+    // Auto-upgrade HTTP to HTTPS, then run it through our proxy so external servers don't block Vercel
     const rawIconUrl = app?.iconUrl || app?.icon_url_external;
-    const appIconUrl = rawIconUrl ? rawIconUrl.replace(/^http:\/\//i, 'https://') : null;
+    const httpsUrl = rawIconUrl ? rawIconUrl.replace(/^http:\/\//i, 'https://') : null;
+    const appIconUrl = httpsUrl ? `/api/image-proxy?url=${encodeURIComponent(httpsUrl)}` : null;
 
     const handleDownload = () => {
         const url = latestRelease?.assets?.[0]?.browser_download_url || app?.downloadUrl || app?.githubUrl;
