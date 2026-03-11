@@ -15,13 +15,11 @@ export default function ClientLayoutWrapper({ children }: { children: React.Reac
     const [isAppLoading, setIsAppLoading] = useState(true);
 
     useEffect(() => {
-        // Temporarily commented for testing the "Battle" design
-        /*
+        // Session Persistence: Only show loader once per session
         const hasLoaded = sessionStorage.getItem("nexa_loaded");
         if (hasLoaded) {
             setIsAppLoading(false);
         }
-        */
     }, []);
 
     const handleLoadingComplete = () => {
