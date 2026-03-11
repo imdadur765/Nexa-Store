@@ -43,6 +43,12 @@ interface SupabaseAppRow {
     icon_url_external?: string;
     screenshots_external?: string;
     slider_image_url?: string;
+    // Editorial Analysis
+    editors_verdict?: string;
+    pros?: any;
+    cons?: any;
+    editorial_rating?: number;
+    is_safety_verified?: boolean;
 }
 
 // Helper to safely parse screenshots
@@ -216,10 +222,17 @@ export function useApps() {
                         permissions: safeParseList(item.permissions),
                         languages: safeParseList(item.languages),
                         older_versions: Array.isArray(item.older_versions) ? item.older_versions : [],
+                        // Editorial Analysis
+                        editors_verdict: item.editors_verdict,
+                        pros: Array.isArray(item.pros) ? item.pros : [],
+                        cons: Array.isArray(item.cons) ? item.cons : [],
+                        editorial_rating: item.editorial_rating,
+                        is_safety_verified: item.is_safety_verified,
                         icon_url_external: item.icon_url_external,
                         screenshots_external: item.screenshots_external,
                         slider_image_url: item.slider_image_url,
                         created_at: (item as any).created_at,
+                        realId: item.id,
                     }));
 
                     // Deduplicate: If an app exists in both Supabase and static data, prefer Supabase

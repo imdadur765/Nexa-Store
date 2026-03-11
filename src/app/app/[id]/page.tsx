@@ -145,6 +145,11 @@ export default function AppDetails({ params }: Props) {
     // Dynamic Background Opacity based on scroll
     const headerOpacity = Math.max(0, 1 - scrollY / 300);
 
+    const olderVersionsList = Array.isArray(app.older_versions) ? app.older_versions : [];
+    const fileSizeMB = latestRelease?.assets?.[0]
+        ? (latestRelease.assets[0].size / (1024 * 1024)).toFixed(1) + " MB"
+        : (app.packageSize || "45.2 MB");
+
     return (
         <div style={{ maxWidth: '900px', margin: '0 auto', padding: '1rem 1rem 10rem 1rem', position: 'relative', overflowX: 'hidden' }}>
 
@@ -578,7 +583,6 @@ export default function AppDetails({ params }: Props) {
                         </div>
                         {!readmeContent && <button style={{ color: 'var(--accent-primary)', fontWeight: '500', marginTop: '1rem', background: 'none', border: 'none', padding: 0 }}>more</button>}
                     </motion.section>
-
                     {/* Time Machine Version History */}
                     <motion.section
                         initial={{ opacity: 0, y: 20 }}
@@ -592,40 +596,53 @@ export default function AppDetails({ params }: Props) {
                         />
 
                         <div className="time-machine">
-                            {[
-                                { v: latestRelease ? latestRelease.tag_name : app.version, date: 'Now', size: latestRelease?.assets?.[0] ? (latestRelease.assets[0].size / (1024 * 1024)).toFixed(1) + ' MB' : '45.2 MB', desc: 'Current stable release from GitHub.' },
-                                { v: '2.4.0', date: '2 weeks ago', size: '44.8 MB', desc: 'Added support for new APIs and modular hooks.' },
-                                { v: '2.3.5', date: '1 month ago', size: '42.1 MB', desc: 'Bug fixes and performance optimization.' }
-                            ].map((version, i) => (
-                                <div key={version.v} className="version-node">
-                                    <div className="liquid-glass" style={{ padding: '1.25rem', borderRadius: '18px' }}>
-                                        {loading ? (
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                    <Skeleton width="60px" height="1.2rem" />
-                                                    <Skeleton width="80px" height="0.8rem" />
-                                                </div>
-                                                <Skeleton width="100%" height="0.9rem" />
-                                                <Skeleton width="40px" height="0.8rem" />
+                            {olderVersionsList.length > 0 ? (
+                                <>
+                                    {/* Current version first */}
+                                    <div className="version-node">
+                                        <div className="liquid-glass" style={{ padding: '1.25rem', borderRadius: '18px' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                                                <span style={{ fontWeight: '900', color: 'white', fontSize: '1.1rem' }}>v{latestRelease ? latestRelease.tag_name : app.version}</span>
+                                                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '500' }}>Current</span>
                                             </div>
-                                        ) : (
-                                            <>
+                                            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>Current stable release from Nexa Store.</p>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{fileSizeMB}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {olderVersionsList.slice(0, 2).map((version) => (
+                                        <div key={version.version} className="version-node">
+                                            <div className="liquid-glass" style={{ padding: '1.25rem', borderRadius: '18px' }}>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                                                    <span style={{ fontWeight: '900', color: 'white', fontSize: '1.1rem' }}>v{version.v}</span>
+                                                    <span style={{ fontWeight: '900', color: 'white', fontSize: '1.1rem' }}>{version.version}</span>
                                                     <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '500' }}>{version.date}</span>
                                                 </div>
-                                                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>{version.desc}</p>
+                                                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>Previous version for legacy compatibility.</p>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{version.size}</span>
-                                                    {i > 0 && <button style={{ fontSize: '0.75rem', color: 'var(--accent-primary)', fontWeight: '500', background: 'none', border: 'none' }}>Compare</button>}
+                                                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{version.type || 'APK'}</span>
                                                 </div>
-                                            </>
-                                        )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </>
+                            ) : (
+                                <div className="version-node" style={{ width: '100%' }}>
+                                    <div className="liquid-glass" style={{ padding: '2rem', borderRadius: '24px', textAlign: 'center', border: '1px dashed rgba(255,255,255,0.1)' }}>
+                                        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+                                            <History size={20} style={{ opacity: 0.5 }} />
+                                        </div>
+                                        <h4 style={{ color: 'white', fontSize: '1rem', marginBottom: '0.5rem' }}>No Older Versions Yet</h4>
+                                        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', maxWidth: '300px', margin: '0 auto' }}>
+                                            This app is currently in its prime state. Previous versions aren't archived yet.
+                                        </p>
                                     </div>
                                 </div>
-                            ))}
+                            )}
                         </div>
                     </motion.section>
+
                 </main>
 
                 {/* Uptodown-style Info Sections */}
@@ -634,6 +651,64 @@ export default function AppDetails({ params }: Props) {
                     latestRelease={latestRelease}
                     githubStars={githubData?.stargazers_count}
                 />
+
+                {/* Fun Footer Section */}
+                <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    style={{ 
+                        marginTop: '4rem', 
+                        textAlign: 'center', 
+                        padding: '4rem 2rem',
+                        borderTop: '1px solid rgba(255,255,255,0.05)',
+                        position: 'relative',
+                        overflow: 'hidden'
+                    }}
+                >
+                    {/* Background decoration */}
+                    <div style={{ 
+                        position: 'absolute', 
+                        top: '50%', 
+                        left: '50%', 
+                        transform: 'translate(-50%, -50%)',
+                        width: '200px',
+                        height: '200px',
+                        background: 'var(--dynamic-accent-glow)',
+                        filter: 'blur(100px)',
+                        opacity: 0.1,
+                        zIndex: -1
+                    }} />
+
+                    <motion.div
+                        animate={{ 
+                            y: [0, -10, 0],
+                            rotate: [0, 5, 0, -5, 0]
+                        }}
+                        transition={{ 
+                            duration: 10, 
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                        }}
+                        style={{ display: 'inline-block', marginBottom: '1.5rem' }}
+                    >
+                        <Rocket size={48} style={{ color: 'var(--accent-primary)', opacity: 0.8 }} />
+                    </motion.div>
+                    
+                    <h2 style={{ 
+                        fontSize: '2rem', 
+                        fontWeight: '900', 
+                        background: 'linear-gradient(to bottom, #fff, rgba(255,255,255,0.4))',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        marginBottom: '1rem'
+                    }}>
+                        Nothing to see here
+                    </h2>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '1rem', maxWidth: '450px', margin: '0 auto' }}>
+                        You&apos;ve reached the edge of the store. No more data floating around here, just infinite possibilities.
+                    </p>
+                </motion.div>
 
                 {/* Elite Sticky Download Bar */}
                 <div className={`sticky-bar ${showSticky ? 'visible' : ''}`}>

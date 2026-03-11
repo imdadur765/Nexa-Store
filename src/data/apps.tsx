@@ -59,6 +59,7 @@ export interface AppEntry {
     icon_url_external?: string;
     screenshots_external?: string;
     slider_image_url?: string;
+    realId?: number;
 }
 
 export const appsData: AppEntry[] = [];

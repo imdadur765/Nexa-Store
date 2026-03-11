@@ -6,6 +6,8 @@ import {
     Package, Zap, ChevronDown, ChevronUp, ChevronRight,
     History, MessageSquare, ThumbsUp, Flag, Heart, BookmarkPlus
 } from "lucide-react";
+import { useComments } from "@/hooks/useComments";
+import { formatDistanceToNow } from "date-fns";
 
 interface AppInfoSectionsProps {
     app: {
@@ -118,36 +120,31 @@ export function AppInfoSections({ app, latestRelease }: AppInfoSectionsProps) {
     const [showOlderVersions, setShowOlderVersions] = useState(false);
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState("");
-    const [comments, setComments] = useState<{ name: string; text: string; stars: number; time: string }[]>([]);
+    const { comments, loading: commentsLoading, postComment } = useComments(app.realId || (app.id as any));
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [wished, setWished] = useState(false);
     const [recommended, setRecommended] = useState(false);
 
-    const handleCommentSubmit = () => {
+    const handleCommentSubmit = async () => {
         if (!comment.trim() || rating === 0) return;
         setSubmitting(true);
-        setTimeout(() => {
-            setComments(prev => [{ name: "You", text: comment.trim(), stars: rating, time: "Just now" }, ...prev]);
+        const { error } = await postComment("Guest User", comment.trim(), rating);
+        
+        if (!error) {
             setComment("");
             setRating(0);
-            setSubmitting(false);
             setSubmitted(true);
             setTimeout(() => setSubmitted(false), 3000);
-        }, 600);
+        } else {
+            alert("Failed to post review. Please try again.");
+        }
+        setSubmitting(false);
     };
 
     const fileSizeMB = latestRelease?.assets?.[0]
         ? (latestRelease.assets[0].size / (1024 * 1024)).toFixed(1) + " MB"
         : (app.packageSize || "45.2 MB");
-
-    const defaultOlderVersions = [
-        { version: "v2.4.0", android: "8.0+", date: "Oct 29, 2025", type: "APK" },
-        { version: "v2.3.5", android: "8.0+", date: "Aug 17, 2025", type: "APK" },
-        { version: "v2.3.0", android: "8.0+", date: "Jul 24, 2025", type: "APK" },
-        { version: "v2.2.0", android: "5.0+", date: "Jun 23, 2025", type: "APK" },
-        { version: "v2.1.0", android: "5.0+", date: "Mar 25, 2025", type: "APK" },
-    ];
 
     const sha256 = (app.sha256 as string) || "244a36d609429e50e1e90c772ff92d7c87325325810da53b8f2060e9aa3dbbaf";
     const certSig = (app.certificate_signature as string) || "3d3e6a9538a1dee0fbc064f52c0ed84d";
@@ -155,9 +152,7 @@ export function AppInfoSections({ app, latestRelease }: AppInfoSectionsProps) {
     const permsList = Array.isArray(app.permissions) && app.permissions.length > 0 ? (app.permissions as string[]) : permissions;
     const langList = Array.isArray(app.languages) && app.languages.length > 0 ? (app.languages as string[]) : ["English"];
 
-    const olderVersionsList = Array.isArray(app.older_versions) && app.older_versions.length > 0
-        ? app.older_versions as { version: string; android: string; date: string; type: string }[]
-        : defaultOlderVersions;
+    const olderVersionsList = Array.isArray(app.older_versions) ? app.older_versions : [];
 
     return (
         <div style={{ marginTop: "2rem" }}>
@@ -383,32 +378,39 @@ export function AppInfoSections({ app, latestRelease }: AppInfoSectionsProps) {
             </motion.div>
 
             {/* ── Older Versions ────────────────────────────── */}
-            <SectionBlock title="Older Versions" icon={<History size={14} />}>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
-                    {(showOlderVersions ? olderVersionsList : olderVersionsList.slice(0, 3)).map((ver, i) => (
-                        <div key={ver.version} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.85rem 0", borderBottom: i < (showOlderVersions ? olderVersionsList.length - 1 : 2) ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                                <div style={{ width: "32px", height: "32px", borderRadius: "9px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.55rem", fontWeight: "900", color: "var(--text-muted)", textTransform: "uppercase" }}>
-                                    {ver.type || "APK"}
+            {olderVersionsList.length > 0 && (
+                <SectionBlock title="Older Versions" icon={<History size={14} />}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
+                        {(showOlderVersions ? olderVersionsList : olderVersionsList.slice(0, 3)).map((ver, i) => (
+                            <div key={ver.version} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.85rem 0", borderBottom: i < (showOlderVersions ? olderVersionsList.length - 1 : 2) ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                                    <div style={{ width: "32px", height: "32px", borderRadius: "9px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.55rem", fontWeight: "900", color: "var(--text-muted)", textTransform: "uppercase" }}>
+                                        {ver.type || "APK"}
+                                    </div>
+                                    <div>
+                                        <div style={{ fontWeight: "900", fontSize: "0.875rem" }}>{ver.version}</div>
+                                        <div style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>Android {ver.android} · {ver.date}</div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <div style={{ fontWeight: "900", fontSize: "0.875rem" }}>{ver.version}</div>
-                                    <div style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>Android {ver.android} · {ver.date}</div>
-                                </div>
+                                <button
+                                    onClick={() => ver.url && window.open(ver.url, '_blank')}
+                                    style={{ background: "none", border: "1px solid #007aff4d", color: "var(--accent-primary)", borderRadius: "50px", padding: "0.3rem 0.9rem", fontSize: "0.75rem", fontWeight: "900", cursor: "pointer" }}
+                                >
+                                    ↓
+                                </button>
                             </div>
-                            <button style={{ background: "none", border: "1px solid #007aff4d", color: "var(--accent-primary)", borderRadius: "50px", padding: "0.3rem 0.9rem", fontSize: "0.75rem", fontWeight: "900", cursor: "pointer" }}>
-                                ↓
-                            </button>
-                        </div>
-                    ))}
-                </div>
-                <button
-                    onClick={() => setShowOlderVersions(p => !p)}
-                    style={{ width: "100%", marginTop: "0.75rem", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "12px", padding: "0.65rem", color: "var(--text-secondary)", fontWeight: "500", fontSize: "0.8rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.4rem" }}
-                >
-                    {showOlderVersions ? <><ChevronUp size={14} /> Show less</> : <><ChevronDown size={14} /> See all {olderVersionsList.length} older versions</>}
-                </button>
-            </SectionBlock>
+                        ))}
+                    </div>
+                    {olderVersionsList.length > 3 && (
+                        <button
+                            onClick={() => setShowOlderVersions(p => !p)}
+                            style={{ width: "100%", marginTop: "0.75rem", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "12px", padding: "0.65rem", color: "var(--text-secondary)", fontWeight: "500", fontSize: "0.8rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.4rem" }}
+                        >
+                            {showOlderVersions ? <><ChevronUp size={14} /> Show less</> : <><ChevronDown size={14} /> See all {olderVersionsList.length} older versions</>}
+                        </button>
+                    )}
+                </SectionBlock>
+            )}
 
             {/* ── Rate & Wishlist Actions ───────────────────── */}
             <motion.div
@@ -480,7 +482,7 @@ export function AppInfoSections({ app, latestRelease }: AppInfoSectionsProps) {
                         <AnimatePresence>
                             {comments.map((c, i) => (
                                 <motion.div
-                                    key={i}
+                                    key={c.id || i}
                                     initial={{ opacity: 0, y: -10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "16px", padding: "1rem 1.25rem" }}
@@ -492,11 +494,11 @@ export function AppInfoSections({ app, latestRelease }: AppInfoSectionsProps) {
                                                 {[1, 2, 3, 4, 5].map(n => <Star key={n} size={10} fill={c.stars >= n ? "#f59e0b" : "none"} color={c.stars >= n ? "#f59e0b" : "rgba(255,255,255,0.2)"} />)}
                                             </div>
                                         </div>
-                                        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                                            <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>{c.time}</span>
+                                            <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>
+                                                {c.created_at ? formatDistanceToNow(new Date(c.created_at), { addSuffix: true }) : "Just now"}
+                                            </span>
                                             <button style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer" }}><Flag size={12} /></button>
                                         </div>
-                                    </div>
                                     <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", lineHeight: "1.6" }}>{c.text}</p>
                                 </motion.div>
                             ))}
