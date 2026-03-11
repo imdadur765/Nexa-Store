@@ -179,7 +179,7 @@ export const AppHero: React.FC<AppHeroProps> = ({ apps }) => {
                     </div>
                     <span style={{
                         fontSize: '0.75rem',
-                        fontWeight: '800',
+                        fontWeight: '900',
                         color: 'rgba(255,255,255,0.6)',
                         letterSpacing: '1px',
                         textTransform: 'uppercase'

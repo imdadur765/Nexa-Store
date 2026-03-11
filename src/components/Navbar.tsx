@@ -27,7 +27,7 @@ export default function Navbar() {
                 <div style={{ position: 'absolute', top: '-20px', left: '10%', width: '120px', height: '120px', background: 'var(--accent-primary)', opacity: 0.15, filter: 'blur(40px)', borderRadius: '50%', pointerEvents: 'none' }} />
                 <div style={{ position: 'absolute', bottom: '-20px', right: '15%', width: '100px', height: '100px', background: '#ec4899', opacity: 0.1, filter: 'blur(35px)', borderRadius: '50%', pointerEvents: 'none' }} />
                 <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-                    <Link href="/" style={{ fontSize: '1.5rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Link href="/" style={{ fontSize: '1.5rem', fontWeight: '900', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <div style={{
                             width: '32px',
                             height: '32px',

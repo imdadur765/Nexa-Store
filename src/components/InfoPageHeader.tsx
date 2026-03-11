@@ -19,11 +19,8 @@ export function InfoPageHeader({ fallbackHref = "/" }: InfoPageHeaderProps) {
     }, []);
 
     const handleBack = () => {
-        if (canGoBack) {
-            router.back();
-        } else {
-            router.push(fallbackHref);
-        }
+        // Force navigate to home to ensure scroll-to-top behavior
+        router.push('/');
     };
 
     return (

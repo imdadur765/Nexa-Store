@@ -123,7 +123,7 @@ function AppCardInner({ app, isLoading }: { app: AppEntry; isLoading?: boolean }
                 )}
 
                 <div style={{ flex: 1, minWidth: 0, pointerEvents: 'none' }}>
-                    <h3 style={{ fontSize: '1rem', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'white', marginBottom: '0.15rem' }}>
+                    <h3 style={{ fontSize: '1rem', fontWeight: '900', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'white', marginBottom: '0.15rem' }}>
                         {app.name}
                     </h3>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
@@ -131,12 +131,12 @@ function AppCardInner({ app, isLoading }: { app: AppEntry; isLoading?: boolean }
                             {app.category}
                         </p>
                         {app.trending && (
-                            <span className="pulse-soft" style={{ fontSize: '0.6rem', background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', padding: '1px 5px', borderRadius: '4px', fontWeight: '700' }}>🔥 Hot</span>
+                            <span className="pulse-soft" style={{ fontSize: '0.6rem', background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', padding: '1px 5px', borderRadius: '4px', fontWeight: '900' }}>🔥 Hot</span>
                         )}
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', marginTop: '0.2rem' }}>
                         <Star size={12} fill="#94a3b8" color="#94a3b8" />
-                        <span style={{ fontSize: '0.75rem', fontWeight: '600', color: 'var(--text-secondary)' }}>{app.rating}</span>
+                        <span style={{ fontSize: '0.75rem', fontWeight: '500', color: 'var(--text-secondary)' }}>{app.rating}</span>
                     </div>
                 </div>
 

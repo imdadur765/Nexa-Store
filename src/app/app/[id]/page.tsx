@@ -173,7 +173,7 @@ export default function AppDetails({ params }: Props) {
                 zIndex: 100
             }}>
                 <button
-                    onClick={() => router.back()}
+                    onClick={() => router.push('/')}
                     className="liquid-glass ios-btn-haptic"
                     style={{
                         padding: '0.6rem 1.25rem',
@@ -181,7 +181,7 @@ export default function AppDetails({ params }: Props) {
                         display: 'flex',
                         alignItems: 'center',
                         gap: '0.4rem',
-                        fontWeight: '800',
+                        fontWeight: '900',
                         fontSize: '0.9rem',
                         color: 'white',
                         background: 'none',
@@ -288,7 +288,7 @@ export default function AppDetails({ params }: Props) {
                             <h1 className="ios-text-gradient" style={{ fontSize: 'clamp(1.5rem, 5.5vw, 2.4rem)', fontWeight: '900', lineHeight: '1.1', letterSpacing: '-0.5px' }}>{app.name}</h1>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.4rem', flexWrap: 'wrap' as const }}>
-                            <p style={{ color: 'var(--accent-primary)', fontSize: '1rem', fontWeight: '700', opacity: 0.9, margin: 0 }}>
+                            <p style={{ color: 'var(--accent-primary)', fontSize: '1rem', fontWeight: '500', opacity: 0.9, margin: 0 }}>
                                 {app.category}
                             </p>
                             <Link href="/services/safety" style={{ textDecoration: 'none' }}>
@@ -359,7 +359,7 @@ export default function AppDetails({ params }: Props) {
                             ) : loading ? "..." : (app.storeSource?.includes('steam') ? "PLAY" : "GET")}
                         </button>
                     </div>
-                    <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', textAlign: 'center', marginTop: '-0.25rem' }}>
+                    <p style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontWeight: '500', textTransform: 'uppercase', textAlign: 'center', marginTop: '-0.25rem' }}>
                         {githubData ? `${githubData.stargazers_count} Stars` : "Offers In-App"}
                     </p>
                 </div>
@@ -382,7 +382,7 @@ export default function AppDetails({ params }: Props) {
                         gap: '0.5rem'
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' as const }}>
-                            <div style={{ fontSize: '0.8rem', fontWeight: '800', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                            <div style={{ fontSize: '0.8rem', fontWeight: '900', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '1px' }}>
                                 Available On
                             </div>
                             <div style={{ height: '20px', width: '1px', background: 'rgba(255,255,255,0.1)' }} />
@@ -393,7 +393,7 @@ export default function AppDetails({ params }: Props) {
                                         {source === 'appstore' && <Image src="/platforms/appstore_logo.png" width={18} height={18} style={{ objectFit: 'contain' }} alt="App Store" />}
                                         {source === 'steam' && <Image src="/platforms/steam_logo.png" width={18} height={18} style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)' }} alt="Steam" />}
                                         {source === 'epic' && <Zap size={18} color="#ffffff" fill="white" />}
-                                        <span style={{ fontSize: '0.8rem', fontWeight: '700', color: 'white' }}>
+                                        <span style={{ fontSize: '0.8rem', fontWeight: '500', color: 'white' }}>
                                             {source.charAt(0).toUpperCase() + source.slice(1)}
                                         </span>
                                     </div>
@@ -498,7 +498,7 @@ export default function AppDetails({ params }: Props) {
                                 <Star key={s} size={14} fill={s <= Math.floor(app.rating) ? "var(--accent-primary)" : "none"} color={s <= Math.floor(app.rating) ? "var(--accent-primary)" : "rgba(255,255,255,0.2)"} />
                             ))}
                         </div>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '700' }}>{((app.id * 7 + 13) % 500) + 100} RATINGS</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '500' }}>{((app.id * 7 + 13) % 500) + 100} RATINGS</div>
                     </div>
 
                     <div style={{ flex: 1, minWidth: '200px', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
@@ -506,7 +506,7 @@ export default function AppDetails({ params }: Props) {
                             const percent = star === 5 ? 75 : star === 4 ? 15 : star === 3 ? 5 : star === 2 ? 3 : 2;
                             return (
                                 <div key={star} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                    <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: '800', width: '10px' }}>{star}</span>
+                                    <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: '900', width: '10px' }}>{star}</span>
                                     <div style={{ flex: 1, height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', overflow: 'hidden' }}>
                                         <motion.div
                                             initial={{ width: 0 }}
@@ -576,7 +576,7 @@ export default function AppDetails({ params }: Props) {
                                 </p>
                             )}
                         </div>
-                        {!readmeContent && <button style={{ color: 'var(--accent-primary)', fontWeight: '700', marginTop: '1rem', background: 'none', border: 'none', padding: 0 }}>more</button>}
+                        {!readmeContent && <button style={{ color: 'var(--accent-primary)', fontWeight: '500', marginTop: '1rem', background: 'none', border: 'none', padding: 0 }}>more</button>}
                     </motion.section>
 
                     {/* Time Machine Version History */}
@@ -611,13 +611,13 @@ export default function AppDetails({ params }: Props) {
                                         ) : (
                                             <>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                                                    <span style={{ fontWeight: '800', color: 'white', fontSize: '1.1rem' }}>v{version.v}</span>
-                                                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '600' }}>{version.date}</span>
+                                                    <span style={{ fontWeight: '900', color: 'white', fontSize: '1.1rem' }}>v{version.v}</span>
+                                                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '500' }}>{version.date}</span>
                                                 </div>
                                                 <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>{version.desc}</p>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                     <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{version.size}</span>
-                                                    {i > 0 && <button style={{ fontSize: '0.75rem', color: 'var(--accent-primary)', fontWeight: '700', background: 'none', border: 'none' }}>Compare</button>}
+                                                    {i > 0 && <button style={{ fontSize: '0.75rem', color: 'var(--accent-primary)', fontWeight: '500', background: 'none', border: 'none' }}>Compare</button>}
                                                 </div>
                                             </>
                                         )}
@@ -664,8 +664,8 @@ export default function AppDetails({ params }: Props) {
                                 )}
                             </div>
                             <div>
-                                <p style={{ fontSize: '0.9rem', fontWeight: '800', color: 'white' }}>{app.name}</p>
-                                <p style={{ fontSize: '0.7rem', color: 'var(--accent-primary)', fontWeight: '700' }}>{app.category}</p>
+                                <p style={{ fontSize: '0.9rem', fontWeight: '900', color: 'white' }}>{app.name}</p>
+                                <p style={{ fontSize: '0.7rem', color: 'var(--accent-primary)', fontWeight: '500' }}>{app.category}</p>
                             </div>
                         </div>
                         <button

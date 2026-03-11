@@ -57,11 +57,11 @@ function InfoRow({ icon, label, value, sub, accent }: {
                 }}>
                     {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement<any>, { size: 14 }) : icon}
                 </div>
-                <span style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.45)", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.5px" }}>{label}</span>
+                <span style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.45)", fontWeight: "500", textTransform: "uppercase", letterSpacing: "0.5px" }}>{label}</span>
             </div>
             <div style={{ textAlign: "right", minWidth: 0 }}>
-                <div style={{ fontSize: "0.9rem", fontWeight: "800", color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{value}</div>
-                {sub && <div style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.3)", marginTop: "2px", fontWeight: "600" }}>{sub}</div>}
+                <div style={{ fontSize: "0.9rem", fontWeight: "900", color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{value}</div>
+                {sub && <div style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.3)", marginTop: "2px", fontWeight: "500" }}>{sub}</div>}
             </div>
         </div>
     );
@@ -189,7 +189,7 @@ export function AppInfoSections({ app, latestRelease }: AppInfoSectionsProps) {
                     </div>
                     <div style={{ textAlign: "center", padding: "0.5rem 1rem", background: "rgba(255,255,255,0.03)", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.05)" }}>
                         <div style={{ fontSize: "1.2rem", fontWeight: "900", color: "white" }}>{app.editorial_rating || "4.8"}</div>
-                        <div style={{ fontSize: "0.6rem", fontWeight: "800", color: "rgba(255,255,255,0.3)", textTransform: "uppercase" }}>Nexa Score</div>
+                        <div style={{ fontSize: "0.6rem", fontWeight: "900", color: "rgba(255,255,255,0.3)", textTransform: "uppercase" }}>Nexa Score</div>
                     </div>
                 </div>
 
@@ -238,7 +238,7 @@ export function AppInfoSections({ app, latestRelease }: AppInfoSectionsProps) {
                 <InfoRow
                     icon={<Globe size={14} />}
                     label="Languages"
-                    value={<span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>{langList[0]} {langList.length > 1 && <span style={{ fontSize: "0.7rem", background: "rgba(0,122,255,0.15)", color: "var(--accent-primary)", padding: "0.1rem 0.4rem", borderRadius: "6px", fontWeight: "800" }}>+{langList.length - 1} more</span>}</span>}
+                    value={<span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>{langList[0]} {langList.length > 1 && <span style={{ fontSize: "0.7rem", background: "rgba(0,122,255,0.15)", color: "var(--accent-primary)", padding: "0.1rem 0.4rem", borderRadius: "6px", fontWeight: "900" }}>+{langList.length - 1} more</span>}</span>}
                 />
             </SectionBlock>
 
@@ -250,7 +250,7 @@ export function AppInfoSections({ app, latestRelease }: AppInfoSectionsProps) {
                     value={
                         <button
                             onClick={() => setShowAllPerms(p => !p)}
-                            style={{ background: "none", border: "none", color: "var(--accent-primary)", fontWeight: "800", fontSize: "0.875rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.3rem" }}
+                            style={{ background: "none", border: "none", color: "var(--accent-primary)", fontWeight: "900", fontSize: "0.875rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.3rem" }}
                         >
                             See {permsList.length} permissions {showAllPerms ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                         </button>
@@ -286,7 +286,7 @@ export function AppInfoSections({ app, latestRelease }: AppInfoSectionsProps) {
                         href={app.githubUrl as string || "#"}
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{ color: "var(--accent-primary)", fontSize: "0.82rem", fontWeight: "700", textDecoration: "none", display: "flex", alignItems: "center", gap: "0.3rem" }}
+                        style={{ color: "var(--accent-primary)", fontSize: "0.82rem", fontWeight: "500", textDecoration: "none", display: "flex", alignItems: "center", gap: "0.3rem" }}
                     >
                         <Shield size={13} /> See security & antivirus report ↗
                     </a>
@@ -305,7 +305,7 @@ export function AppInfoSections({ app, latestRelease }: AppInfoSectionsProps) {
                     <span style={{ fontWeight: "900", color: "white" }}>Why is <span style={{ color: "var(--accent-primary)" }}>{app.name}</span> on Nexa Store?</span>
                     <br />
                     This app is listed because it provides genuine value to our community, meets our editorial quality standards, and is free for users. It was submitted by the developer or discovered by our editorial team through open-source channels.{" "}
-                    <a href="/discover/editorial-policy" style={{ color: "var(--accent-primary)", fontWeight: "700" }}>Learn more →</a>
+                    <a href="/discover/editorial-policy" style={{ color: "var(--accent-primary)", fontWeight: "500" }}>Learn more →</a>
                 </p>
             </motion.div>
 
@@ -392,11 +392,11 @@ export function AppInfoSections({ app, latestRelease }: AppInfoSectionsProps) {
                                     {ver.type || "APK"}
                                 </div>
                                 <div>
-                                    <div style={{ fontWeight: "800", fontSize: "0.875rem" }}>{ver.version}</div>
+                                    <div style={{ fontWeight: "900", fontSize: "0.875rem" }}>{ver.version}</div>
                                     <div style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>Android {ver.android} · {ver.date}</div>
                                 </div>
                             </div>
-                            <button style={{ background: "none", border: "1px solid rgba(0,122,255,0.3)", color: "var(--accent-primary)", borderRadius: "50px", padding: "0.3rem 0.9rem", fontSize: "0.75rem", fontWeight: "800", cursor: "pointer" }}>
+                            <button style={{ background: "none", border: "1px solid #007aff4d", color: "var(--accent-primary)", borderRadius: "50px", padding: "0.3rem 0.9rem", fontSize: "0.75rem", fontWeight: "900", cursor: "pointer" }}>
                                 ↓
                             </button>
                         </div>
@@ -404,7 +404,7 @@ export function AppInfoSections({ app, latestRelease }: AppInfoSectionsProps) {
                 </div>
                 <button
                     onClick={() => setShowOlderVersions(p => !p)}
-                    style={{ width: "100%", marginTop: "0.75rem", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "12px", padding: "0.65rem", color: "var(--text-secondary)", fontWeight: "700", fontSize: "0.8rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.4rem" }}
+                    style={{ width: "100%", marginTop: "0.75rem", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "12px", padding: "0.65rem", color: "var(--text-secondary)", fontWeight: "500", fontSize: "0.8rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.4rem" }}
                 >
                     {showOlderVersions ? <><ChevronUp size={14} /> Show less</> : <><ChevronDown size={14} /> See all {olderVersionsList.length} older versions</>}
                 </button>
@@ -427,13 +427,13 @@ export function AppInfoSections({ app, latestRelease }: AppInfoSectionsProps) {
                 <div style={{ display: "flex", gap: "0.75rem", marginTop: "1.25rem" }}>
                     <button
                         onClick={() => setWished(p => !p)}
-                        style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", padding: "0.7rem", background: wished ? "rgba(236,72,153,0.12)" : "rgba(255,255,255,0.04)", border: `1px solid ${wished ? "rgba(236,72,153,0.4)" : "rgba(255,255,255,0.1)"}`, borderRadius: "14px", color: wished ? "#ec4899" : "var(--text-secondary)", fontWeight: "700", fontSize: "0.78rem", cursor: "pointer", transition: "all 0.3s" }}
+                        style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", padding: "0.7rem", background: wished ? "rgba(236,72,153,0.12)" : "rgba(255,255,255,0.04)", border: `1px solid ${wished ? "rgba(236,72,153,0.4)" : "rgba(255,255,255,0.1)"}`, borderRadius: "14px", color: wished ? "#ec4899" : "var(--text-secondary)", fontWeight: "500", fontSize: "0.78rem", cursor: "pointer", transition: "all 0.3s" }}
                     >
                         <Heart size={15} fill={wished ? "currentColor" : "none"} /> {wished ? "In Wishlist" : "Add to Wishlist"}
                     </button>
                     <button
                         onClick={() => setRecommended(p => !p)}
-                        style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", padding: "0.7rem", background: recommended ? "rgba(0,122,255,0.12)" : "rgba(255,255,255,0.04)", border: `1px solid ${recommended ? "rgba(0,122,255,0.4)" : "rgba(255,255,255,0.1)"}`, borderRadius: "14px", color: recommended ? "var(--accent-primary)" : "var(--text-secondary)", fontWeight: "700", fontSize: "0.78rem", cursor: "pointer", transition: "all 0.3s" }}
+                        style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", padding: "0.7rem", background: recommended ? "rgba(0,122,255,0.12)" : "rgba(255,255,255,0.04)", border: `1px solid ${recommended ? "rgba(0,122,255,0.4)" : "rgba(255,255,255,0.1)"}`, borderRadius: "14px", color: recommended ? "var(--accent-primary)" : "var(--text-secondary)", fontWeight: "500", fontSize: "0.78rem", cursor: "pointer", transition: "all 0.3s" }}
                     >
                         <ThumbsUp size={15} fill={recommended ? "currentColor" : "none"} /> {recommended ? "Recommended!" : "Recommend"}
                     </button>
@@ -487,7 +487,7 @@ export function AppInfoSections({ app, latestRelease }: AppInfoSectionsProps) {
                                 >
                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.5rem" }}>
                                         <div>
-                                            <span style={{ fontWeight: "800", fontSize: "0.875rem" }}>{c.name}</span>
+                                            <span style={{ fontWeight: "900", fontSize: "0.875rem" }}>{c.name}</span>
                                             <div style={{ display: "flex", gap: "2px", marginTop: "2px" }}>
                                                 {[1, 2, 3, 4, 5].map(n => <Star key={n} size={10} fill={c.stars >= n ? "#f59e0b" : "none"} color={c.stars >= n ? "#f59e0b" : "rgba(255,255,255,0.2)"} />)}
                                             </div>

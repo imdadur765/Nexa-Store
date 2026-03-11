@@ -136,15 +136,15 @@ const GamingItem = ({ game, index = 0 }: { game: AppEntry, index?: number }) => 
             <div style={{ padding: '0 0.5rem', position: 'relative', zIndex: 1 }}>
                 <h3 style={{
                     fontSize: '0.9rem',
-                    fontWeight: '800',
+                    fontWeight: '900',
                     marginBottom: '0.1rem',
                     letterSpacing: '-0.3px'
                 }}>{game.name}</h3>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>{game.category}</span>
+                        <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', fontWeight: '500' }}>{game.category}</span>
                         <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }} />
-                        <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>{game.downloads}</span>
+                        <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', fontWeight: '500' }}>{game.downloads}</span>
                     </div>
                     <div style={{
                         padding: '0.35rem 0.85rem',

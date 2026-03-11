@@ -50,7 +50,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             }}>
                 {showBackButton ? (
                     <button
-                        onClick={() => router.back()}
+                        onClick={() => router.push('/')}
                         className="liquid-glass ios-btn-haptic"
                         style={{
                             padding: '0.6rem 1.25rem',

@@ -60,7 +60,7 @@ const GamingGridItem = ({ game }: { game: AppEntry }) => {
             <div style={{ flex: 1, minWidth: 0 }}>
                 <h3 style={{
                     fontSize: '1rem',
-                    fontWeight: '800',
+                    fontWeight: '900',
                     marginBottom: '0.2rem',
                     letterSpacing: '-0.3px',
                     whiteSpace: 'nowrap',
@@ -69,7 +69,7 @@ const GamingGridItem = ({ game }: { game: AppEntry }) => {
                 }}>{game.name}</h3>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.5rem' }}>
-                    <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>{game.category}</span>
+                    <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', fontWeight: '500' }}>{game.category}</span>
                     <div style={{ width: '2px', height: '2px', borderRadius: '50%', background: 'rgba(255,255,255,0.2)' }} />
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.1rem', color: '#fbbf24', fontSize: '0.7rem', fontWeight: '800' }}>
                         {game.rating} <Star size={10} fill="currentColor" />
@@ -78,7 +78,7 @@ const GamingGridItem = ({ game }: { game: AppEntry }) => {
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center' }}>
-                        <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>{game.downloads} dl</span>
+                        <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', fontWeight: '500' }}>{game.downloads} dl</span>
                     </div>
                     <div className="ios-btn-haptic" style={{
                         padding: '0.35rem 0.85rem',

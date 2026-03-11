@@ -43,7 +43,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
                             gap: '6px',
                             color: 'var(--accent-primary)',
                             fontSize: '0.75rem',
-                            fontWeight: '800',
+                            fontWeight: '900',
                             textDecoration: 'none',
                             background: 'rgba(0, 122, 255, 0.08)',
                             border: '1px solid rgba(0, 122, 255, 0.15)',
