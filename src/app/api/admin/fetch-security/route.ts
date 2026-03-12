@@ -62,13 +62,56 @@ export async function GET(request: NextRequest) {
             `${fileData.signature.owner} (SHA1: ${fileData.signature.sha1 || 'Unknown'})` : 
             (fileData.signature?.sha1 || null);
 
+        // Formatted Size - PRIORITY: Web Scrape (Full Version) > API (Latest stub)
+        let formattedSize = 'Varies';
+        try {
+            // Priority 1: Scrape Aptoide Web Page for real "Full" size
+            if (appData.uname) {
+                const webRes = await fetch(`https://${appData.uname}.en.aptoide.com/`, {
+                    headers: { 'User-Agent': 'Mozilla/5.0' },
+                    next: { revalidate: 3600 }
+                });
+                if (webRes.ok) {
+                    const html = await webRes.text();
+                    // Matches "252.5MB" or "252.5 MB"
+                    const sizeMatch = html.match(/([\d.]+)\s*MB/i);
+                    if (sizeMatch && parseFloat(sizeMatch[1]) > 10) {
+                        formattedSize = sizeMatch[0];
+                    }
+                }
+            }
+
+            // Priority 2: Fallback to API size if web scrape failed or returned small size
+            if (formattedSize === 'Varies') {
+                const sizeInBytes = fileData.filesize || appData.size || 0;
+                if (sizeInBytes > 0) {
+                    formattedSize = (sizeInBytes / (1024 * 1024)).toFixed(1) + ' MB';
+                }
+            }
+
+            // Priority 3: Fallback to Uptodown Scrape if still suspicious
+            if (formattedSize === 'Varies' || parseFloat(formattedSize) < 15) {
+                const uptodownRes = await fetch(`https://${packageName.split('.').slice(-1)[0]}.en.uptodown.com/android`, {
+                    headers: { 'User-Agent': 'Mozilla/5.0' }
+                });
+                if (uptodownRes.ok) {
+                    const utHtml = await uptodownRes.text();
+                    const utMatch = utHtml.match(/([\d.]+)\s*MB/i);
+                    if (utMatch) formattedSize = utMatch[0];
+                }
+            }
+        } catch (e) {
+            console.error("Size scraping error:", e);
+        }
+
         return NextResponse.json({
             packageName,
             appName: appData.name,
-            source: 'Aptoide Repository API',
+            source: 'Aptoide & Web Scraper',
             sha256: fileHash, // Mapping MD5 to the UI field representing the checksum
             signature: signatureInfo,
             permissions: cleanPermissions.slice(0, 50), // Cap at 50 to prevent UI overflow
+            size: formattedSize,
             isMalwareFree: fileData.malware?.rank === 'TRUSTED',
             storeUrl: appData.store?.urls?.web
         });

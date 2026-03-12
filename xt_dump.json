@@ -1,0 +1,472 @@
+{
+  "info": {
+    "status": "OK",
+    "time": {
+      "seconds": 0.022325992584228516,
+      "human": "22 milliseconds"
+    }
+  },
+  "nodes": {
+    "meta": {
+      "info": {
+        "status": "OK",
+        "time": {
+          "seconds": 0.03227806091308594,
+          "human": "32 milliseconds"
+        }
+      },
+      "data": {
+        "id": 66708209,
+        "name": "Hypic - Photo Editor & AI Art",
+        "package": "com.xt.retouchoversea",
+        "uname": "hypic",
+        "size": 9856518,
+        "icon": "https://pool.img.aptoide.com/apps/243647767332b93eda582ad9a8fcd9e2_icon.jpg",
+        "graphic": "https://pool.img.aptoide.com/apps/009eab5fa23258a06ad456688b496024_fgraphic.jpg",
+        "added": "2023-07-15 14:12:06",
+        "modified": "2024-03-31 04:51:34",
+        "updated": "2026-03-09 18:22:22",
+        "main_package": null,
+        "age": {
+          "name": "all",
+          "title": "Everyone",
+          "pegi": "PEGI-3",
+          "rating": 0
+        },
+        "developer": {
+          "id": 387313,
+          "name": "Bytedance Pte. Ltd.",
+          "website": null,
+          "email": "retouchpics.support@bytedance.com",
+          "privacy": "https://lf16-beecdn.ibytedtos.com/obj/ies-fe-bee-alisg/bee_prod/biz_376/bee_prod_376_bee_publish_10981.html"
+        },
+        "store": {
+          "id": 15,
+          "name": "apps",
+          "avatar": "https://pool.img.aptoide.com/apps/815872daa4e7a55f93cb3692aff65e31_ravatar.jpg",
+          "appearance": {
+            "theme": "default",
+            "description": "Aptoide Official App Store"
+          },
+          "stats": {
+            "apps": 320176,
+            "subscribers": 3412895,
+            "downloads": 0
+          }
+        },
+        "file": {
+          "vername": "899.9999.999",
+          "vercode": 999999999,
+          "md5sum": "2bdef12755631529d1e66f361795747e",
+          "filesize": 9856518,
+          "signature": {
+            "sha1": "61:ED:37:7E:85:D3:86:A8:DF:EE:6B:86:4B:D8:5B:0B:FA:A5:AF:81",
+            "owner": "EMAILADDRESS=android@android.com, CN=Android, OU=Android, O=Android, L=Mountain View, ST=California, C=US"
+          },
+          "added": "2023-12-21 23:12:03",
+          "path": "https://pool.apk.aptoide.com/apps/com-xt-retouchoversea-999999999-66708209-2bdef12755631529d1e66f361795747e.apk",
+          "path_alt": "https://pool.apk.aptoide.com/apps/com-xt-retouchoversea-999999999-66708209-2bdef12755631529d1e66f361795747e.apk",
+          "hardware": {
+            "sdk": 19,
+            "screen": "SMALL",
+            "gles": 0,
+            "cpus": [],
+            "densities": [],
+            "dependencies": []
+          },
+          "malware": {
+            "rank": "UNKNOWN",
+            "reason": {
+              "signature_validated": {
+                "date": "2025-03-11",
+                "status": "review"
+              },
+              "scanned": {
+                "status": "unknown",
+                "date": "2024-04-02 11:05:48",
+                "av_info": [
+                  {
+                    "infections": [],
+                    "name": "fake_detector"
+                  }
+                ]
+              }
+            },
+            "added": "2023-12-21 23:12:04",
+            "modified": "2025-03-11 01:37:43"
+          },
+          "flags": {
+            "votes": [
+              {
+                "type": "FAKE",
+                "count": 0
+              },
+              {
+                "type": "FREEZE",
+                "count": 0
+              },
+              {
+                "type": "GOOD",
+                "count": 2
+              },
+              {
+                "type": "LICENSE",
+                "count": 0
+              },
+              {
+                "type": "VIRUS",
+                "count": 0
+              }
+            ]
+          },
+          "used_features": [
+            "android.hardware.faketouch",
+            "android.hardware.wifi"
+          ],
+          "used_permissions": [
+            "android.permission.ACCESS_ADSERVICES_ATTRIBUTION",
+            "android.permission.ACCESS_ADSERVICES_TOPICS",
+            "android.permission.ACCESS_NETWORK_STATE",
+            "android.permission.ACCESS_WIFI_STATE",
+            "android.permission.FOREGROUND_SERVICE",
+            "android.permission.INTERNET",
+            "android.permission.POST_NOTIFICATIONS",
+            "android.permission.READ_APP_BADGE",
+            "android.permission.RECEIVE_BOOT_COMPLETED",
+            "android.permission.VIBRATE",
+            "android.permission.WAKE_LOCK",
+            "com.anddoes.launcher.permission.UPDATE_COUNT",
+            "com.google.android.c2dm.permission.RECEIVE",
+            "com.google.android.gms.permission.AD_ID",
+            "com.htc.launcher.permission.READ_SETTINGS",
+            "com.htc.launcher.permission.UPDATE_SHORTCUT",
+            "com.huawei.android.launcher.permission.CHANGE_BADGE",
+            "com.huawei.android.launcher.permission.READ_SETTINGS",
+            "com.huawei.android.launcher.permission.WRITE_SETTINGS",
+            "com.majeur.launcher.permission.UPDATE_BADGE",
+            "com.oppo.launcher.permission.READ_SETTINGS",
+            "com.oppo.launcher.permission.WRITE_SETTINGS",
+            "com.sec.android.provider.badge.permission.READ",
+            "com.sec.android.provider.badge.permission.WRITE",
+            "com.sonyericsson.home.permission.BROADCAST_BADGE",
+            "com.sonymobile.home.permission.PROVIDER_INSERT_BADGE",
+            "com.xt.retouchoversea.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
+            "com.xt.retouchoversea.permission.C2D_MESSAGE",
+            "me.everything.badger.permission.BADGE_COUNT_READ",
+            "me.everything.badger.permission.BADGE_COUNT_WRITE"
+          ],
+          "tags": []
+        },
+        "media": {
+          "keywords": [
+            "retouchoversea",
+            "photography",
+            "welcome"
+          ],
+          "description": "Hypic is an All-in-One Photo Editing Tool with Professional smart Features.\r\nHypic offers a suite of professional image editing tools, including one-click magic removal and cutout, photo quality enhancement, AI portrait beautification, and a range of trendy effects, filters, and templates.\r\nAs a photo editor, Hypic integrates the latest fashion trends from TikTok, Instagram, Pinterest, Capcut to meet your diverse needs. It helps you effortlessly edit your pics and create works of art, ensuring your photos stand out in social media. \r\n\r\nFeatures:\r\nFull-featured photo editor\r\n- AI Cleanup: Erase photo backgrounds in just one click. With AI, smoothly removes any unwanted objects in the image. \r\n- AI photo quality enhancement : Let AI effortlessly enhance photo quality, making your photos clearer. \r\n- AI Cutout: Remove photo background by automatically recognizing objects and allowing precise adjustments.\r\n- Batch Edit: Edit multiple photos in the same style to save editing time. Share them to TikTok with just one click.\r\n- Collage & Overlay: Explore a variety of collage styles to add artistic flair to your photos. Overlay images through blending modes to unlock endless creativity. \r\n- Video thumbnail editing: Use AI expand and professional templates to empower your CapCut viral video editing by creating alluring thumbnails. \r\n- Basic Photo Editing Features: flip, crop, adjust photo brightness, saturation, and HSL\r\n\r\nArtistic and natural portrait editing\r\n- AI Avatar: Use AI-generated photos to see your alter egos with just one photo uploaded .\r\n- AI filter: Try different AI filters to see yourself in diverse aesthetics such as comic, cyberpunk, vintage, cartoon, PS2 style. You can also get personalized AI headshots for your pets.\r\n- AI Retouch: Experience the magic of AI with one click, change your hairstyle, try on new hair color, and make your photo more vivid by adjusting your smile.\r\n- Makeup: Apply the most suitable makeup for you in just one tap. \r\n- Retouch Tools: Multiple retouch tools enable natural and precise adjustments to various aspects of your selfies, including smooth skin, face tune, body adjustments, and sculpting.\r\n\r\nAesthetic Effects & Filters\r\n- Trendy Effects: Make your photos stylish by applying cool effects such as Blur, Studio light, KIRA, Retro, and DV (that CapCut has as well!) \r\n  - Add a radiant glow to your photos with Long Exposure Effects. \r\n  - Use Lofi Effects to capture a vintage Vibe in your photos.\r\n- Hottest Filters: Elevate your picture with retro, movie, digital camera, plolarrid and night scene filters. \r\n- You can also overlay multiple effects and filters to create personalized pics art u like. \r\n\r\nTemplates, Fonts and Stickers\r\n- Make your photos artistic in a one-click with aesthetic templates and hundreds of Designer Artistic Fonts and stickers.\r\n- Templates for various scenarios: TikTok, Instagram, selfies, couples, nature, food, celebrations, wallpapers, etc. Stay Up-to-Date with the latest image and short video trends, CapCut trends, Memes, etc.\r\n\r\nHypic is a powerful photo and art editing app, with advanced features like AI avatars, AI cutout, image enhancement, trendy effects and templates. Use Hypic to edit your selfies and still photos into aesthetic pics of art and boost your social media on TikTok, Instagram, Pinterest, and Facebook! \r\n\r\nAny questions about Hypic (Pics editor & AI art) Please contact us at retouchpics.support@bytedance.com. \r\nFor more new feature tutorials and advanced picture editing tips, please follow @hypic on Instagram https://www.instagram.com/hypic_app/ or TikTok https://www.tiktok.com/@hypic_global. \r\n\r\nTerms of Service\r\nhttps://m.hypic.com/clause/hypic-terms-of-service\r\n\r\nPrivacy Policy\r\nhttps://m.hypic.com/clause/hypic-privacy-policy",
+          "summary": "",
+          "news": "Bug fixes, experience optimization, and one-click updates.",
+          "videos": [],
+          "screenshots": [
+            {
+              "url": "https://pool.img.aptoide.com/apps/775b93a13e2619113e506518b09f7a43_screen.jpg",
+              "height": 800,
+              "width": 450
+            },
+            {
+              "url": "https://pool.img.aptoide.com/apps/aa447d4a28e3b5d7a0efb4b9da712696_screen.jpg",
+              "height": 800,
+              "width": 450
+            },
+            {
+              "url": "https://pool.img.aptoide.com/apps/5da30c2d03e6b23e0545a9331c6fa15b_screen.jpg",
+              "height": 800,
+              "width": 450
+            },
+            {
+              "url": "https://pool.img.aptoide.com/apps/cc7b4c38bf14f921f00c1de01271b9cb_screen.jpg",
+              "height": 800,
+              "width": 450
+            }
+          ]
+        },
+        "urls": {
+          "w": "https://hypic.en.aptoide.com/?store_name=apps&app_id=66708209",
+          "m": "https://hypic.en.aptoide.com/?store_name=apps&app_id=66708209"
+        },
+        "stats": {
+          "rating": {
+            "avg": 0,
+            "total": 0,
+            "votes": [
+              {
+                "value": 5,
+                "count": 0
+              },
+              {
+                "value": 4,
+                "count": 0
+              },
+              {
+                "value": 3,
+                "count": 0
+              },
+              {
+                "value": 2,
+                "count": 0
+              },
+              {
+                "value": 1,
+                "count": 0
+              }
+            ]
+          },
+          "prating": {
+            "avg": 4.64,
+            "total": 11,
+            "votes": [
+              {
+                "value": 5,
+                "count": 10
+              },
+              {
+                "value": 4,
+                "count": 0
+              },
+              {
+                "value": 3,
+                "count": 0
+              },
+              {
+                "value": 2,
+                "count": 0
+              },
+              {
+                "value": 1,
+                "count": 1
+              }
+            ]
+          },
+          "downloads": 50000000,
+          "pdownloads": 50000000
+        },
+        "aab": null,
+        "obb": null,
+        "pay": null,
+        "appcoins": {
+          "advertising": false,
+          "billing": false,
+          "flags": []
+        },
+        "soft_locks": [],
+        "geo": null
+      }
+    },
+    "versions": {
+      "info": {
+        "status": "OK",
+        "time": {
+          "seconds": 0.03616499900817871,
+          "human": "36 milliseconds"
+        }
+      },
+      "list": [
+        {
+          "id": 66708209,
+          "name": "Hypic - Photo Editor & AI Art",
+          "package": "com.xt.retouchoversea",
+          "uname": "hypic",
+          "size": 9856518,
+          "icon": "https://pool.img.aptoide.com/apps/243647767332b93eda582ad9a8fcd9e2_icon.jpg",
+          "graphic": "https://pool.img.aptoide.com/apps/009eab5fa23258a06ad456688b496024_fgraphic.jpg",
+          "added": "2023-07-15 14:12:06",
+          "modified": "2024-03-31 04:51:34",
+          "updated": "2026-03-09 18:22:22",
+          "uptype": "aptuploader",
+          "store": {
+            "id": 15,
+            "name": "apps",
+            "avatar": "https://pool.img.aptoide.com/apps/815872daa4e7a55f93cb3692aff65e31_ravatar.jpg",
+            "appearance": {
+              "theme": "default",
+              "description": "Aptoide Official App Store"
+            },
+            "stats": {
+              "apps": 320176,
+              "subscribers": 3412895,
+              "downloads": 0
+            }
+          },
+          "file": {
+            "vername": "899.9999.999",
+            "vercode": 999999999,
+            "md5sum": "2bdef12755631529d1e66f361795747e",
+            "filesize": 9856518,
+            "added": "2023-12-21 23:12:03",
+            "tags": [],
+            "malware": {
+              "rank": "UNKNOWN"
+            },
+            "hardware": {
+              "sdk": 19,
+              "screen": "SMALL",
+              "gles": 0,
+              "cpus": [],
+              "densities": [],
+              "dependencies": []
+            }
+          },
+          "stats": {
+            "downloads": 50000000,
+            "pdownloads": 50000000,
+            "rating": {
+              "avg": 0,
+              "total": 0
+            },
+            "prating": {
+              "avg": 4.64,
+              "total": 11
+            }
+          },
+          "obb": null,
+          "appcoins": {
+            "advertising": false,
+            "billing": false,
+            "flags": []
+          },
+          "urls": {}
+        },
+        {
+          "id": 73851899,
+          "name": "Hypic - Photo Editor & AI Art",
+          "package": "com.xt.retouchoversea",
+          "uname": "hypic",
+          "size": 2944306,
+          "icon": "https://pool.img.aptoide.com/vuj546hgf/243647767332b93eda582ad9a8fcd9e2_icon.jpg",
+          "graphic": "https://pool.img.aptoide.com/vuj546hgf/009eab5fa23258a06ad456688b496024_fgraphic.jpg",
+          "added": "2026-03-08 03:45:55",
+          "modified": "2026-03-08 03:45:55",
+          "updated": "2026-03-08 03:45:55",
+          "uptype": "aptuploader",
+          "store": {
+            "id": 3821767,
+            "name": "vuj546hgf",
+            "avatar": "https://pool.img.aptoide.com/vuj546hgf/3bf5adf05843f9f28c486d5ddef8f873_ravatar.jpg",
+            "appearance": {
+              "theme": "default",
+              "description": ""
+            },
+            "stats": {
+              "apps": 7,
+              "subscribers": 0,
+              "downloads": 0
+            }
+          },
+          "file": {
+            "vername": "999",
+            "vercode": 999,
+            "md5sum": "f072e8ad0c68f23658a5bf6e79f82280",
+            "filesize": 2944306,
+            "added": "2026-03-08 03:45:55",
+            "tags": [],
+            "malware": {
+              "rank": "UNKNOWN"
+            },
+            "hardware": {
+              "sdk": 23,
+              "screen": "SMALL",
+              "gles": 0,
+              "cpus": [],
+              "densities": [],
+              "dependencies": []
+            }
+          },
+          "stats": {
+            "downloads": 50000000,
+            "pdownloads": 50000000,
+            "rating": {
+              "avg": 0,
+              "total": 0
+            },
+            "prating": {
+              "avg": 4.64,
+              "total": 11
+            }
+          },
+          "obb": null,
+          "appcoins": {
+            "advertising": false,
+            "billing": false,
+            "flags": []
+          },
+          "urls": {}
+        },
+        {
+          "id": 72368248,
+          "name": "Hypic - Photo Editor & AI Art",
+          "package": "com.xt.retouchoversea",
+          "uname": "hypic",
+          "size": 5347419,
+          "icon": "https://pool.img.aptoide.com/vujj54yrtfg/243647767332b93eda582ad9a8fcd9e2_icon.jpg",
+          "graphic": "https://pool.img.aptoide.com/vujj54yrtfg/009eab5fa23258a06ad456688b496024_fgraphic.jpg",
+          "added": "2025-11-17 19:53:15",
+          "modified": "2025-11-17 19:53:16",
+          "updated": "2025-11-17 19:53:16",
+          "uptype": "aptuploader",
+          "store": {
+            "id": 3779764,
+            "name": "vujj54yrtfg",
+            "avatar": "https://pool.img.aptoide.com/vujj54yrtfg/3bf5adf05843f9f28c486d5ddef8f873_ravatar.jpg",
+            "appearance": {
+              "theme": "default",
+              "description": ""
+            },
+            "stats": {
+              "apps": 1,
+              "subscribers": 0,
+              "downloads": 0
+            }
+          },
+          "file": {
+            "vername": "999.0",
+            "vercode": 999,
+            "md5sum": "19fe4384bbf37ac5dc8e00d04f472c76",
+            "filesize": 5347419,
+            "added": "2025-11-17 19:53:15",
+            "tags": [],
+            "malware": {
+              "rank": "UNKNOWN"
+            },
+            "hardware": {
+              "sdk": 24,
+              "screen": "SMALL",
+              "gles": 0,
+              "cpus": [],
+              "densities": [],
+              "dependencies": []
+            }
+          },
+          "stats": {
+            "downloads": 50000000,
+            "pdownloads": 50000000,
+            "rating": {
+              "avg": 0,
+              "total": 0
+            },
+            "prating": {
+              "avg": 4.64,
+              "total": 11
+            }
+          },
+          "obb": null,
+          "appcoins": {
+            "advertising": false,
+            "billing": false,
+            "flags": []
+          },
+          "urls": {}
+        }
+      ]
+    }
+  }
+}

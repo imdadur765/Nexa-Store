@@ -54,6 +54,23 @@ export const AppHero: React.FC<AppHeroProps> = ({ apps }) => {
 
     const app = apps[currentIndex];
 
+    const [isHorizontal, setIsHorizontal] = useState(false);
+
+    useEffect(() => {
+        if (!app) return;
+        const img = new window.Image();
+        const src = getProxiedImageUrl(app.slider_image_url) || 
+                   getProxiedImageUrl(app.heroImage) || 
+                   getProxiedImageUrl(app.iconUrl);
+        
+        if (src) {
+            img.src = src;
+            img.onload = () => {
+                setIsHorizontal(img.naturalWidth > img.naturalHeight);
+            };
+        }
+    }, [app]);
+
     if (!app) return null;
 
     const accent = app.accentColor || 'rgba(59, 130, 246, 1)';
@@ -67,12 +84,12 @@ export const AppHero: React.FC<AppHeroProps> = ({ apps }) => {
     return (
         <section className="hw-accel app-hero-container" style={{
             position: 'relative',
-            height: '340px',
+            height: isHorizontal ? '220px' : '340px',
             borderRadius: '24px',
             margin: '0 0.75rem 2rem',
             overflow: 'hidden',
             zIndex: 10,
-            transition: 'box-shadow 0.6s ease',
+            transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
             boxShadow: `0 20px 50px -10px ${accent}66, 0 0 0 1px rgba(255,255,255,0.1)` // Dynamic glow + subtle border
         }}>
             {apps.map((a, idx) => {
@@ -205,8 +222,13 @@ export const AppHero: React.FC<AppHeroProps> = ({ apps }) => {
                     color: 'rgba(255,255,255,0.6)',
                     fontWeight: '500',
                     marginBottom: '1.25rem',
-                    maxWidth: '350px',
-                    lineHeight: '1.4'
+                    maxWidth: '450px',
+                    lineHeight: '1.4',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
                 }}>
                     {app.description}
                 </p>

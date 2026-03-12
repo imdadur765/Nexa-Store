@@ -57,6 +57,44 @@ const SmallIconMap = {
 
 type Props = { params: Promise<{ id: string }> };
 
+const ScreenshotItem = ({ src, index, onClick }: { src: string, index: number, onClick: () => void }) => {
+    const [aspectRatio, setAspectRatio] = useState<'v' | 'h' | null>(null);
+
+    useEffect(() => {
+        const img = new window.Image();
+        img.src = src;
+        img.onload = () => {
+            setAspectRatio(img.naturalWidth > img.naturalHeight ? 'h' : 'v');
+        };
+    }, [src]);
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: index * 0.1 }}
+            className="screenshot-item liquid-glass ios-btn-haptic"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={onClick}
+            style={{
+                minWidth: aspectRatio === 'h' ? 'min(calc(100vw - 3rem), 550px)' : '220px', 
+                height: '400px',
+                borderRadius: '24px', 
+                overflow: 'hidden',
+                position: 'relative',
+                flexShrink: 0,
+                cursor: 'pointer',
+                boxShadow: '0 8px 30px -8px rgba(0,0,0,0.6)',
+                transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)'
+            }}
+        >
+            <Image src={src} alt={`Screenshot ${index + 1}`} fill style={{ objectFit: 'cover', borderRadius: '24px' }} />
+        </motion.div>
+    );
+};
+
 export default function AppDetails({ params }: Props) {
     const { id } = use(params);
     const { apps: appsData, loading: appsLoading } = useApps();
@@ -457,27 +495,12 @@ export default function AppDetails({ params }: Props) {
                     />
                     <div className="screenshot-carousel no-scrollbar">
                         {app.screenshots.filter(s => isValidUrl(s)).map((src, i) => (
-                            <motion.div
-                                key={i}
-                                initial={{ opacity: 0, x: 20 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: i * 0.1 }}
-                                className="screenshot-item liquid-glass ios-btn-haptic"
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                onClick={() => setActiveScreenshot(src)}
-                                style={{
-                                    minWidth: '220px', height: '400px',
-                                    borderRadius: '24px', overflow: 'hidden',
-                                    position: 'relative',
-                                    flexShrink: 0,
-                                    cursor: 'pointer',
-                                    boxShadow: '0 8px 30px -8px rgba(0,0,0,0.6)'
-                                }}
-                            >
-                                <Image src={src} alt={`Screenshot ${i + 1}`} fill style={{ objectFit: 'cover', borderRadius: '24px' }} />
-                            </motion.div>
+                            <ScreenshotItem 
+                                key={i} 
+                                src={src} 
+                                index={i} 
+                                onClick={() => setActiveScreenshot(src)} 
+                            />
                         ))}
                     </div>
                 </section>

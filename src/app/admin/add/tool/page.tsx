@@ -5,7 +5,8 @@ import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import {
     ArrowLeft, Upload, Save, Image as ImageIcon,
-    Smartphone, Zap, Cpu, Terminal, Github, Code, Wand2, Plus, History, Trash2, ShieldCheck, Send
+    Smartphone, Zap, Cpu, Terminal, Github, Code, Wand2, Plus, History, Trash2, ShieldCheck, Send,
+    Sparkles, Layout, Monitor, Star, Gamepad2
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -65,6 +66,15 @@ export default function AddToolPage() {
     });
     const [iconFile, setIconFile] = useState<File | null>(null);
     const [iconPreview, setIconPreview] = useState<string | null>(null);
+    const [heroFile, setHeroFile] = useState<File | null>(null);
+    const [heroPreview, setHeroPreview] = useState<string | null>(null);
+    const [screenshotFiles, setScreenshotFiles] = useState<File[]>([]);
+    const [screenshotPreviews, setScreenshotPreviews] = useState<string[]>([]);
+
+    const [mirrors, setMirrors] = useState<{ source: string; name: string; url: string; isDirect?: boolean }[]>([]);
+    const [searchingMirrors, setSearchingMirrors] = useState(false);
+    const [mirroring, setMirroring] = useState(false);
+    const [fetchingSecurity, setFetchingSecurity] = useState(false);
 
     // Auth check
     useEffect(() => {
@@ -152,6 +162,145 @@ export default function AddToolPage() {
         }));
     };
 
+    const handleFetchPlaystore = async () => {
+        if (!formData.package_name) {
+            alert('Please enter a Package Name first (e.g., com.google.android.apps.messaging)');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const res = await fetch(`/api/admin/fetch-playstore?id=${encodeURIComponent(formData.package_name)}`);
+            const data = await res.json();
+
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+
+            // Auto-populate form
+            setFormData(prev => ({
+                ...prev,
+                name: data.name || prev.name,
+                description: data.description || prev.description,
+                category: data.category || prev.category,
+                developer: data.developer || prev.developer,
+                package_size: data.package_size || prev.package_size,
+                rating: data.rating ? String(data.rating).slice(0, 3) : prev.rating,
+                whats_new: data.whats_new || prev.whats_new,
+                min_android_version: data.min_android_version || prev.min_android_version,
+                icon_url_external: data.icon || prev.icon_url_external,
+                hero_image: data.hero_image || prev.hero_image,
+                screenshot1_external: data.screenshots?.[0] || prev.screenshot1_external,
+                screenshot2_external: data.screenshots?.[1] || prev.screenshot2_external,
+                screenshot3_external: data.screenshots?.[2] || prev.screenshot3_external,
+                screenshot4_external: data.screenshots?.[3] || prev.screenshot4_external,
+                is_game: false,
+                version: data.version || prev.version
+            }));
+
+            // Handle preview updates
+            if (data.icon) setIconPreview(data.icon);
+            if (data.hero_image) setHeroPreview(data.hero_image);
+            if (data.screenshots) setScreenshotPreviews(data.screenshots);
+
+            alert('✨ Magic Fetch Successful! Data populated.');
+            
+            // Auto-search mirrors as well
+            handleSearchMirrors(formData.package_name || data.package_name);
+        } catch (err: any) {
+            alert('❌ Failed to fetch: ' + err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSearchMirrors = async (pName?: string) => {
+        const pkg = pName || formData.package_name;
+        if (!pkg) {
+            alert('Please enter a Package Name or use Magic Fetch first');
+            return;
+        }
+
+        setSearchingMirrors(true);
+        try {
+            const res = await fetch(`/api/admin/fetch-mirrors?id=${encodeURIComponent(pkg)}`);
+            const data = await res.json();
+            if (data.mirrors) {
+                setMirrors(data.mirrors);
+            }
+        } catch (err) {
+            console.error("Mirror search failed:", err);
+        } finally {
+            setSearchingMirrors(false);
+        }
+    };
+
+    const handleFetchSecurity = async () => {
+        if (!formData.package_name) {
+            alert('Please enter a Package Name first (or use Magic Fetch).');
+            return;
+        }
+        setFetchingSecurity(true);
+        try {
+            const res = await fetch(`/api/admin/fetch-security?id=${encodeURIComponent(formData.package_name)}`);
+            const data = await res.json();
+            if (data.error) {
+                alert('❌ Security Fetch Failed: ' + data.error);
+                return;
+            }
+            setFormData(prev => ({
+                ...prev,
+                sha256: data.sha256 || prev.sha256,
+                certificate_signature: data.signature || prev.certificate_signature,
+                permissions: data.permissions?.join(', ') || prev.permissions,
+                package_size: data.size || prev.package_size,
+            }));
+            alert(`✅ Security data fetched!\nSHA256: ${data.sha256 ? 'Found ✅' : 'Not found ❌'}\nPermissions: ${data.permissions?.length || 0} found`);
+        } catch (err: any) {
+            alert('❌ Error: ' + err.message);
+        } finally {
+            setFetchingSecurity(false);
+        }
+    };
+
+    const handleCloudMirror = async (mirrorUrl: string) => {
+        if (!formData.package_name) {
+            alert('Package name is required for mirroring');
+            return;
+        }
+
+        const confirmMirror = confirm("Cloud-Mirroring will transfer the APK directly from the source to your GitHub Releases (Zero Data Usage). Continue?");
+        if (!confirmMirror) return;
+
+        setMirroring(true);
+        setLoading(true);
+        try {
+            const res = await fetch('/api/admin/cloud-mirror', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mirrorUrl, packageName: formData.package_name })
+            });
+
+            const data = await res.json();
+
+            if (data.error) {
+                alert('❌ Mirror Failed: ' + data.error);
+                return;
+            }
+
+            // Success! Update the form download URL
+            setFormData(prev => ({ ...prev, download_url: data.directDownloadUrl }));
+            alert(`✅ Success! APK Mirrored to GitHub.\nFile Size: ${data.size}\nDirect Link Generated.`);
+
+        } catch (err: any) {
+            alert('❌ Cloud Mirror Error: ' + err.message);
+        } finally {
+            setMirroring(false);
+            setLoading(false);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -202,11 +351,12 @@ export default function AddToolPage() {
     };
 
     return (
-        <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', paddingBottom: '80px' }}>
+        <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', paddingBottom: '100px' }}>
             <header className="ultra-glass" style={{
                 position: 'sticky', top: 0, zIndex: 100,
                 padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', gap: '1rem',
-                borderBottom: '1px solid rgba(59, 130, 246, 0.2)'
+                borderBottom: '1px solid rgba(59, 130, 246, 0.2)',
+                background: 'rgba(10, 10, 15, 0.8)', backdropFilter: 'blur(20px)'
             }}>
                 <button onClick={() => router.back()} style={{ background: 'none', border: 'none', color: 'white' }}>
                     <ArrowLeft size={24} />
@@ -217,7 +367,7 @@ export default function AddToolPage() {
                 </div>
             </header>
 
-            <form onSubmit={handleSubmit} style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <form onSubmit={handleSubmit} style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '800px', margin: '0 auto' }}>
 
                 {/* ── Tool Identity ── */}
                 <div className="glass" style={{ padding: '1.5rem', borderRadius: '32px', border: '1px solid rgba(59, 130, 246, 0.1)', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -377,10 +527,20 @@ export default function AddToolPage() {
                 <div className="glass" style={{ padding: '1.5rem', borderRadius: '32px', display: 'flex', flexDirection: 'column', gap: '1.25rem', border: '1px solid rgba(59, 130, 246, 0.1)' }}>
                     <h3 style={{ fontSize: '0.9rem', fontWeight: '900', color: '#3b82f6', letterSpacing: '1px', textTransform: 'uppercase' }}>Technical Details</h3>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                        <div>
+                        <div style={{ flex: 1 }}>
                             <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', marginBottom: '0.5rem', fontSize: '0.75rem', fontWeight: '800' }}>PACKAGE NAME</label>
-                            <input type="text" name="package_name" value={formData.package_name} onChange={handleInputChange} placeholder="com.example.tool"
-                                style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.9rem', borderRadius: '16px', color: 'white', fontWeight: '700', outline: 'none' }} />
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <input type="text" name="package_name" value={formData.package_name} onChange={handleInputChange} placeholder="com.example.tool"
+                                    style={{ flex: 1, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.9rem', borderRadius: '16px', color: 'white', fontWeight: '700', outline: 'none' }} />
+                                <button type="button" onClick={handleFetchPlaystore} disabled={loading}
+                                    style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.2)', padding: '0 1rem', borderRadius: '14px', color: '#3b82f6', display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}>
+                                    <Sparkles size={16} /> Magic
+                                </button>
+                                <button type="button" onClick={handleFetchSecurity} disabled={fetchingSecurity}
+                                    style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '0 1rem', borderRadius: '14px', color: '#10b981', display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}>
+                                    <ShieldCheck size={16} /> Security
+                                </button>
+                            </div>
                         </div>
                         <div>
                             <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', marginBottom: '0.5rem', fontSize: '0.75rem', fontWeight: '800' }}>MIN ANDROID</label>
@@ -412,6 +572,40 @@ export default function AddToolPage() {
                                 style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.9rem', borderRadius: '16px', color: 'white', fontWeight: '700', outline: 'none' }} />
                         </div>
                     </div>
+
+                    {/* ── Mirror Registry (Uptodown/Aptoide) ── */}
+                    {mirrors.length > 0 && (
+                        <div className="glass" style={{ padding: '1rem', borderRadius: '24px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                                <Monitor size={16} color="#3b82f6" />
+                                <h4 style={{ fontSize: '0.8rem', fontWeight: '800', color: '#3b82f6' }}>COLLECTION SEARCH RESULTS (MIRRORS)</h4>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                {mirrors.map((mirror, idx) => (
+                                    <div key={idx} style={{ 
+                                        display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
+                                        background: formData.download_url === mirror.url ? 'rgba(59, 130, 246, 0.1)' : 'rgba(255,255,255,0.02)', 
+                                        padding: '0.75rem 1rem', borderRadius: '16px', 
+                                        border: formData.download_url === mirror.url ? '1px solid rgba(59, 130, 246, 0.4)' : '1px solid rgba(255,255,255,0.05)',
+                                        transition: 'all 0.2s'
+                                    }}>
+                                        <button type="button" onClick={() => setFormData(p => ({ ...p, download_url: mirror.url }))}
+                                            style={{ display: 'flex', flexDirection: 'column', background: 'none', border: 'none', textAlign: 'left', cursor: 'pointer', flex: 1 }}>
+                                            <span style={{ fontSize: '0.75rem', fontWeight: '800', color: formData.download_url === mirror.url ? '#3b82f6' : 'white' }}>{mirror.name.slice(0, 30)}...</span>
+                                            <span style={{ fontSize: '0.65rem', color: formData.download_url === mirror.url ? 'rgba(59, 130, 246, 0.6)' : 'rgba(255,255,255,0.3)', fontWeight: '600' }}>Source: {mirror.source}</span>
+                                        </button>
+                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                            <a href={mirror.url} target="_blank" rel="noopener noreferrer" style={{ padding: '0.5rem 0.75rem', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', color: 'white', fontSize: '0.7rem', fontWeight: '800', textDecoration: 'none' }}>Visit</a>
+                                            <button type="button" onClick={() => handleCloudMirror(mirror.url)} disabled={mirroring}
+                                                style={{ padding: '0.5rem 0.75rem', borderRadius: '10px', background: 'rgba(59, 130, 246, 0.2)', border: 'none', color: '#3b82f6', fontSize: '0.7rem', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                                                🚀 Cloud Mirror
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* ── Collection & Placement ── */}
@@ -560,6 +754,6 @@ export default function AddToolPage() {
             <style jsx>{`
                 .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
             `}</style>
-        </div >
+        </div>
     );
 }

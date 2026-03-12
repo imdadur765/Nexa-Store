@@ -82,6 +82,7 @@ export default function EditAppPage({ params }: { params: Promise<{ id: string }
         is_safety_verified: true,
         // External URLs
         icon_url_external: '',
+        slider_image_url: '',
         screenshot1_external: '',
         screenshot2_external: '',
         screenshot3_external: '',
@@ -93,6 +94,11 @@ export default function EditAppPage({ params }: { params: Promise<{ id: string }
     const [screenshotFiles, setScreenshotFiles] = useState<File[]>([]);
     const [existingScreenshots, setExistingScreenshots] = useState<string[]>([]);
     const [screenshotPreviews, setScreenshotPreviews] = useState<string[]>([]);
+    
+    // Magic States
+    const [fetchingSecurity, setFetchingSecurity] = useState(false);
+    const [searchingMirrors, setSearchingMirrors] = useState(false);
+    const [mirrors, setMirrors] = useState<any[]>([]);
 
     useEffect(() => {
         const checkAndFetch = async () => {
@@ -154,7 +160,8 @@ export default function EditAppPage({ params }: { params: Promise<{ id: string }
                 pros: Array.isArray(appData.pros) ? appData.pros.join(', ') : '',
                 cons: Array.isArray(appData.cons) ? appData.cons.join(', ') : '',
                 editorial_rating: appData.editorial_rating?.toString() || '4.5',
-                is_safety_verified: appData.is_safety_verified ?? true
+                is_safety_verified: appData.is_safety_verified ?? true,
+                slider_image_url: appData.slider_image_url || appData.hero_image || ''
             });
             setSelectedPlatforms(Array.isArray(appData.platforms) ? appData.platforms : (appData.platforms ? appData.platforms.split(',').map((p: string) => p.trim()) : ['Android']));
             setCurrentIconUrl(appData.icon_url || '');
@@ -266,6 +273,101 @@ export default function EditAppPage({ params }: { params: Promise<{ id: string }
         }));
     };
 
+    // ── MAGIC FUNCTIONS (Ported from Add Page) ──
+
+    const handleFetchPlaystore = async () => {
+        if (!formData.package_name) {
+            alert('Please enter a Package Name first (e.g., com.whatsapp)');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const res = await fetch(`/api/admin/fetch-playstore?id=${encodeURIComponent(formData.package_name)}`);
+            const data = await res.json();
+
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+
+            // Auto-populate form
+            setFormData(prev => ({
+                ...prev,
+                name: data.name || prev.name,
+                description: data.description || prev.description,
+                category: data.category || prev.category,
+                developer: data.developer || prev.developer,
+                package_size: data.package_size || prev.package_size,
+                rating: data.rating ? String(data.rating).slice(0, 3) : prev.rating,
+                whats_new: data.whats_new || prev.whats_new,
+                min_android_version: data.min_android_version || prev.min_android_version,
+                icon_url_external: data.icon || prev.icon_url_external,
+                hero_image: data.hero_image || prev.hero_image,
+                slider_image_url: data.hero_image || prev.slider_image_url,
+                screenshot1_external: data.screenshots?.[0] || prev.screenshot1_external,
+                screenshot2_external: data.screenshots?.[1] || prev.screenshot2_external,
+                screenshot3_external: data.screenshots?.[2] || prev.screenshot3_external,
+                screenshot4_external: data.screenshots?.[3] || prev.screenshot4_external,
+                is_game: data.is_game ?? prev.is_game,
+                version: data.version || prev.version
+            }));
+
+            // In Edit page we don't have setIconPreview but we can update the external icon preview
+            if (data.screenshots) setScreenshotPreviews(data.screenshots);
+
+            alert('✨ Magic Fetch Successful! Data populated.');
+            handleSearchMirrors(formData.package_name || data.package_name);
+        } catch (err: any) {
+            alert('❌ Failed to fetch: ' + err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSearchMirrors = async (pName?: string) => {
+        const pkg = pName || formData.package_name;
+        if (!pkg) return;
+        setSearchingMirrors(true);
+        try {
+            const res = await fetch(`/api/admin/fetch-mirrors?id=${encodeURIComponent(pkg)}`);
+            const data = await res.json();
+            if (data.mirrors) setMirrors(data.mirrors);
+        } catch (err) {
+            console.error("Mirror search failed:", err);
+        } finally {
+            setSearchingMirrors(false);
+        }
+    };
+
+    const handleFetchSecurity = async () => {
+        if (!formData.package_name) {
+            alert('Please enter a Package Name first.');
+            return;
+        }
+        setFetchingSecurity(true);
+        try {
+            const res = await fetch(`/api/admin/fetch-security?id=${encodeURIComponent(formData.package_name)}`);
+            const data = await res.json();
+            if (data.error) {
+                alert('❌ Security Fetch Failed: ' + data.error);
+                return;
+            }
+            setFormData(prev => ({
+                ...prev,
+                sha256: data.sha256 || prev.sha256,
+                certificate_signature: data.signature || prev.certificate_signature,
+                permissions: data.permissions?.join(', ') || prev.permissions,
+                package_size: data.size || prev.package_size,
+            }));
+            alert(`✅ Security data fetched!\nPermissions: ${data.permissions?.length || 0} found\nSize: ${data.size}`);
+        } catch (err: any) {
+            alert('❌ Error: ' + err.message);
+        } finally {
+            setFetchingSecurity(false);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
@@ -342,7 +444,7 @@ export default function EditAppPage({ params }: { params: Promise<{ id: string }
                     </button>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                         <Layout size={22} color="#10b981" />
-                        <h1 style={{ fontSize: '1.25rem', fontWeight: '900', letterSpacing: '-0.5px' }}>App Portal</h1>
+                        <h1 style={{ fontSize: '1.25rem', fontWeight: '900', letterSpacing: '-0.5px' }}>Premium Edit Portal</h1>
                     </div>
                 </header>
 
@@ -399,9 +501,9 @@ export default function EditAppPage({ params }: { params: Promise<{ id: string }
                     </div>
 
                     {/* ── Hero Marketing ── */}
-                    <div className="glass" style={{ padding: '1.5rem', borderRadius: '32px', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                    <div className="glass" style={{ padding: '1.5rem', borderRadius: '32px', display: 'flex', flexDirection: 'column', gap: '1.25rem', border: '1px solid rgba(16, 185, 129, 0.1)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <h3 style={{ fontSize: '0.9rem', fontWeight: '900', color: 'white', letterSpacing: '1px', textTransform: 'uppercase' }}>Hero Marketing</h3>
+                            <h3 style={{ fontSize: '0.9rem', fontWeight: '900', color: '#10b981', letterSpacing: '1px', textTransform: 'uppercase' }}>Hero Marketing</h3>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                                 <span style={{ fontSize: '0.75rem', fontWeight: '800', color: formData.is_hero ? '#10b981' : 'rgba(255,255,255,0.3)' }}>Enable Hero Slider</span>
                                 <button type="button" onClick={() => handleToggle('is_hero')}
@@ -412,14 +514,22 @@ export default function EditAppPage({ params }: { params: Promise<{ id: string }
                         </div>
 
                         <div>
-                            <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', marginBottom: '0.5rem', fontSize: '0.8rem', fontWeight: '700' }}>HERO BACKGROUND URL</label>
+                            <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', marginBottom: '0.8rem', fontSize: '0.75rem', fontWeight: '800' }}>HOMEPAGE SLIDER IMAGE (16:9 BANNER)</label>
+                            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                <input type="url" name="slider_image_url" value={formData.slider_image_url} onChange={handleInputChange} placeholder="GitHub/Imgur banner link..."
+                                    style={{ flex: 1, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.9rem', borderRadius: '16px', color: '#10b981', fontWeight: '700', outline: 'none' }} />
+                                {formData.slider_image_url && (
+                                    <div style={{ width: '80px', height: '45px', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)' }}>
+                                        <img src={formData.slider_image_url} alt="Slider" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => (e.currentTarget.src = 'https://via.placeholder.com/80x45?text=Error')} />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', marginBottom: '0.5rem', fontSize: '0.8rem', fontWeight: '700' }}>APP HERO IMAGE (BLURRED BG)</label>
                             <input type="url" name="hero_image" value={formData.hero_image} onChange={handleInputChange} placeholder="https://..."
                                 style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.9rem', borderRadius: '16px', color: 'white', outline: 'none' }} />
-                            {formData.hero_image && (
-                                <div style={{ marginTop: '1rem', width: '100%', aspectRatio: '16/9', borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
-                                    <img src={formData.hero_image} alt="Hero" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                </div>
-                            )}
                         </div>
                     </div>
 
@@ -482,6 +592,47 @@ export default function EditAppPage({ params }: { params: Promise<{ id: string }
                         </div>
                     </div>
 
+                    {/* ── Mirror Registry ── */}
+                    <div className="glass" style={{ padding: '1.5rem', borderRadius: '32px', border: '1px solid rgba(16, 185, 129, 0.1)', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <h3 style={{ fontSize: '0.9rem', fontWeight: '900', color: '#10b981', letterSpacing: '1px', textTransform: 'uppercase' }}>Mirror Registry</h3>
+                            <button type="button" onClick={() => handleSearchMirrors()} disabled={searchingMirrors}
+                                style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '0.5rem 1rem', borderRadius: '12px', color: '#10b981', fontSize: '0.75rem', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                {searchingMirrors ? 'Searching...' : <><Zap size={14} /> Refresh Mirrors</>}
+                            </button>
+                        </div>
+
+                        {mirrors.length > 0 ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                {mirrors.map((mirror, idx) => (
+                                    <div key={idx} 
+                                        onClick={() => setFormData(prev => ({ ...prev, download_url: mirror.url }))}
+                                        style={{ 
+                                            padding: '1rem', borderRadius: '16px', background: 'rgba(255,255,255,0.02)', 
+                                            border: formData.download_url === mirror.url ? '1px solid #10b981' : '1px solid rgba(255,255,255,0.05)', 
+                                            display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
+                                            transition: '0.2s'
+                                        }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                <Smartphone size={20} color="#10b981" />
+                                            </div>
+                                            <div>
+                                                <div style={{ fontSize: '0.85rem', fontWeight: '800' }}>{mirror.name}</div>
+                                                <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', fontWeight: '600' }}>Source: {mirror.source}</div>
+                                            </div>
+                                        </div>
+                                        {formData.download_url === mirror.url && <CheckCircle2 size={18} color="#10b981" />}
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div style={{ padding: '2rem', textAlign: 'center', color: 'rgba(255,255,255,0.2)', fontSize: '0.8rem', fontWeight: '700' }}>
+                                No mirrors found. Use Refresh to search.
+                            </div>
+                        )}
+                    </div>
+
                     {/* ── Universal External Asset Control ── */}
                     <div className="glass" style={{ padding: '1.5rem', borderRadius: '32px', display: 'flex', flexDirection: 'column', gap: '1.25rem', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
                         <h3 style={{ fontSize: '0.9rem', fontWeight: '900', color: '#10b981', letterSpacing: '1px', textTransform: 'uppercase' }}>Universal External Asset Control</h3>
@@ -528,7 +679,17 @@ export default function EditAppPage({ params }: { params: Promise<{ id: string }
 
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                             <div>
-                                <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', marginBottom: '0.5rem', fontSize: '0.75rem', fontWeight: '800' }}>PACKAGE NAME</label>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                                    <label style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem', fontWeight: '800' }}>PACKAGE NAME</label>
+                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                        <button type="button" onClick={handleFetchPlaystore} className="ultra-glass" style={{ padding: '0.3rem 0.6rem', borderRadius: '8px', fontSize: '0.65rem', fontWeight: '900', color: '#10b981', border: '1px solid rgba(16, 185, 129, 0.3)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <Wand2 size={12} /> MAGIC FETCH
+                                        </button>
+                                        <button type="button" onClick={handleFetchSecurity} className="ultra-glass" style={{ padding: '0.3rem 0.6rem', borderRadius: '8px', fontSize: '0.65rem', fontWeight: '900', color: '#3b82f6', border: '1px solid rgba(59, 130, 246, 0.3)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <ShieldCheck size={12} /> SECURITY
+                                        </button>
+                                    </div>
+                                </div>
                                 <input type="text" name="package_name" value={formData.package_name} onChange={handleInputChange} placeholder="com.example.app"
                                     style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.9rem', borderRadius: '16px', color: 'white', fontWeight: '700', outline: 'none' }} />
                             </div>
@@ -692,14 +853,15 @@ export default function EditAppPage({ params }: { params: Promise<{ id: string }
                 <header className="ultra-glass" style={{
                     position: 'sticky', top: 0, zIndex: 100,
                     padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', gap: '1rem',
-                    borderBottom: '1px solid rgba(139, 92, 246, 0.2)'
+                    borderBottom: '1px solid rgba(139, 92, 246, 0.2)',
+                    background: 'rgba(10, 10, 15, 0.8)', backdropFilter: 'blur(20px)'
                 }}>
                     <button onClick={() => router.back()} style={{ background: 'none', border: 'none', color: 'white' }}>
                         <ArrowLeft size={24} />
                     </button>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                         <Gamepad2 size={22} color="#8b5cf6" />
-                        <h1 style={{ fontSize: '1.25rem', fontWeight: '900', letterSpacing: '-0.5px' }}>Edit Game Portal</h1>
+                        <h1 style={{ fontSize: '1.25rem', fontWeight: '900', letterSpacing: '-0.5px' }}>Premium Game Edit</h1>
                     </div>
                 </header>
 
@@ -721,7 +883,7 @@ export default function EditAppPage({ params }: { params: Promise<{ id: string }
                                     ) : currentIconUrl ? (
                                         <img src={currentIconUrl} alt="current" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                     ) : (
-                                        <ImageIcon size={28} color="#8b5cf6" />
+                                        <Gamepad2 size={28} color="#8b5cf6" />
                                     )}
                                 </div>
                                 <input type="file" accept="image/*" onChange={handleFileChange} style={{ display: 'none' }} />
@@ -792,27 +954,38 @@ export default function EditAppPage({ params }: { params: Promise<{ id: string }
                         </div>
                     </div>
 
-                    {/* ── Hero & Marketing ── */}
-                    <div className="glass" style={{ padding: '1.5rem', borderRadius: '32px', display: 'flex', flexDirection: 'column', gap: '1.5rem', border: '1px solid rgba(245, 158, 11, 0.2)' }}>
-                        <h3 style={{ fontSize: '0.9rem', fontWeight: '900', color: '#f59e0b', letterSpacing: '1px', textTransform: 'uppercase' }}>Hero Marketing</h3>
-
-                        <div className="glass" style={{ padding: '1rem', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    {/* ── Hero & Marketing (Slider) ── */}
+                    <div className="glass" style={{ padding: '1.5rem', borderRadius: '32px', display: 'flex', flexDirection: 'column', gap: '1.5rem', border: '1px solid rgba(139, 92, 246, 0.2)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <h3 style={{ fontSize: '0.9rem', fontWeight: '900', color: '#8b5cf6', letterSpacing: '1px', textTransform: 'uppercase' }}>Hero Marketing</h3>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                <Zap size={20} color={formData.is_hero ? '#f59e0b' : 'rgba(255,255,255,0.2)'} fill={formData.is_hero ? '#f59e0b' : 'none'} />
-                                <span style={{ fontSize: '0.9rem', fontWeight: '800' }}>Add to Home Slider</span>
+                                <span style={{ fontSize: '0.75rem', fontWeight: '800', color: formData.is_hero ? '#8b5cf6' : 'rgba(255,255,255,0.3)' }}>Enable Hero Slider</span>
+                                <button type="button" onClick={() => handleToggle('is_hero')}
+                                    style={{
+                                        width: '44px', height: '24px', borderRadius: '100px', border: 'none',
+                                        background: formData.is_hero ? '#8b5cf6' : 'rgba(255,255,255,0.1)',
+                                        position: 'relative', cursor: 'pointer', transition: 'all 0.3s'
+                                    }}>
+                                    <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'white', position: 'absolute', top: '3px', left: formData.is_hero ? '23px' : '3px', transition: '0.3s' }} />
+                                </button>
                             </div>
-                            <button type="button" onClick={() => handleToggle('is_hero')}
-                                style={{
-                                    width: '44px', height: '24px', borderRadius: '100px', border: 'none',
-                                    background: formData.is_hero ? '#f59e0b' : 'rgba(255,255,255,0.1)',
-                                    position: 'relative', cursor: 'pointer', transition: 'all 0.3s'
-                                }}>
-                                <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'white', position: 'absolute', top: '3px', left: formData.is_hero ? '23px' : '3px', transition: '0.3s' }} />
-                            </button>
                         </div>
 
                         <div>
-                            <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', marginBottom: '0.5rem', fontSize: '0.8rem', fontWeight: '700' }}>HERO BACKGROUND URL</label>
+                            <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', marginBottom: '0.8rem', fontSize: '0.75rem', fontWeight: '800' }}>HOMEPAGE SLIDER IMAGE (16:9 BANNER)</label>
+                            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                <input type="url" name="slider_image_url" value={formData.slider_image_url} onChange={handleInputChange} placeholder="GitHub/Imgur banner link..."
+                                    style={{ flex: 1, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.9rem', borderRadius: '16px', color: '#8b5cf6', fontWeight: '700', outline: 'none' }} />
+                                {formData.slider_image_url && (
+                                    <div style={{ width: '80px', height: '45px', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)' }}>
+                                        <img src={formData.slider_image_url} alt="Slider" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => (e.currentTarget.src = 'https://via.placeholder.com/80x45?text=Error')} />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', marginBottom: '0.5rem', fontSize: '0.8rem', fontWeight: '700' }}>GAME HERO IMAGE (BLURRED BG)</label>
                             <input type="url" name="hero_image" value={formData.hero_image} onChange={handleInputChange} placeholder="https://..."
                                 style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.9rem', borderRadius: '16px', color: 'white', outline: 'none' }} />
                         </div>
@@ -907,13 +1080,64 @@ export default function EditAppPage({ params }: { params: Promise<{ id: string }
                         </div>
                     </div>
 
-                    {/* ── Uptodown Technical Info ── */}
+                    {/* ── Mirror Registry ── */}
+                    <div className="glass" style={{ padding: '1.5rem', borderRadius: '32px', border: '1px solid rgba(139, 92, 246, 0.1)', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <h3 style={{ fontSize: '0.9rem', fontWeight: '900', color: '#8b5cf6', letterSpacing: '1px', textTransform: 'uppercase' }}>Mirror Registry</h3>
+                            <button type="button" onClick={() => handleSearchMirrors()} disabled={searchingMirrors}
+                                style={{ background: 'rgba(139, 92, 246, 0.1)', border: '1px solid rgba(139, 92, 246, 0.2)', padding: '0.5rem 1rem', borderRadius: '12px', color: '#8b5cf6', fontSize: '0.75rem', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                {searchingMirrors ? 'Searching...' : <><Zap size={14} /> Refresh Mirrors</>}
+                            </button>
+                        </div>
+
+                        {mirrors.length > 0 ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                {mirrors.map((mirror, idx) => (
+                                    <div key={idx} 
+                                        onClick={() => setFormData(prev => ({ ...prev, download_url: mirror.url }))}
+                                        style={{ 
+                                            padding: '1rem', borderRadius: '16px', background: 'rgba(255,255,255,0.02)', 
+                                            border: formData.download_url === mirror.url ? '1px solid #8b5cf6' : '1px solid rgba(255,255,255,0.05)', 
+                                            display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
+                                            transition: '0.2s'
+                                        }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(139, 92, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                <Smartphone size={20} color="#8b5cf6" />
+                                            </div>
+                                            <div>
+                                                <div style={{ fontSize: '0.85rem', fontWeight: '800' }}>{mirror.name}</div>
+                                                <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', fontWeight: '600' }}>Source: {mirror.source}</div>
+                                            </div>
+                                        </div>
+                                        {formData.download_url === mirror.url && <CheckCircle2 size={18} color="#8b5cf6" />}
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div style={{ padding: '2rem', textAlign: 'center', color: 'rgba(255,255,255,0.2)', fontSize: '0.8rem', fontWeight: '700' }}>
+                                No mirrors found. Use Refresh to search.
+                            </div>
+                        )}
+                    </div>
+
+                    {/* ── Technical Info ── */}
                     <div className="glass" style={{ padding: '1.5rem', borderRadius: '32px', border: '1px solid rgba(139, 92, 246, 0.1)', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                         <h3 style={{ fontSize: '0.9rem', fontWeight: '900', color: '#8b5cf6', letterSpacing: '1px', textTransform: 'uppercase' }}>Technical Details</h3>
 
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                             <div>
-                                <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', marginBottom: '0.5rem', fontSize: '0.75rem', fontWeight: '800' }}>PACKAGE NAME</label>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                                    <label style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem', fontWeight: '800' }}>PACKAGE NAME</label>
+                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                        <button type="button" onClick={handleFetchPlaystore} className="ultra-glass" style={{ padding: '0.3rem 0.6rem', borderRadius: '8px', fontSize: '0.65rem', fontWeight: '900', color: '#8b5cf6', border: '1px solid rgba(139, 92, 246, 0.3)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <Wand2 size={12} /> MAGIC FETCH
+                                        </button>
+                                        <button type="button" onClick={handleFetchSecurity} className="ultra-glass" style={{ padding: '0.3rem 0.6rem', borderRadius: '8px', fontSize: '0.65rem', fontWeight: '900', color: '#3b82f6', border: '1px solid rgba(59, 130, 246, 0.3)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <ShieldCheck size={12} /> SECURITY
+                                        </button>
+                                    </div>
+                                </div>
                                 <input type="text" name="package_name" value={formData.package_name} onChange={handleInputChange} placeholder="com.example.game"
                                     style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.9rem', borderRadius: '16px', color: 'white', fontWeight: '700', outline: 'none' }} />
                             </div>
@@ -1054,14 +1278,15 @@ export default function EditAppPage({ params }: { params: Promise<{ id: string }
                 <header className="ultra-glass" style={{
                     position: 'sticky', top: 0, zIndex: 100,
                     padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', gap: '1rem',
-                    borderBottom: '1px solid rgba(59, 130, 246, 0.2)'
+                    borderBottom: '1px solid rgba(59, 130, 246, 0.2)',
+                    background: 'rgba(10, 10, 15, 0.8)', backdropFilter: 'blur(20px)'
                 }}>
                     <button onClick={() => router.back()} style={{ background: 'none', border: 'none', color: 'white' }}>
                         <ArrowLeft size={24} />
                     </button>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                         <Cpu size={22} color="#3b82f6" />
-                        <h1 style={{ fontSize: '1.25rem', fontWeight: '900', letterSpacing: '-0.5px' }}>Edit Tool Registry</h1>
+                        <h1 style={{ fontSize: '1.25rem', fontWeight: '900', letterSpacing: '-0.5px' }}>Premium Tool Edit</h1>
                     </div>
                 </header>
 
@@ -1114,24 +1339,107 @@ export default function EditAppPage({ params }: { params: Promise<{ id: string }
                         </div>
                     </div>
 
-                    {/* ── Technical URLs ── */}
-                    <div className="glass" style={{ padding: '1.5rem', borderRadius: '32px', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                        <h3 style={{ fontSize: '0.85rem', fontWeight: '900', color: '#3b82f6', letterSpacing: '1px', textTransform: 'uppercase' }}>Resources</h3>
-
-                        <div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                                <Github size={18} color="rgba(255,255,255,0.4)" />
-                                <label style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem', fontWeight: '800' }}>GITHUB REPOSITORY</label>
+                    {/* ── Hero & Marketing (Slider) ── */}
+                    <div className="glass" style={{ padding: '1.5rem', borderRadius: '32px', display: 'flex', flexDirection: 'column', gap: '1.5rem', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <h3 style={{ fontSize: '0.9rem', fontWeight: '900', color: '#3b82f6', letterSpacing: '1px', textTransform: 'uppercase' }}>Hero Marketing</h3>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                <span style={{ fontSize: '0.75rem', fontWeight: '800', color: formData.is_hero ? '#3b82f6' : 'rgba(255,255,255,0.3)' }}>Enable Hero Slider</span>
+                                <button type="button" onClick={() => handleToggle('is_hero')}
+                                    style={{
+                                        width: '44px', height: '24px', borderRadius: '100px', border: 'none',
+                                        background: formData.is_hero ? '#3b82f6' : 'rgba(255,255,255,0.1)',
+                                        position: 'relative', cursor: 'pointer', transition: 'all 0.3s'
+                                    }}>
+                                    <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: 'white', position: 'absolute', top: '3px', left: formData.is_hero ? '23px' : '3px', transition: '0.3s' }} />
+                                </button>
                             </div>
-                            <input type="url" name="github_url" value={formData.github_url} onChange={handleInputChange} placeholder="https://github.com/..."
-                                style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.9rem', borderRadius: '16px', color: 'white', outline: 'none', fontFamily: 'monospace' }} />
                         </div>
 
                         <div>
-                            <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', marginBottom: '0.5rem', fontSize: '0.75rem', fontWeight: '800' }}>DOWNLOAD ASSET URL</label>
-                            <input type="url" name="download_url" value={formData.download_url} onChange={handleInputChange} placeholder="Direct link to APK or ZIP"
+                            <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', marginBottom: '0.8rem', fontSize: '0.75rem', fontWeight: '800' }}>HOMEPAGE SLIDER IMAGE (16:9 BANNER)</label>
+                            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                <input type="url" name="slider_image_url" value={formData.slider_image_url} onChange={handleInputChange} placeholder="GitHub/Imgur banner link..."
+                                    style={{ flex: 1, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.9rem', borderRadius: '16px', color: '#3b82f6', fontWeight: '700', outline: 'none' }} />
+                                {formData.slider_image_url && (
+                                    <div style={{ width: '80px', height: '45px', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)' }}>
+                                        <img src={formData.slider_image_url} alt="Slider" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => (e.currentTarget.src = 'https://via.placeholder.com/80x45?text=Error')} />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', marginBottom: '0.5rem', fontSize: '0.8rem', fontWeight: '700' }}>TOOL HERO IMAGE (BLURRED BG)</label>
+                            <input type="url" name="hero_image" value={formData.hero_image} onChange={handleInputChange} placeholder="https://..."
                                 style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.9rem', borderRadius: '16px', color: 'white', outline: 'none' }} />
                         </div>
+                    </div>
+
+                    {/* ── Technical URLs ── */}
+                    <div className="glass" style={{ padding: '1.5rem', borderRadius: '32px', display: 'flex', flexDirection: 'column', gap: '1.5rem', border: '1px solid rgba(59, 130, 246, 0.1)' }}>
+                        <h3 style={{ fontSize: '0.85rem', fontWeight: '900', color: '#3b82f6', letterSpacing: '1px', textTransform: 'uppercase' }}>Resources</h3>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                            <div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                                    <Github size={18} color="rgba(255,255,255,0.4)" />
+                                    <label style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem', fontWeight: '800' }}>GITHUB REPOSITORY</label>
+                                </div>
+                                <input type="url" name="github_url" value={formData.github_url} onChange={handleInputChange} placeholder="https://github.com/..."
+                                    style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.9rem', borderRadius: '16px', color: 'white', outline: 'none', fontFamily: 'monospace' }} />
+                            </div>
+
+                            <div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                                    <Zap size={18} color="rgba(255,255,255,0.4)" />
+                                    <label style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem', fontWeight: '800' }}>DOWNLOAD ASSET URL</label>
+                                </div>
+                                <input type="url" name="download_url" value={formData.download_url} onChange={handleInputChange} placeholder="Direct link to APK or ZIP"
+                                    style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.9rem', borderRadius: '16px', color: 'white', outline: 'none' }} />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* ── Mirror Registry ── */}
+                    <div className="glass" style={{ padding: '1.5rem', borderRadius: '32px', border: '1px solid rgba(59, 130, 246, 0.1)', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <h3 style={{ fontSize: '0.9rem', fontWeight: '900', color: '#3b82f6', letterSpacing: '1px', textTransform: 'uppercase' }}>Mirror Registry</h3>
+                            <button type="button" onClick={() => handleSearchMirrors()} disabled={searchingMirrors}
+                                style={{ background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.2)', padding: '0.5rem 1rem', borderRadius: '12px', color: '#3b82f6', fontSize: '0.75rem', fontWeight: '800', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                {searchingMirrors ? 'Searching...' : <><Zap size={14} /> Refresh Mirrors</>}
+                            </button>
+                        </div>
+
+                        {mirrors.length > 0 ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                {mirrors.map((mirror, idx) => (
+                                    <div key={idx} 
+                                        onClick={() => setFormData(prev => ({ ...prev, download_url: mirror.url }))}
+                                        style={{ 
+                                            padding: '1rem', borderRadius: '16px', background: 'rgba(255,255,255,0.02)', 
+                                            border: formData.download_url === mirror.url ? '1px solid #3b82f6' : '1px solid rgba(255,255,255,0.05)', 
+                                            display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
+                                            transition: '0.2s'
+                                        }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(59, 130, 246, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                <Smartphone size={20} color="#3b82f6" />
+                                            </div>
+                                            <div>
+                                                <div style={{ fontSize: '0.85rem', fontWeight: '800' }}>{mirror.name}</div>
+                                                <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', fontWeight: '600' }}>Source: {mirror.source}</div>
+                                            </div>
+                                        </div>
+                                        {formData.download_url === mirror.url && <CheckCircle2 size={18} color="#3b82f6" />}
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div style={{ padding: '2rem', textAlign: 'center', color: 'rgba(255,255,255,0.2)', fontSize: '0.8rem', fontWeight: '700' }}>
+                                No mirrors found. Use Refresh to search.
+                            </div>
+                        )}
                     </div>
 
                     {/* ── Universal External Asset Control ── */}
@@ -1188,9 +1496,19 @@ export default function EditAppPage({ params }: { params: Promise<{ id: string }
 
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                             <div>
-                                <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', marginBottom: '0.5rem', fontSize: '0.75rem', fontWeight: '800' }}>PACKAGE NAME</label>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                                    <label style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem', fontWeight: '800' }}>PACKAGE NAME</label>
+                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                        <button type="button" onClick={handleFetchPlaystore} className="ultra-glass" style={{ padding: '0.3rem 0.6rem', borderRadius: '8px', fontSize: '0.65rem', fontWeight: '900', color: '#3b82f6', border: '1px solid rgba(59, 130, 246, 0.3)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <Wand2 size={12} /> MAGIC FETCH
+                                        </button>
+                                        <button type="button" onClick={handleFetchSecurity} className="ultra-glass" style={{ padding: '0.3rem 0.6rem', borderRadius: '8px', fontSize: '0.65rem', fontWeight: '900', color: '#3b82f6', border: '1px solid rgba(59, 130, 246, 0.3)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <ShieldCheck size={12} /> SECURITY
+                                        </button>
+                                    </div>
+                                </div>
                                 <input type="text" name="package_name" value={formData.package_name} onChange={handleInputChange} placeholder="com.example.tool"
-                                    style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.8rem', borderRadius: '14px', color: 'white', fontWeight: '700', outline: 'none' }} />
+                                    style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.9rem', borderRadius: '16px', color: 'white', fontWeight: '700', outline: 'none' }} />
                             </div>
                             <div>
                                 <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', marginBottom: '0.5rem', fontSize: '0.75rem', fontWeight: '800' }}>MIN ANDROID</label>
@@ -1282,13 +1600,13 @@ export default function EditAppPage({ params }: { params: Promise<{ id: string }
                             style={{
                                 width: '100%', padding: '1.25rem', borderRadius: '24px',
                                 background: 'linear-gradient(135deg, #3b82f6, #2563eb)',
-                                color: 'white', border: 'none', fontSize: '1rem', fontWeight: '900',
+                                color: 'white', border: 'none', fontSize: '1.1rem', fontWeight: '900',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem',
-                                boxShadow: '0 12px 32px rgba(3b82f6, 0.4)',
+                                boxShadow: '0 12px 32px rgba(59, 130, 246, 0.4)',
                                 opacity: saving ? 0.7 : 1, cursor: saving ? 'not-allowed' : 'pointer'
                             }}>
-                            <Save size={20} />
-                            {saving ? 'Updating Tool...' : 'Update Tools Registry'}
+                            <Save size={22} />
+                            {saving ? 'Saving Changes...' : 'Update Tool Registry'}
                         </button>
                     </div>
                 </form>

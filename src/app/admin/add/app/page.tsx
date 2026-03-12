@@ -82,7 +82,7 @@ export default function AddGeneralAppPage() {
     const [screenshotFiles, setScreenshotFiles] = useState<File[]>([]);
     const [screenshotPreviews, setScreenshotPreviews] = useState<string[]>([]);
 
-    const [mirrors, setMirrors] = useState<{ source: string; name: string; url: string }[]>([]);
+    const [mirrors, setMirrors] = useState<{ source: string; name: string; url: string; isDirect?: boolean }[]>([]);
     const [searchingMirrors, setSearchingMirrors] = useState(false);
     const [mirroring, setMirroring] = useState(false);
 
@@ -274,7 +274,8 @@ export default function AddGeneralAppPage() {
                 ...prev,
                 sha256: data.sha256 || prev.sha256,
                 certificate_signature: data.signature || prev.certificate_signature,
-                permissions: data.permissions?.join('\n') || prev.permissions,
+                permissions: data.permissions?.join(', ') || prev.permissions,
+                package_size: data.size || prev.package_size,
             }));
             alert(`✅ Security data fetched!\nSHA256: ${data.sha256 ? 'Found ✅' : 'Not found ❌'}\nPermissions: ${data.permissions?.length || 0} found`);
         } catch (err: any) {
@@ -357,6 +358,7 @@ export default function AddGeneralAppPage() {
                     priority: parseInt(formData.priority) || 0,
                     // Technical Info
                     package_name: formData.package_name,
+                    package_size: formData.package_size,
                     sha256: formData.sha256,
                     certificate_signature: formData.certificate_signature,
                     min_android_version: formData.min_android_version,

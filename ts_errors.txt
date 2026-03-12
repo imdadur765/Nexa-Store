@@ -1,0 +1,7 @@
+src/app/admin/add/app/page.tsx(558,57): error TS2339: Property 'isDirect' does not exist on type '{ source: string; name: string; url: string; }'.
+src/app/admin/add/game/page.tsx(117,13): error TS2304: Cannot find name 'setIconFile'.
+src/app/admin/add/game/page.tsx(332,29): error TS2304: Cannot find name 'iconFile'.
+src/app/admin/add/game/page.tsx(332,67): error TS2304: Cannot find name 'iconFile'.
+src/app/admin/add/tool/page.tsx(107,13): error TS2304: Cannot find name 'setIconFile'.
+src/app/admin/add/tool/page.tsx(308,29): error TS2304: Cannot find name 'iconFile'.
+src/app/admin/add/tool/page.tsx(308,67): error TS2304: Cannot find name 'iconFile'.

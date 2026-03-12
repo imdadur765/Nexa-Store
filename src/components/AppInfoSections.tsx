@@ -149,7 +149,7 @@ export function AppInfoSections({ app, latestRelease }: AppInfoSectionsProps) {
     const sha256 = (app.sha256 as string) || "244a36d609429e50e1e90c772ff92d7c87325325810da53b8f2060e9aa3dbbaf";
     const certSig = (app.certificate_signature as string) || "3d3e6a9538a1dee0fbc064f52c0ed84d";
     const minAndroid = (app.min_android_version as string) || "6.0 and above";
-    const permsList = Array.isArray(app.permissions) && app.permissions.length > 0 ? (app.permissions as string[]) : permissions;
+    const permsList = Array.isArray(app.permissions) && app.permissions.length > 0 ? (app.permissions as string[]) : [];
     const langList = Array.isArray(app.languages) && app.languages.length > 0 ? (app.languages as string[]) : ["English"];
 
     const olderVersionsList = Array.isArray(app.older_versions) ? app.older_versions : [];
@@ -247,7 +247,11 @@ export function AppInfoSections({ app, latestRelease }: AppInfoSectionsProps) {
                             onClick={() => setShowAllPerms(p => !p)}
                             style={{ background: "none", border: "none", color: "var(--accent-primary)", fontWeight: "900", fontSize: "0.875rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.3rem" }}
                         >
-                            See {permsList.length} permissions {showAllPerms ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                            {permsList.length > 0 ? (
+                                <>See {permsList.length} permissions {showAllPerms ? <ChevronUp size={14} /> : <ChevronDown size={14} />}</>
+                            ) : (
+                                <>No special permissions required</>
+                            )}
                         </button>
                     }
                 />
@@ -261,8 +265,20 @@ export function AppInfoSections({ app, latestRelease }: AppInfoSectionsProps) {
                             style={{ overflow: "hidden" }}
                         >
                             <div style={{ padding: "0.75rem 0 0.25rem", display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-                                {permsList.map(p => (
-                                    <span key={p} style={{ fontSize: "0.7rem", padding: "0.25rem 0.6rem", borderRadius: "8px", fontFamily: "monospace", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.7)" }}>
+                                {Array.from(new Set(permsList.flatMap(p => p.split(',').map(s => s.trim().replace(/^"/, '').replace(/"$/, ''))).filter(Boolean))).map(p => (
+                                    <span key={p} style={{ 
+                                        fontSize: "0.7rem", 
+                                        padding: "0.35rem 0.7rem", 
+                                        borderRadius: "10px", 
+                                        fontFamily: "monospace", 
+                                        background: "rgba(59, 130, 246, 0.1)", 
+                                        border: "1px solid rgba(59, 130, 246, 0.2)", 
+                                        color: "#60a5fa",
+                                        fontWeight: "600",
+                                        boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                                        textTransform: "lowercase",
+                                        letterSpacing: "0.5px"
+                                    }}>
                                         {p}
                                     </span>
                                 ))}
