@@ -172,9 +172,9 @@ export const AppHero: React.FC<AppHeroProps> = ({ apps }) => {
             {/* Content */}
             <div className="hw-accel" style={{
                 position: 'absolute',
-                bottom: '2.5rem',
-                left: '1.75rem',
-                right: '1.75rem',
+                bottom: isHorizontal ? '1.5rem' : '2.5rem',
+                left: isHorizontal ? '1.5rem' : '1.75rem',
+                right: isHorizontal ? '1.5rem' : '1.75rem',
                 zIndex: 10,
                 opacity: isAnimating ? 0 : 1,
                 transform: isAnimating ? 'translateY(10px)' : 'translateY(0)',
@@ -206,10 +206,10 @@ export const AppHero: React.FC<AppHeroProps> = ({ apps }) => {
                 </div>
 
                 <h1 style={{
-                    fontSize: '2.4rem',
+                    fontSize: isHorizontal ? '1.8rem' : '2.4rem',
                     fontWeight: '900',
                     lineHeight: '1',
-                    marginBottom: '0.6rem',
+                    marginBottom: isHorizontal ? '0.4rem' : '0.6rem',
                     letterSpacing: '-1.2px',
                     color: 'white',
                     textShadow: '0 2px 4px rgba(0,0,0,0.5), 0 8px 32px rgba(0,0,0,0.6)' // Enhanced multi-layer shadow
@@ -218,14 +218,14 @@ export const AppHero: React.FC<AppHeroProps> = ({ apps }) => {
                 </h1>
 
                 <p style={{
-                    fontSize: '0.85rem',
+                    fontSize: isHorizontal ? '0.75rem' : '0.85rem',
                     color: 'rgba(255,255,255,0.6)',
                     fontWeight: '500',
-                    marginBottom: '1.25rem',
-                    maxWidth: '450px',
+                    marginBottom: isHorizontal ? '0.8rem' : '1.25rem',
+                    maxWidth: isHorizontal ? '350px' : '450px',
                     lineHeight: '1.4',
                     display: '-webkit-box',
-                    WebkitLineClamp: 2,
+                    WebkitLineClamp: isHorizontal ? 1 : 2,
                     WebkitBoxOrient: 'vertical',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis'
@@ -237,8 +237,8 @@ export const AppHero: React.FC<AppHeroProps> = ({ apps }) => {
                     <Link href={`/app/${app.id}`} className="btn-get-ios btn-premium-glow ios-btn-haptic" style={{
                         background: accent,
                         color: 'white',
-                        padding: '0.6rem 2.5rem',
-                        fontSize: '1rem',
+                        padding: isHorizontal ? '0.4rem 1.8rem' : '0.6rem 2.5rem',
+                        fontSize: isHorizontal ? '0.85rem' : '1rem',
                         borderRadius: '100px',
                         fontWeight: '900',
                         border: 'none',
@@ -248,7 +248,7 @@ export const AppHero: React.FC<AppHeroProps> = ({ apps }) => {
                         textDecoration: 'none',
                         boxShadow: `0 8px 25px ${accent}88`
                     }}>
-                        <Download size={18} strokeWidth={3} /> GET
+                        <Download size={isHorizontal ? 16 : 18} strokeWidth={3} /> GET
                     </Link>
                     <Link href={`/app/${app.id}`} className="ios-btn-haptic haptic-scale" style={{
                         width: '42px',
