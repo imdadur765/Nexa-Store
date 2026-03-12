@@ -82,6 +82,10 @@ export default function AddGeneralAppPage() {
     const [screenshotFiles, setScreenshotFiles] = useState<File[]>([]);
     const [screenshotPreviews, setScreenshotPreviews] = useState<string[]>([]);
 
+    const [mirrors, setMirrors] = useState<{ source: string; name: string; url: string }[]>([]);
+    const [searchingMirrors, setSearchingMirrors] = useState(false);
+    const [mirroring, setMirroring] = useState(false);
+
     // Auth check
     useEffect(() => {
         const check = async () => {
@@ -176,6 +180,145 @@ export default function AddGeneralAppPage() {
             ...prev,
             older_versions: prev.older_versions.map((ver, i) => i === index ? { ...ver, [field]: value } : ver)
         }));
+    };
+
+    const handleFetchPlaystore = async () => {
+        if (!formData.package_name) {
+            alert('Please enter a Package Name first (e.g., com.whatsapp)');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const res = await fetch(`/api/admin/fetch-playstore?id=${encodeURIComponent(formData.package_name)}`);
+            const data = await res.json();
+
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+
+            // Auto-populate form
+            setFormData(prev => ({
+                ...prev,
+                name: data.name || prev.name,
+                description: data.description || prev.description,
+                category: data.category || prev.category,
+                developer: data.developer || prev.developer,
+                package_size: data.package_size || prev.package_size,
+                rating: data.rating ? String(data.rating).slice(0, 3) : prev.rating,
+                whats_new: data.whats_new || prev.whats_new,
+                min_android_version: data.min_android_version || prev.min_android_version,
+                icon_url_external: data.icon || prev.icon_url_external,
+                hero_image: data.hero_image || prev.hero_image,
+                screenshot1_external: data.screenshots?.[0] || prev.screenshot1_external,
+                screenshot2_external: data.screenshots?.[1] || prev.screenshot2_external,
+                screenshot3_external: data.screenshots?.[2] || prev.screenshot3_external,
+                screenshot4_external: data.screenshots?.[3] || prev.screenshot4_external,
+                is_game: data.is_game ?? prev.is_game,
+                version: data.version || prev.version
+            }));
+
+            // Handle preview updates
+            if (data.icon) setIconPreview(data.icon);
+            if (data.hero_image) setHeroPreview(data.hero_image);
+            if (data.screenshots) setScreenshotPreviews(data.screenshots);
+
+            alert('✨ Magic Fetch Successful! Data populated.');
+            
+            // Auto-search mirrors as well
+            handleSearchMirrors(formData.package_name || data.package_name);
+        } catch (err: any) {
+            alert('❌ Failed to fetch: ' + err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSearchMirrors = async (pName?: string) => {
+        const pkg = pName || formData.package_name;
+        if (!pkg) {
+            alert('Please enter a Package Name or use Magic Fetch first');
+            return;
+        }
+
+        setSearchingMirrors(true);
+        try {
+            const res = await fetch(`/api/admin/fetch-mirrors?id=${encodeURIComponent(pkg)}`);
+            const data = await res.json();
+            if (data.mirrors) {
+                setMirrors(data.mirrors);
+            }
+        } catch (err) {
+            console.error("Mirror search failed:", err);
+        } finally {
+            setSearchingMirrors(false);
+        }
+    };
+
+    const [fetchingSecurity, setFetchingSecurity] = useState(false);
+    const handleFetchSecurity = async () => {
+        if (!formData.package_name) {
+            alert('Please enter a Package Name first (or use Magic Fetch).');
+            return;
+        }
+        setFetchingSecurity(true);
+        try {
+            const res = await fetch(`/api/admin/fetch-security?id=${encodeURIComponent(formData.package_name)}`);
+            const data = await res.json();
+            if (data.error) {
+                alert('❌ Security Fetch Failed: ' + data.error);
+                return;
+            }
+            setFormData(prev => ({
+                ...prev,
+                sha256: data.sha256 || prev.sha256,
+                certificate_signature: data.signature || prev.certificate_signature,
+                permissions: data.permissions?.join('\n') || prev.permissions,
+            }));
+            alert(`✅ Security data fetched!\nSHA256: ${data.sha256 ? 'Found ✅' : 'Not found ❌'}\nPermissions: ${data.permissions?.length || 0} found`);
+        } catch (err: any) {
+            alert('❌ Error: ' + err.message);
+        } finally {
+            setFetchingSecurity(false);
+        }
+    };
+
+    const handleCloudMirror = async (mirrorUrl: string) => {
+        if (!formData.package_name) {
+            alert('Package name is required for mirroring');
+            return;
+        }
+
+        const confirmMirror = confirm("Cloud-Mirroring will transfer the APK directly from the source to your GitHub Releases (Zero Data Usage). Continue?");
+        if (!confirmMirror) return;
+
+        setMirroring(true);
+        setLoading(true);
+        try {
+            const res = await fetch('/api/admin/cloud-mirror', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mirrorUrl, packageName: formData.package_name })
+            });
+
+            const data = await res.json();
+
+            if (data.error) {
+                alert('❌ Mirror Failed: ' + data.error);
+                return;
+            }
+
+            // Success! Update the form download URL
+            setFormData(prev => ({ ...prev, download_url: data.directDownloadUrl }));
+            alert(`✅ Success! APK Mirrored to GitHub.\nFile Size: ${data.size}\nDirect Link Generated.`);
+
+        } catch (err: any) {
+            alert('❌ Cloud Mirror Error: ' + err.message);
+        } finally {
+            setMirroring(false);
+            setLoading(false);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -382,8 +525,49 @@ export default function AddGeneralAppPage() {
 
                     <div>
                         <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', marginBottom: '0.5rem', fontSize: '0.75rem', fontWeight: '800' }}>DOWNLOAD URL (APK/PLAY STORE)</label>
-                        <input type="url" name="download_url" value={formData.download_url} onChange={handleInputChange} placeholder="https://cloud.nexa/dl/..." required
-                            style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.9rem 1.25rem', borderRadius: '16px', color: '#10b981', fontWeight: '700', outline: 'none' }} />
+                        <div style={{ display: 'flex', gap: '0.75rem', marginBottom: mirrors.length > 0 ? '1rem' : '0' }}>
+                            <input type="url" name="download_url" value={formData.download_url} onChange={handleInputChange} placeholder="https://cloud.nexa/dl/..." required
+                                style={{ flex: 1, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.9rem 1.25rem', borderRadius: '16px', color: '#10b981', fontWeight: '700', outline: 'none' }} />
+                            <button type="button" onClick={() => handleSearchMirrors()} disabled={searchingMirrors}
+                                style={{
+                                    background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.3)',
+                                    padding: '0 1.25rem', borderRadius: '16px', color: '#3b82f6', display: 'flex',
+                                    alignItems: 'center', gap: '0.5rem', fontWeight: '900', fontSize: '0.8rem', cursor: 'pointer', transition: '0.3s'
+                                }}>
+                                <History size={16} /> {searchingMirrors ? 'Searching...' : 'Find Mirrors'}
+                            </button>
+                        </div>
+
+                        {mirrors.length > 0 && (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '1rem', background: 'rgba(59, 130, 246, 0.05)', borderRadius: '20px', border: '1px solid rgba(59, 130, 246, 0.1)' }}>
+                                <span style={{ fontSize: '0.7rem', fontWeight: '900', color: '#3b82f6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Suggested Mirrors (Data Saver)</span>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
+                                    {mirrors.map((mirror, i) => (
+                                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(255,255,255,0.03)', padding: '0.4rem', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                            <button type="button" onClick={() => setFormData(p => ({ ...p, download_url: mirror.url }))}
+                                                style={{
+                                                    padding: '0.4rem 0.8rem', borderRadius: '10px', border: 'none',
+                                                    background: formData.download_url === mirror.url ? '#3b82f6' : 'transparent',
+                                                    color: formData.download_url === mirror.url ? 'white' : 'rgba(255,255,255,0.6)',
+                                                    fontSize: '0.75rem', fontWeight: '800', cursor: 'pointer',
+                                                    display: 'flex', alignItems: 'center', gap: '0.4rem'
+                                                }}>
+                                                {mirror.source}: {mirror.name.slice(0, 12)}...
+                                                {mirror.isDirect && <span style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', padding: '2px 6px', borderRadius: '6px', fontSize: '10px' }}>DIRECT ⚡</span>}
+                                            </button>
+                                            <button type="button" onClick={() => handleCloudMirror(mirror.url)} disabled={mirroring}
+                                                style={{
+                                                    background: 'rgba(16, 185, 129, 0.2)', border: 'none',
+                                                    padding: '0.4rem 0.6rem', borderRadius: '10px', color: '#10b981',
+                                                    fontSize: '0.65rem', fontWeight: '900', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem'
+                                                }}>
+                                                <Zap size={12} /> Mirror 🚀
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -392,10 +576,28 @@ export default function AddGeneralAppPage() {
                     <h3 style={{ fontSize: '0.9rem', fontWeight: '900', color: '#10b981', letterSpacing: '1px', textTransform: 'uppercase' }}>Technical Details</h3>
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                        <div>
+                        <div style={{ position: 'relative' }}>
                             <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', marginBottom: '0.5rem', fontSize: '0.75rem', fontWeight: '800' }}>PACKAGE NAME</label>
-                            <input type="text" name="package_name" value={formData.package_name} onChange={handleInputChange} placeholder="com.example.app"
-                                style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.9rem', borderRadius: '16px', color: 'white', fontWeight: '700', outline: 'none' }} />
+                            <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                <input type="text" name="package_name" value={formData.package_name} onChange={handleInputChange} placeholder="com.example.app"
+                                    style={{ flex: 1, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '0.9rem', borderRadius: '16px', color: 'white', fontWeight: '700', outline: 'none' }} />
+                                <button type="button" onClick={handleFetchPlaystore} disabled={loading}
+                                    style={{
+                                        background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)',
+                                        padding: '0 1.25rem', borderRadius: '16px', color: '#10b981', display: 'flex',
+                                        alignItems: 'center', gap: '0.5rem', fontWeight: '900', fontSize: '0.8rem', cursor: 'pointer', transition: '0.3s'
+                                    }}>
+                                    <Wand2 size={16} /> Magic
+                                </button>
+                                <button type="button" onClick={handleFetchSecurity} disabled={fetchingSecurity}
+                                    style={{
+                                        background: 'rgba(56, 189, 248, 0.1)', border: '1px solid rgba(56, 189, 248, 0.3)',
+                                        padding: '0 1.25rem', borderRadius: '16px', color: '#38bdf8', display: 'flex',
+                                        alignItems: 'center', gap: '0.5rem', fontWeight: '900', fontSize: '0.8rem', cursor: 'pointer', transition: '0.3s'
+                                    }}>
+                                    <ShieldCheck size={16} /> {fetchingSecurity ? 'Fetching...' : 'Security'}
+                                </button>
+                            </div>
                         </div>
                         <div>
                             <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', marginBottom: '0.5rem', fontSize: '0.75rem', fontWeight: '800' }}>MIN ANDROID</label>
