@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Plus, Edit2, Trash2, LogOut, Package, HardDrive, Smartphone, Users, RefreshCw, Zap, ShieldCheck, Layout, Gem } from 'lucide-react';
+import { Plus, Edit2, Trash2, LogOut, Package, HardDrive, Smartphone, Users, RefreshCw, Zap, ShieldCheck, Layout, Gem, Database } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AdminDashboard() {
@@ -279,6 +279,28 @@ export default function AdminDashboard() {
                                 <div>
                                     <h3 style={{ fontSize: '1rem', fontWeight: '900', margin: 0, color: 'white' }}>Publish App</h3>
                                     <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', margin: 0 }}>Social, Productivity, etc.</p>
+                                </div>
+                            </motion.div>
+                        </Link>
+
+                        {/* Bulk Importer Portal */}
+                        <Link href="/admin/bulk-import" style={{ textDecoration: 'none' }}>
+                            <motion.div
+                                whileHover={{ scale: 1.02, y: -4 }}
+                                whileTap={{ scale: 0.98 }}
+                                className="ultra-glass"
+                                style={{
+                                    padding: '1.25rem', borderRadius: '24px', display: 'flex', alignItems: 'center', gap: '1rem',
+                                    border: '1px solid rgba(245, 158, 11, 0.3)',
+                                    background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.1), transparent)'
+                                }}
+                            >
+                                <div style={{ width: '48px', height: '48px', borderRadius: '14px', background: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', boxShadow: '0 8px 16px rgba(245, 158, 11, 0.4)' }}>
+                                    <Database size={24} />
+                                </div>
+                                <div>
+                                    <h3 style={{ fontSize: '1rem', fontWeight: '900', margin: 0, color: 'white' }}>Bulk Importer</h3>
+                                    <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', margin: 0 }}>Import 100+ Apps instantly</p>
                                 </div>
                             </motion.div>
                         </Link>

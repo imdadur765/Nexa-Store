@@ -21,7 +21,8 @@ export async function GET(request: NextRequest) {
         const mappedData = {
             name: appData.title,
             description: appData.description,
-            category: mapCategory(appData.genre),
+            category: appData.genre, // Using raw genre directly (e.g., 'Action', 'Productivity')
+            genreId: appData.genreId,
             icon: appData.icon,
             hero_image: appData.headerImage,
             screenshots: appData.screenshots.slice(0, 4),

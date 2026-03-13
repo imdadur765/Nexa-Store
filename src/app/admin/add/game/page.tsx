@@ -72,7 +72,7 @@ export default function AddGamePage() {
     const [screenshotFiles, setScreenshotFiles] = useState<File[]>([]);
     const [screenshotPreviews, setScreenshotPreviews] = useState<string[]>([]);
 
-    const [mirrors, setMirrors] = useState<{ source: string; name: string; url: string }[]>([]);
+    const [mirrors, setMirrors] = useState<{ source: string; name: string; url: string; isDirect?: boolean }[]>([]);
     const [searchingMirrors, setSearchingMirrors] = useState(false);
     const [mirroring, setMirroring] = useState(false);
     const [fetchingSecurity, setFetchingSecurity] = useState(false);

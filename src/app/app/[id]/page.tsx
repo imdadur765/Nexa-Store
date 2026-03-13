@@ -60,14 +60,6 @@ type Props = { params: Promise<{ id: string }> };
 const ScreenshotItem = ({ src, index, onClick }: { src: string, index: number, onClick: () => void }) => {
     const [aspectRatio, setAspectRatio] = useState<'v' | 'h' | null>(null);
 
-    useEffect(() => {
-        const img = new window.Image();
-        img.src = src;
-        img.onload = () => {
-            setAspectRatio(img.naturalWidth > img.naturalHeight ? 'h' : 'v');
-        };
-    }, [src]);
-
     return (
         <motion.div
             initial={{ opacity: 0, x: 20 }}
@@ -80,7 +72,7 @@ const ScreenshotItem = ({ src, index, onClick }: { src: string, index: number, o
             onClick={onClick}
             style={{
                 minWidth: aspectRatio === 'h' ? 'min(calc(100vw - 3rem), 550px)' : '220px', 
-                height: '400px',
+                height: aspectRatio === 'h' ? '310px' : '440px',
                 borderRadius: '24px', 
                 overflow: 'hidden',
                 position: 'relative',
@@ -90,7 +82,18 @@ const ScreenshotItem = ({ src, index, onClick }: { src: string, index: number, o
                 transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)'
             }}
         >
-            <Image src={src} alt={`Screenshot ${index + 1}`} fill style={{ objectFit: 'cover', borderRadius: '24px' }} />
+            <Image 
+                src={src} 
+                alt={`Screenshot ${index + 1}`} 
+                fill 
+                style={{ objectFit: 'cover', borderRadius: '24px' }}
+                onLoad={(e) => {
+                    const img = e.currentTarget;
+                    if (img.naturalWidth && img.naturalHeight) {
+                        setAspectRatio(img.naturalWidth > img.naturalHeight ? 'h' : 'v');
+                    }
+                }}
+            />
         </motion.div>
     );
 };

@@ -60,11 +60,11 @@ function AppCardInner({ app, isLoading }: { app: AppEntry; isLoading?: boolean }
                 position: 'relative',
                 overflow: 'hidden',
                 textDecoration: 'none',
-                padding: '1.25rem',
-                borderRadius: '24px',
+                padding: '0.85rem',
+                borderRadius: '20px',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '1rem',
+                gap: '0.75rem',
                 background: 'rgba(255, 255, 255, 0.05)',
                 border: '1px solid rgba(255, 255, 255, 0.15)',
                 backdropFilter: 'blur(24px)',
@@ -75,10 +75,10 @@ function AppCardInner({ app, isLoading }: { app: AppEntry; isLoading?: boolean }
             {/* Absolute Link covering the card except the save button */}
             <Link href={`/app/${app.id}`} style={{ position: 'absolute', inset: 0, zIndex: 0 }} />
 
-            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', position: 'relative', zIndex: 1 }}>
+            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', position: 'relative', zIndex: 1 }}>
                 <div className="ios-squircle ios-card-shadow" style={{
-                    width: '60px',
-                    height: '60px',
+                    width: '48px',
+                    height: '48px',
                     background: (app.iconUrl || app.icon_url_external) ? 'transparent' : app.gradient,
                     display: 'flex',
                     alignItems: 'center',
@@ -86,62 +86,63 @@ function AppCardInner({ app, isLoading }: { app: AppEntry; isLoading?: boolean }
                     flexShrink: 0,
                     overflow: 'hidden',
                     position: 'relative',
-                    pointerEvents: 'none'
+                    pointerEvents: 'none',
+                    borderRadius: '12px'
                 }}>
                     {getProxiedImageUrl(app.iconUrl || app.icon_url_external) ? (
-                        <Image src={getProxiedImageUrl(app.iconUrl || app.icon_url_external)!} alt={app.name} width={60} height={60} style={{ objectFit: 'cover' }} loading="lazy" unoptimized={true} />
+                        <Image src={getProxiedImageUrl(app.iconUrl || app.icon_url_external)!} alt={app.name} width={48} height={48} style={{ objectFit: 'cover' }} loading="lazy" unoptimized={true} />
                     ) : (
-                        <div style={{ color: 'white', opacity: 0.95 }}>
+                        <div style={{ color: 'white', opacity: 0.95, transform: 'scale(0.8)' }}>
                             {IconMap[app.iconId]}
                         </div>
                     )}
 
                     {/* Store Source Badges Overlay */}
-                    <div style={{ position: 'absolute', bottom: '4px', right: '4px', display: 'flex', gap: '2px', zIndex: 3 }}>
+                    <div style={{ position: 'absolute', bottom: '2px', right: '2px', display: 'flex', gap: '2px', zIndex: 3 }}>
                         {app.storeSource?.includes('playstore') && (
-                            <div style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', padding: '4px', borderRadius: '7px', border: '1px solid rgba(255,255,255,0.15)', display: 'flex' }}>
-                                <Image src="/platforms/playstore_logo.png" alt="Play Store" width={14} height={14} style={{ objectFit: 'contain' }} />
+                            <div style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', padding: '3px', borderRadius: '5px', border: '1px solid rgba(255,255,255,0.15)', display: 'flex' }}>
+                                <Image src="/platforms/playstore_logo.png" alt="Play Store" width={10} height={10} style={{ objectFit: 'contain' }} />
                             </div>
                         )}
                         {app.storeSource?.includes('appstore') && (
-                            <div style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', padding: '4px', borderRadius: '7px', border: '1px solid rgba(255,255,255,0.15)', display: 'flex' }}>
-                                <Image src="/platforms/appstore_logo.png" alt="App Store" width={14} height={14} style={{ objectFit: 'contain' }} />
+                            <div style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', padding: '3px', borderRadius: '5px', border: '1px solid rgba(255,255,255,0.15)', display: 'flex' }}>
+                                <Image src="/platforms/appstore_logo.png" alt="App Store" width={10} height={10} style={{ objectFit: 'contain' }} />
                             </div>
                         )}
                         {app.storeSource?.includes('steam') && (
-                            <div style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', padding: '4px', borderRadius: '7px', border: '1px solid rgba(255,255,255,0.15)', display: 'flex' }}>
-                                <Image src="/platforms/steam_logo.png" alt="Steam" width={14} height={14} style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
+                            <div style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', padding: '3px', borderRadius: '5px', border: '1px solid rgba(255,255,255,0.15)', display: 'flex' }}>
+                                <Image src="/platforms/steam_logo.png" alt="Steam" width={10} height={10} style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
                             </div>
                         )}
                     </div>
                 </div>
 
                 {app.isEditorChoice && (
-                    <div style={{ position: 'absolute', top: '-8px', left: '-8px', background: '#f59e0b', color: 'white', fontSize: '0.6rem', fontWeight: '900', padding: '2px 6px', borderRadius: '6px', zIndex: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.3)', textTransform: 'uppercase' }}>
+                    <div style={{ position: 'absolute', top: '-6px', left: '-6px', background: '#f59e0b', color: 'white', fontSize: '0.5rem', fontWeight: '900', padding: '2px 4px', borderRadius: '4px', zIndex: 2, boxShadow: '0 2px 4px rgba(0,0,0,0.3)', textTransform: 'uppercase' }}>
                         Choice
                     </div>
                 )}
 
                 <div style={{ flex: 1, minWidth: 0, pointerEvents: 'none' }}>
-                    <h3 style={{ fontSize: '1rem', fontWeight: '900', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'white', marginBottom: '0.15rem' }}>
+                    <h3 style={{ fontSize: '0.85rem', fontWeight: '800', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'white', marginBottom: '0.1rem', letterSpacing: '-0.2px' }}>
                         {app.name}
                     </h3>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                        <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: '500' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                        <p style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: '600' }}>
                             {app.category}
                         </p>
                         {app.trending && (
-                            <span className="pulse-soft" style={{ fontSize: '0.6rem', background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', padding: '1px 5px', borderRadius: '4px', fontWeight: '900' }}>🔥 Hot</span>
+                            <span className="pulse-soft" style={{ fontSize: '0.55rem', background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', padding: '1px 4px', borderRadius: '4px', fontWeight: '800' }}>🔥 Hot</span>
                         )}
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', marginTop: '0.2rem' }}>
-                        <Star size={12} fill="#94a3b8" color="#94a3b8" />
-                        <span style={{ fontSize: '0.75rem', fontWeight: '500', color: 'var(--text-secondary)' }}>{app.rating}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.15rem' }}>
+                        <Star size={10} fill="#94a3b8" color="#94a3b8" />
+                        <span style={{ fontSize: '0.65rem', fontWeight: '600', color: 'var(--text-secondary)' }}>{app.rating}</span>
                     </div>
                 </div>
 
                 {/* Save & Get Buttons */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-end', zIndex: 2 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignItems: 'flex-end', zIndex: 2 }}>
                     <button
                         className="ios-btn-haptic pulse-soft"
                         onClick={(e) => {
@@ -153,19 +154,19 @@ function AppCardInner({ app, isLoading }: { app: AppEntry; isLoading?: boolean }
                             background: isSaved ? 'rgba(236, 72, 153, 0.2)' : 'rgba(255,255,255,0.05)',
                             border: `1px solid ${isSaved ? 'rgba(236, 72, 153, 0.4)' : 'rgba(255,255,255,0.1)'}`,
                             color: isSaved ? '#ec4899' : 'var(--text-secondary)',
-                            width: '32px', height: '32px', borderRadius: '50%',
+                            width: '28px', height: '28px', borderRadius: '50%',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             cursor: 'pointer', transition: 'all 0.3s'
                         }}
                     >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill={isSaved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
                         </svg>
                     </button>
                     <div
                         className="btn-get-ios btn-premium-glow ios-btn-haptic"
                         role="button"
-                        style={{ background: 'rgba(255,255,255,0.08)', color: 'var(--accent-primary)', fontSize: '0.8rem', padding: '0.3rem 1.2rem', border: 'none', borderRadius: '100px', fontWeight: '900', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                        style={{ background: 'rgba(255,255,255,0.08)', color: 'var(--accent-primary)', fontSize: '0.7rem', padding: '0.25rem 0.85rem', border: 'none', borderRadius: '100px', fontWeight: '900', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
                         onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
@@ -179,7 +180,7 @@ function AppCardInner({ app, isLoading }: { app: AppEntry; isLoading?: boolean }
                 </div>
             </div>
 
-            <p style={{ pointerEvents: 'none', fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: '1.4', height: '2.2rem', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', position: 'relative', zIndex: 1 }}>
+            <p style={{ pointerEvents: 'none', fontSize: '0.7rem', color: 'var(--text-muted)', lineHeight: '1.4', height: '1.9rem', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', position: 'relative', zIndex: 1, marginTop: '-0.2rem' }}>
                 {app.description}
             </p>
         </div>

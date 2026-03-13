@@ -1,0 +1,13 @@
+.next/dev/types/routes.d.ts(125,4): error TS1128: Declaration or statement expected.
+.next/dev/types/routes.d.ts(125,6): error TS1110: Type expected.
+.next/dev/types/routes.d.ts(126,6): error TS1109: Expression expected.
+.next/dev/types/routes.d.ts(127,4): error TS1109: Expression expected.
+.next/dev/types/routes.d.ts(139,9): error TS1005: ';' expected.
+.next/dev/types/routes.d.ts(140,6): error TS1109: Expression expected.
+.next/dev/types/routes.d.ts(141,4): error TS1109: Expression expected.
+.next/dev/types/routes.d.ts(141,8): error TS1109: Expression expected.
+.next/dev/types/routes.d.ts(142,8): error TS1109: Expression expected.
+.next/dev/types/routes.d.ts(143,6): error TS1109: Expression expected.
+.next/dev/types/routes.d.ts(144,4): error TS1109: Expression expected.
+.next/dev/types/routes.d.ts(150,1): error TS1160: Unterminated template literal.
+.next/dev/types/validator.ts(543,1): error TS1128: Declaration or statement expected.

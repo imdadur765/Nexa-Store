@@ -82,6 +82,12 @@ export default function Home() {
   const featuredApps = useMemo(() => appsData.filter(a => a.isHero || a.trending).slice(0, 6), [appsData]);
   const hasResults = allFiltered.length > 0;
 
+  // Dynamically extract all unique categories for the endless feed, excluding hidden ones
+  const uniqueCategories = useMemo(() => {
+    const cats = new Set(consumerApps.map(app => app.category).filter(Boolean));
+    return Array.from(cats).sort();
+  }, [consumerApps]);
+
   const homeCategories = [
     { id: 'customization', label: 'Customization', icon: <Palette size={18} />, color: '#f472b6', desc: 'Theming & Layouts', span: 1, row: 1 },
     { id: 'system', label: 'System Tools', icon: <Cpu size={18} />, color: '#3ddc84', desc: 'Performance & Root', span: 1, row: 1 },
@@ -329,18 +335,24 @@ export default function Home() {
                     {/* Premium Hero Carousel */}
                     <AppHero apps={featuredApps} />
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '3.5rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
 
-                      {rareFinds.length > 0 && (
+                      {/* Inline divider component */}
+                      {/* eslint-disable-next-line react/display-name */}
+
+                      {rareFinds.length > 0 && (<>
                         <GamingRow title="💎 Rare Finds" games={rareFinds} seeAllHref="/categories/rare" />
-                      )}
+                        <div style={{ margin: '0 1.25rem', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.08) 80%, transparent)', marginBottom: '2.5rem' }} />
+                      </>)}
 
-                      {editorsChoice.length > 0 && (
+                      {editorsChoice.length > 0 && (<>
                         <GamingRow title="✨ Editor's Choice" games={editorsChoice} seeAllHref="/suggested" />
-                      )}
+                        <div style={{ margin: '0 1.25rem', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.08) 80%, transparent)', marginBottom: '2.5rem' }} />
+                      </>)}
 
                       {/* Standardized Section: Suggested */}
                       <GamingRow title="Recommended for you" games={consumerApps.slice(0, 10)} seeAllHref="/suggested" />
+                      <div style={{ margin: '0 1.25rem', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.08) 80%, transparent)', marginBottom: '2.5rem' }} />
 
                       {/* Home Bento Categories */}
                       <section id="explore-categories" style={{ padding: '0 0.5rem' }}>
@@ -415,12 +427,30 @@ export default function Home() {
                         </div>
                       </section>
 
-                      {/* Standardized Section: Root Workshop */}
-                      <GamingRow title="Root Workshop" games={moduleApps} seeAllHref="/modules" />
+                      <div style={{ margin: '0 1.25rem 2.5rem', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.08) 80%, transparent)' }} />
 
-                      {securityApps.length > 0 && (
-                        <GamingRow title="🛡️ Security & Privacy" games={securityApps} seeAllHref="/tools" />
-                      )}
+                      {/* Standardized Section: Root Workshop */}
+                      {moduleApps.length > 0 && (<>
+                        <GamingRow title="Root Workshop" games={moduleApps} seeAllHref="/modules" />
+                        <div style={{ margin: '0 1.25rem 2.5rem', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.08) 80%, transparent)' }} />
+                      </>)}
+
+                      {/* Dynamic Endless Feed Based on Categories */}
+                      {uniqueCategories.map((category) => {
+                        const gamesForCategory = consumerApps.filter(a => a.category === category);
+                        if (gamesForCategory.length === 0) return null;
+
+                        return (
+                          <div key={category}>
+                            <GamingRow 
+                              title={`Discover ${category}`} 
+                              games={gamesForCategory} 
+                              seeAllHref={`/categories/${category.toLowerCase()}`} 
+                            />
+                            <div style={{ margin: '0 1.25rem 2.5rem', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.08) 80%, transparent)' }} />
+                          </div>
+                        );
+                      })}
 
                       {/* Standardized Section: Trending */}
                       <GamingRow title="Trending Powerhouses" games={consumerApps.filter(a => a.trending)} seeAllHref="/trending" />
