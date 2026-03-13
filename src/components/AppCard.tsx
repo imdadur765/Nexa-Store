@@ -50,12 +50,29 @@ function AppCardInner({ app, isLoading }: { app: AppEntry; isLoading?: boolean }
         );
     }
 
+    const hoverTimeout = React.useRef<NodeJS.Timeout | null>(null);
+
+    const handleMouseEnter = () => {
+        // Clear any pending reset
+        if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+        
+        // Delay theme change to avoid thrashing during scroll/fast hover
+        hoverTimeout.current = setTimeout(() => {
+            setTheme(app.gradient);
+        }, 150);
+    };
+
+    const handleMouseLeave = () => {
+        if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+        resetAccent();
+    };
+
     return (
         <div
             className="liquid-glass app-card glass-reflection"
-            onMouseEnter={() => setTheme(app.gradient)}
-            onMouseLeave={resetAccent}
-            onTouchStart={() => setTheme(app.gradient)}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onTouchStart={handleMouseEnter}
             style={{
                 position: 'relative',
                 overflow: 'hidden',

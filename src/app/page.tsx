@@ -17,6 +17,7 @@ import { useApps } from "@/hooks/useApps";
 import { useAuth } from "@/context/AuthContext";
 import { useNexaPoints } from "@/hooks/useNexaPoints";
 import { getAvatarUrl } from "@/lib/utils";
+import LazyRow from "@/components/LazyRow";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -32,6 +33,8 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const targetPoints = livePoints;
   const counterRef = useRef<HTMLDivElement>(null);
+  const [categoryBatch, setCategoryBatch] = useState(8);
+  const observerTarget = useRef(null);
 
   useEffect(() => {
     // Simple ease-out counter animation
@@ -88,6 +91,32 @@ export default function Home() {
     const cats = new Set(consumerApps.map(app => app.category).filter(Boolean));
     return Array.from(cats).sort();
   }, [consumerApps]);
+
+  // Performance: Pre-map apps by category to avoid .filter() in the render loop
+  const appsByCategory = useMemo(() => {
+    const map: Record<string, typeof consumerApps> = {};
+    uniqueCategories.forEach(cat => {
+      map[cat] = consumerApps.filter(a => a.category === cat);
+    });
+    return map;
+  }, [uniqueCategories, consumerApps]);
+
+  // Infinite Scroll for Categories
+  useEffect(() => {
+    if (!observerTarget.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && categoryBatch < uniqueCategories.length) {
+          setCategoryBatch(prev => prev + 6);
+        }
+      },
+      { threshold: 0.1, rootMargin: '400px' }
+    );
+
+    observer.observe(observerTarget.current);
+    return () => observer.disconnect();
+  }, [categoryBatch, uniqueCategories.length]);
 
   const homeCategories = [
     { id: 'customization', label: 'Customization', icon: <Palette size={18} />, color: '#f472b6', desc: 'Theming & Layouts', span: 1, row: 1 },
@@ -424,19 +453,25 @@ export default function Home() {
                       {/* Inline divider component */}
                       {/* eslint-disable-next-line react/display-name */}
 
-                      {rareFinds.length > 0 && (<>
-                        <GamingRow title="💎 Rare Finds" games={rareFinds} seeAllHref="/categories/rare" />
-                        <div style={{ margin: '0 1.25rem', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.08) 80%, transparent)', marginBottom: '2.5rem' }} />
-                      </>)}
+                      {rareFinds.length > 0 && (
+                        <LazyRow height="420px">
+                          <GamingRow title="💎 Rare Finds" games={rareFinds} seeAllHref="/categories/rare" />
+                          <div style={{ margin: '0 1.25rem', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.08) 80%, transparent)', marginBottom: '4.5rem' }} />
+                        </LazyRow>
+                      )}
 
-                      {editorsChoice.length > 0 && (<>
-                        <GamingRow title="✨ Editor's Choice" games={editorsChoice} seeAllHref="/suggested" />
-                        <div style={{ margin: '0 1.25rem', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.08) 80%, transparent)', marginBottom: '2.5rem' }} />
-                      </>)}
+                      {editorsChoice.length > 0 && (
+                        <LazyRow height="420px">
+                          <GamingRow title="✨ Editor's Choice" games={editorsChoice} seeAllHref="/suggested" />
+                          <div style={{ margin: '0 1.25rem', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.08) 80%, transparent)', marginBottom: '4.5rem' }} />
+                        </LazyRow>
+                      )}
 
                       {/* Standardized Section: Suggested */}
-                      <GamingRow title="Recommended for you" games={consumerApps.slice(0, 10)} seeAllHref="/suggested" />
-                      <div style={{ margin: '0 1.25rem', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.08) 80%, transparent)', marginBottom: '2.5rem' }} />
+                      <LazyRow height="400px">
+                        <GamingRow title="Recommended for you" games={consumerApps.slice(0, 10)} seeAllHref="/suggested" />
+                        <div style={{ margin: '0 1.25rem', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.08) 80%, transparent)', marginBottom: '4.5rem' }} />
+                      </LazyRow>
 
                       {/* Home Bento Categories */}
                       <section id="explore-categories" style={{ padding: '0 0.5rem' }}>
@@ -511,33 +546,44 @@ export default function Home() {
                         </div>
                       </section>
 
-                      <div style={{ margin: '0 1.25rem 2.5rem', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.08) 80%, transparent)' }} />
+                      <div style={{ margin: '4.5rem 1.25rem', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.08) 80%, transparent)' }} />
 
                       {/* Standardized Section: Root Workshop */}
-                      {moduleApps.length > 0 && (<>
-                        <GamingRow title="Root Workshop" games={moduleApps} seeAllHref="/modules" />
-                        <div style={{ margin: '0 1.25rem 2.5rem', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.08) 80%, transparent)' }} />
-                      </>)}
+                      {moduleApps.length > 0 && (
+                        <LazyRow height="400px">
+                          <GamingRow title="Root Workshop" games={moduleApps} seeAllHref="/modules" />
+                          <div style={{ margin: '0 1.25rem 4.5rem', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.08) 80%, transparent)' }} />
+                        </LazyRow>
+                      )}
 
-                      {/* Dynamic Endless Feed Based on Categories */}
-                      {uniqueCategories.map((category) => {
-                        const gamesForCategory = consumerApps.filter(a => a.category === category);
+                      {/* Dynamic Endless Feed Based on Categories - Batch Loaded */}
+                      {uniqueCategories.slice(0, categoryBatch).map((category) => {
+                        const gamesForCategory = appsByCategory[category] || [];
                         if (gamesForCategory.length === 0) return null;
 
                         return (
-                          <div key={category}>
+                          <LazyRow key={category} height="400px">
                             <GamingRow 
                               title={`Discover ${category}`} 
                               games={gamesForCategory} 
                               seeAllHref={`/categories/${category.toLowerCase()}`} 
                             />
                             <div style={{ margin: '0 1.25rem 2.5rem', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.08) 80%, transparent)' }} />
-                          </div>
+                          </LazyRow>
                         );
                       })}
 
+                      {/* Infinite Scroll Trigger */}
+                      {categoryBatch < uniqueCategories.length && (
+                        <div ref={observerTarget} style={{ height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <div className="pulse-soft" style={{ width: '40px', height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px' }} />
+                        </div>
+                      )}
+
                       {/* Standardized Section: Trending */}
-                      <GamingRow title="Trending Powerhouses" games={consumerApps.filter(a => a.trending)} seeAllHref="/trending" />
+                      <LazyRow height="400px">
+                        <GamingRow title="Trending Powerhouses" games={consumerApps.filter(a => a.trending)} seeAllHref="/trending" />
+                      </LazyRow>
 
                     </div>
                   </>
