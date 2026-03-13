@@ -84,6 +84,23 @@ export default function BulkImportPage() {
     // Helper: Delay to prevent API rate limits
     const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+    // Helper: Clean and truncate text for DB efficiency
+    const cleanText = (text: string, limit: number = 1500) => {
+        if (!text) return '';
+        const cleaned = text
+            .replace(/<[^>]*>?/gm, '') // Remove HTML tags
+            .replace(/&[a-z0-9#]+;/gi, (tag) => {
+                const entities: Record<string, string> = {
+                    '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': "'", '&nbsp;': ' '
+                };
+                return entities[tag] || tag;
+            })
+            .replace(/[\%\$#\{\}\[\]\\]/g, '') // Remove junk characters requested
+            .replace(/\s+/g, ' ') // Collapse whitespace
+            .trim();
+        return cleaned.length > limit ? cleaned.substring(0, limit) + '...' : cleaned;
+    };
+
     // MAIN PROCESSING LOOP
     const startProcessing = async () => {
         if (queue.length === 0) return;
@@ -219,12 +236,12 @@ export default function BulkImportPage() {
 
                 const insertData = {
                     name: playData.name,
-                    description: playData.description,
+                    description: cleanText(playData.description, 1500),
                     category: finalCategory,
                     developer: playData.developer,
                     package_size: playData.package_size || 'Varies with device',
                     rating: ratingNum,
-                    whats_new: playData.whats_new || 'Latest Version',
+                    whats_new: cleanText(playData.whats_new || 'Latest Version', 500),
                     min_android_version: playData.min_android_version || '6.0+',
                     icon_url: playData.icon || '', 
                     hero_image: playData.hero_image || '',

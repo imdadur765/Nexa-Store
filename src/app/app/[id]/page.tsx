@@ -115,6 +115,7 @@ export default function AppDetails({ params }: Props) {
     const [activeScreenshot, setActiveScreenshot] = useState<string | null>(null);
     const [iconError, setIconError] = useState(false);
     const [downloading, setDownloading] = useState(false);
+    const [showMore, setShowMore] = useState(false);
 
     // Auto-upgrade HTTP to HTTPS, then run it through our proxy so external servers don't block Vercel
     const appIconUrl = getProxiedImageUrl(app?.iconUrl || app?.icon_url_external);
@@ -587,7 +588,12 @@ export default function AppDetails({ params }: Props) {
                             marginTop="0"
                             marginBottom="1.25rem"
                         />
-                        <div style={{ color: 'var(--text-secondary)', lineHeight: '1.7', fontSize: '1.05rem' }}>
+                        <div style={{ 
+                            color: 'var(--text-secondary)', 
+                            lineHeight: '1.7', 
+                            fontSize: '1.05rem',
+                            position: 'relative'
+                        }}>
                             {loading ? (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                                     <Skeleton width="100%" height="1.2rem" />
@@ -602,12 +608,42 @@ export default function AppDetails({ params }: Props) {
                                     </ReactMarkdown>
                                 </div>
                             ) : (
-                                <p>
-                                    {app.description} Nexa Store provide exclusive early access to this module. Designed for performance enthusiasts and customization experts.
-                                </p>
+                                <div style={{
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: showMore ? 'unset' : 6,
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden',
+                                    transition: 'all 0.3s ease'
+                                }}>
+                                    <p>
+                                        {app.description}
+                                    </p>
+                                </div>
                             )}
                         </div>
-                        {!readmeContent && <button style={{ color: 'var(--accent-primary)', fontWeight: '500', marginTop: '1rem', background: 'none', border: 'none', padding: 0 }}>more</button>}
+                        {!readmeContent && !loading && (
+                            <button 
+                                onClick={() => setShowMore(!showMore)}
+                                className="ios-btn-haptic pulse-soft"
+                                style={{ 
+                                    color: 'var(--accent-primary)', 
+                                    fontWeight: '900', 
+                                    marginTop: '0.75rem', 
+                                    background: 'rgba(59, 130, 246, 0.05)', 
+                                    border: '1px solid rgba(59, 130, 246, 0.1)', 
+                                    padding: '0.4rem 1.25rem',
+                                    borderRadius: '12px',
+                                    fontSize: '0.85rem',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.3rem'
+                                }}
+                            >
+                                {showMore ? 'Show Less' : 'Show More'}
+                                <ChevronRight size={14} style={{ transform: showMore ? 'rotate(-90deg)' : 'rotate(90deg)', transition: '0.3s' }} />
+                            </button>
+                        )}
                     </motion.section>
                     {/* Time Machine Version History */}
                     <motion.section
