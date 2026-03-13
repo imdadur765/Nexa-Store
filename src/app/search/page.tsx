@@ -38,13 +38,96 @@ function SearchContent() {
         });
     }, [appsData, type]);
 
+    // ─── High-Accuracy Ranked Search Engine ───────────────────────────────────
     const filteredApps = useMemo(() => {
-        return contextualApps.filter(app =>
-            app.name.toLowerCase().includes(query.toLowerCase()) ||
-            app.description.toLowerCase().includes(query.toLowerCase()) ||
-            app.category.toLowerCase().includes(query.toLowerCase()) ||
-            app.tags?.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
-        );
+        const q = query.trim().toLowerCase();
+        if (!q) return contextualApps;
+
+        // Build acronym from query words (e.g. "wa" → match "WhatsApp")
+        const qWords = q.split(/\s+/);
+
+        // Simple fuzzy helper: checks if every char of needle appears in order in haystack
+        const fuzzyMatch = (needle: string, haystack: string): boolean => {
+            let ni = 0;
+            for (let hi = 0; hi < haystack.length && ni < needle.length; hi++) {
+                if (needle[ni] === haystack[hi]) ni++;
+            }
+            return ni === needle.length;
+        };
+
+        // Levenshtein distance (for short words, handles typos)
+        const editDistance = (a: string, b: string): number => {
+            if (Math.abs(a.length - b.length) > 3) return 99;
+            const dp = Array.from({ length: a.length + 1 }, (_, i) =>
+                Array.from({ length: b.length + 1 }, (_, j) => i === 0 ? j : j === 0 ? i : 0)
+            );
+            for (let i = 1; i <= a.length; i++)
+                for (let j = 1; j <= b.length; j++)
+                    dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] :
+                        1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]);
+            return dp[a.length][b.length];
+        };
+
+        const scoreApp = (app: typeof contextualApps[0]): number => {
+            const name = app.name.toLowerCase();
+            const desc = (app.description || '').toLowerCase();
+            const cat = (app.category || '').toLowerCase();
+            const tags = (app.tags || []).map(t => t.toLowerCase()).join(' ');
+            const developer = (app.developer || '').toLowerCase();
+            // Generate acronym of app name (first letter of each word)
+            const nameAcronym = name.split(/\s+/).map(w => w[0]).join('');
+
+            let score = 0;
+
+            // ── Tier 1: Exact full name match (highest relevance)
+            if (name === q) score += 1000;
+            // ── Tier 2: Name starts with query
+            else if (name.startsWith(q)) score += 500;
+            // ── Tier 3: Each query word present as prefix of a name word
+            else if (qWords.every(w => name.split(/\s+/).some(nw => nw.startsWith(w)))) score += 300;
+            // ── Tier 4: Name contains query as substring
+            else if (name.includes(q)) score += 200;
+            // ── Tier 5: All query words individually present in name
+            else if (qWords.every(w => name.includes(w))) score += 150;
+            // ── Tier 6: Some query words present in name
+            else {
+                const matchedWords = qWords.filter(w => name.includes(w));
+                score += matchedWords.length * 50;
+            }
+
+            // ── Acronym match (e.g. "yt" → YouTube)
+            if (nameAcronym.startsWith(q) || nameAcronym === q) score += 250;
+
+            // ── Fuzzy character sequence match on name
+            if (score === 0 && q.length >= 3 && fuzzyMatch(q, name)) score += 80;
+
+            // ── Typo tolerance: editDistance on name words for short queries
+            if (score === 0 && q.length >= 3 && q.length <= 8) {
+                const minDist = name.split(/\s+/).reduce((min, nw) =>
+                    Math.min(min, editDistance(q, nw)), 99);
+                if (minDist <= 2) score += Math.max(0, 60 - (minDist * 20));
+            }
+
+            // ── Secondary fields (bonus points, doesn't surface zero-score apps)
+            if (score > 0) {
+                if (cat.includes(q)) score += 40;
+                if (tags.includes(q)) score += 30;
+                if (desc.includes(q)) score += 20;
+                if (developer.includes(q)) score += 15;
+                // Boost highly rated apps slightly
+                if (app.isHero || app.trending) score += 10;
+                const rating = parseFloat(String(app.rating));
+                if (!isNaN(rating)) score += rating * 2;
+            }
+
+            return score;
+        };
+
+        return contextualApps
+            .map(app => ({ app, score: scoreApp(app) }))
+            .filter(({ score }) => score > 0)
+            .sort((a, b) => b.score - a.score)
+            .map(({ app }) => app);
     }, [contextualApps, query]);
 
     const getContextInfo = () => {
