@@ -49,13 +49,30 @@ export default function ManageSection() {
             query = query.eq('is_hero', true);
         } else if (section === 'featured') {
             query = query.eq('is_featured', true);
-        } else if (section === 'categories' && categoryFilter === 'all') {
-            // Default to first available category if none selected
         }
 
         const { data, error } = await query.order('created_at', { ascending: false });
 
-        if (data) setApps(data);
+        if (data) {
+            if (section === 'duplicates') {
+                // Client-side grouping for duplicates
+                const packageGroups = data.reduce((acc: any, app: any) => {
+                    const pkg = app.package_name || app.id;
+                    if (!acc[pkg]) acc[pkg] = [];
+                    acc[pkg].push(app);
+                    return acc;
+                }, {});
+
+                // Filter only packages that have more than 1 entry
+                const duplicateApps = Object.values(packageGroups)
+                    .filter((group: any) => group.length > 1)
+                    .flat();
+                
+                setApps(duplicateApps);
+            } else {
+                setApps(data);
+            }
+        }
         setLoading(false);
     };
 
@@ -94,6 +111,7 @@ export default function ManageSection() {
             case 'hero': return 'Slider Manager';
             case 'featured': return 'Featured Collection';
             case 'all': return 'Global Registry';
+            case 'duplicates': return 'Duplicate Cleanup';
             default: return 'App Management';
         }
     };
@@ -126,6 +144,28 @@ export default function ManageSection() {
         setIsBulkLoading(false);
     };
 
+    const selectAllButOne = () => {
+        // For duplicates cleanup: keeps the newest version of each duplicate package
+        const packageMap = new Map();
+        const idsToRemove: number[] = [];
+
+        // Sort by created_at desc (newest first)
+        const sortedApps = [...apps].sort((a, b) => 
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+
+        sortedApps.forEach(app => {
+            const pkg = app.package_name || app.id;
+            if (!packageMap.has(pkg)) {
+                packageMap.set(pkg, app.id); // Guard the first (newest) encounter
+            } else {
+                idsToRemove.push(app.id); // Mark others for deletion
+            }
+        });
+
+        setSelectedIds(idsToRemove);
+    };
+
     const categories = Array.from(new Set(apps.map(a => a.category).filter(Boolean)));
 
     return (
@@ -143,6 +183,15 @@ export default function ManageSection() {
                     <h1 style={{ fontSize: '1.25rem', fontWeight: '900', margin: 0 }}>{getTitle()}</h1>
                     <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', margin: 0 }}>Nexa Command Center • {filteredApps.length} entries</p>
                 </div>
+                {section === 'duplicates' && (
+                    <button 
+                        onClick={selectAllButOne}
+                        className="play-btn" 
+                        style={{ padding: '0.5rem 1rem', borderRadius: '10px', fontSize: '0.8rem', background: 'linear-gradient(135deg, #f59e0b, #ea580c)', marginRight: '0.5rem' }}
+                    >
+                        <Zap size={14} /> Magic Clean
+                    </button>
+                )}
                 <Link href="/admin/add" style={{ textDecoration: 'none' }}>
                     <button className="play-btn" style={{ padding: '0.5rem 1rem', borderRadius: '10px', fontSize: '0.8rem' }}>
                         <Plus size={16} /> Add App
@@ -280,6 +329,11 @@ export default function ManageSection() {
                                             <div style={{ padding: '2px 8px', borderRadius: '6px', fontSize: '0.6rem', fontWeight: '800', background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.4)' }}>
                                                 {app.category}
                                             </div>
+                                            {section === 'duplicates' && (
+                                                <div style={{ padding: '2px 8px', borderRadius: '6px', fontSize: '0.6rem', fontWeight: '900', background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444' }}>
+                                                    REDUNDANT ENTRY
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 

@@ -14,8 +14,8 @@ type AppType = 'app' | 'game' | 'tool';
 
 interface QueueItem {
     id: string; // package_name
-    status: 'pending' | 'processing' | 'success' | 'failed';
-    step: 'waiting' | 'playstore' | 'security' | 'mirrors' | 'cloud' | 'database' | 'done' | 'error';
+    status: 'pending' | 'processing' | 'success' | 'failed' | 'skipped';
+    step: 'waiting' | 'playstore' | 'security' | 'mirrors' | 'cloud' | 'database' | 'done' | 'error' | 'duplicate';
     progress: number;
     errorMsg?: string;
     type: AppType;
@@ -28,6 +28,7 @@ export default function BulkImportPage() {
     const [rawInput, setRawInput] = useState('');
     const [queue, setQueue] = useState<QueueItem[]>([]);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [checkingDuplicates, setCheckingDuplicates] = useState(false);
     const [globalType, setGlobalType] = useState<AppType>('app');
     
     // Auth check
@@ -40,7 +41,7 @@ export default function BulkImportPage() {
     }, [router]);
 
     // Parse input into queue
-    const handleParse = () => {
+    const handleParse = async () => {
         if (!rawInput.trim()) return;
         
         // Split by comma, space or newline, clean up empty ones
@@ -49,7 +50,7 @@ export default function BulkImportPage() {
             .map(p => p.trim())
             .filter(p => p.length > 3 && p.includes('.')); // Basic package name validation
             
-        // Deduplicate
+        // Deduplicate local list
         const unique = Array.from(new Set(packages));
         
         if (unique.length > 100) {
@@ -57,15 +58,27 @@ export default function BulkImportPage() {
             return;
         }
 
+        setCheckingDuplicates(true);
+        
+        // Check which ones exist in DB
+        const { data: existingApps } = await supabase
+            .from('apps')
+            .select('package_name')
+            .in('package_name', unique);
+        
+        const existingPackages = new Set(existingApps?.map(a => a.package_name) || []);
+
         const newQueue: QueueItem[] = unique.map(pkg => ({
             id: pkg,
-            status: 'pending',
-            step: 'waiting',
-            progress: 0,
-            type: globalType
+            status: existingPackages.has(pkg) ? 'skipped' : 'pending',
+            step: existingPackages.has(pkg) ? 'duplicate' : 'waiting',
+            progress: existingPackages.has(pkg) ? 100 : 0,
+            type: globalType,
+            errorMsg: existingPackages.has(pkg) ? "App already exists in database" : undefined
         }));
 
         setQueue(newQueue);
+        setCheckingDuplicates(false);
     };
 
     // Helper: Delay to prevent API rate limits
@@ -279,6 +292,7 @@ export default function BulkImportPage() {
     // UI Helpers
     const getStatusColor = (status: string) => {
         if (status === 'success') return '#10b981';
+        if (status === 'skipped') return '#f59e0b';
         if (status === 'failed') return '#ef4444';
         if (status === 'processing') return '#3b82f6';
         return 'rgba(255,255,255,0.3)';
@@ -286,6 +300,7 @@ export default function BulkImportPage() {
     
     const getStatusIcon = (status: string) => {
         if (status === 'success') return <CheckCircle2 size={16} color="#10b981" />;
+        if (status === 'skipped') return <ShieldCheck size={16} color="#f59e0b" />;
         if (status === 'failed') return <XCircle size={16} color="#ef4444" />;
         if (status === 'processing') return <Loader2 size={16} color="#3b82f6" className="spin-fast" />;
         return <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgba(255,255,255,0.2)' }} />;
@@ -293,7 +308,9 @@ export default function BulkImportPage() {
 
     const stats = {
         total: queue.length,
-        success: queue.filter(q => q.status === 'success').length,
+        success: queue.filter(q => q.status === 'success' || q.status === 'skipped').length,
+        actualSuccess: queue.filter(q => q.status === 'success').length,
+        skipped: queue.filter(q => q.status === 'skipped').length,
         failed: queue.filter(q => q.status === 'failed').length,
         pending: queue.filter(q => q.status === 'pending').length
     };
@@ -371,14 +388,19 @@ export default function BulkImportPage() {
                     </div>
                     
                     {queue.length === 0 ? (
-                        <button onClick={handleParse} disabled={!rawInput.trim()}
+                        <button onClick={handleParse} disabled={!rawInput.trim() || checkingDuplicates}
                             style={{
                                 width: '100%', padding: '1rem', borderRadius: '20px',
                                 background: 'white', color: 'black', border: 'none',
-                                fontSize: '0.9rem', fontWeight: '900', cursor: rawInput.trim() ? 'pointer' : 'not-allowed',
-                                opacity: rawInput.trim() ? 1 : 0.5
+                                fontSize: '0.9rem', fontWeight: '900', cursor: (rawInput.trim() && !checkingDuplicates) ? 'pointer' : 'not-allowed',
+                                opacity: (rawInput.trim() && !checkingDuplicates) ? 1 : 0.5,
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
                             }}>
-                            Parse {rawInput.split(/[\n,\s]+/).filter(p => p.trim()).length} Packages
+                            {checkingDuplicates ? (
+                                <><Loader2 size={18} className="spin-fast" /> Validating DB...</>
+                            ) : (
+                                <>Parse {rawInput.split(/[\n,\s]+/).filter(p => p.trim()).length} Packages</>
+                            )}
                         </button>
                     ) : (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -426,8 +448,12 @@ export default function BulkImportPage() {
                             <span style={{ fontSize: '0.7rem', fontWeight: '800', color: 'rgba(255,255,255,0.4)' }}>TOTAL IN QUEUE</span>
                         </div>
                         <div className="glass" style={{ flex: 1, padding: '1rem', borderRadius: '24px', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                            <span style={{ fontSize: '1.5rem', fontWeight: '900', color: '#10b981' }}>{stats.success}</span>
-                            <span style={{ fontSize: '0.7rem', fontWeight: '800', color: 'rgba(16, 185, 129, 0.6)' }}>SUCCESSFUL</span>
+                            <span style={{ fontSize: '1.5rem', fontWeight: '900', color: '#10b981' }}>{stats.actualSuccess}</span>
+                            <span style={{ fontSize: '0.7rem', fontWeight: '800', color: 'rgba(16, 185, 129, 0.6)' }}>IMPORTED</span>
+                        </div>
+                        <div className="glass" style={{ flex: 1, padding: '1rem', borderRadius: '24px', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                            <span style={{ fontSize: '1.5rem', fontWeight: '900', color: '#f59e0b' }}>{stats.skipped}</span>
+                            <span style={{ fontSize: '0.7rem', fontWeight: '800', color: 'rgba(245, 158, 11, 0.6)' }}>SKIPPED</span>
                         </div>
                         <div className="glass" style={{ flex: 1, padding: '1rem', borderRadius: '24px', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
                             <span style={{ fontSize: '1.5rem', fontWeight: '900', color: '#ef4444' }}>{stats.failed}</span>
@@ -472,6 +498,10 @@ export default function BulkImportPage() {
                                         {/* Error Label */}
                                         {item.status === 'failed' && (
                                             <span style={{ fontSize: '0.65rem', color: '#ef4444', fontWeight: '600' }}>Error: {item.errorMsg}</span>
+                                        )}
+                                        {/* Skipped Label */}
+                                        {item.status === 'skipped' && (
+                                            <span style={{ fontSize: '0.65rem', color: '#f59e0b', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.3rem' }}><AlertTriangle size={10} /> {item.errorMsg}</span>
                                         )}
                                         {/* Success Label */}
                                         {item.status === 'success' && (

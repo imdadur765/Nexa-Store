@@ -210,6 +210,23 @@ export default function AdminDashboard() {
                         </Link>
                     </motion.div>
 
+                    {/* Duplicate Cleanup */}
+                    <motion.div whileHover={{ y: -5 }} className="liquid-glass" style={{ padding: '1.5rem', borderRadius: '28px', display: 'flex', flexDirection: 'column', gap: '1rem', border: '1px solid rgba(16, 185, 129, 0.3)', position: 'relative', overflow: 'hidden' }}>
+                        <div style={{ position: 'absolute', top: '-10%', right: '-10%', width: '60px', height: '60px', background: 'rgba(16, 185, 129, 0.1)', filter: 'blur(20px)', borderRadius: '50%' }} />
+                        <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: 'rgba(16, 185, 129, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                            <Trash2 size={22} color="#10b981" />
+                        </div>
+                        <div>
+                            <h3 style={{ fontSize: '1.5rem', fontWeight: '900', letterSpacing: '-0.5px' }}>Cleanup</h3>
+                            <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontWeight: '700' }}>Duplicates Tool</p>
+                        </div>
+                        <Link href="/admin/manage/duplicates" style={{ marginTop: 'auto', textDecoration: 'none' }}>
+                            <button className="ios-btn-haptic" style={{ width: '100%', padding: '0.6rem', borderRadius: '12px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', color: '#10b981', fontSize: '0.75rem', fontWeight: '800', cursor: 'pointer' }}>
+                                Find & Kill
+                            </button>
+                        </Link>
+                    </motion.div>
+
                 </div>
 
                 {/* ── Specialized Publishing Portals ── */}
