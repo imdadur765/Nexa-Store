@@ -24,7 +24,8 @@ export default function Home() {
   const router = useRouter();
   const { apps: appsData, loading } = useApps();
   const { user } = useAuth();
-  const { points: livePoints, getCurrentLevel } = useNexaPoints();
+  const { points: livePoints, getCurrentLevel, claimDailyReward, canClaimDaily, isUpdating } = useNexaPoints();
+  const [claimStatus, setClaimStatus] = useState<{ success?: boolean, message?: string } | null>(null);
 
   // ── Animated Points Counter Logic ──
   const [points, setPoints] = useState(0);
@@ -51,9 +52,9 @@ export default function Home() {
         setPoints(targetPoints); // ensure exact final number
       }
     };
-
-    window.requestAnimationFrame(step);
-  }, []);
+ 
+     window.requestAnimationFrame(step);
+   }, [targetPoints]); // Depend on targetPoints for real-time reactivity
 
   // Memoized filter operations — prevent recalculating on every render
   const consumerApps = useMemo(() =>
@@ -144,6 +145,7 @@ export default function Home() {
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => router.push('/profile')}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -161,7 +163,7 @@ export default function Home() {
             >
               <Sparkles size={14} color="#f59e0b" style={{ filter: 'drop-shadow(0 0 4px rgba(245,158,11,0.5))' }} />
               <span ref={counterRef} style={{ fontVariantNumeric: 'tabular-nums', letterSpacing: '0.5px' }}>
-                {points.toLocaleString()}
+                {points.toLocaleString()} XP
               </span>
             </motion.div>
 
@@ -267,6 +269,79 @@ export default function Home() {
             Search for apps & games
           </div>
         </div>
+ 
+        {/* Real-time Achievement / Daily Claim Notification */}
+        {user && canClaimDaily() && !claimStatus?.success && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="liquid-glass pulse-soft"
+            style={{
+              margin: '0.5rem 1.25rem',
+              padding: '0.75rem 1rem',
+              borderRadius: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              background: 'rgba(59, 130, 246, 0.1)',
+              border: '1px solid rgba(59, 130, 246, 0.2)',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(59, 130, 246, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Trophy size={16} color="#3b82f6" />
+              </div>
+              <div>
+                <p style={{ fontSize: '0.85rem', fontWeight: '900', color: 'white' }}>Daily Reward Ready!</p>
+                <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.6)' }}>Earn 50 XP for visiting today.</p>
+              </div>
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              disabled={isUpdating}
+              onClick={async () => {
+                const result = await claimDailyReward();
+                setClaimStatus(result);
+              }}
+              style={{
+                background: 'var(--accent-primary)',
+                color: 'white',
+                border: 'none',
+                padding: '0.4rem 1rem',
+                borderRadius: '50px',
+                fontSize: '0.75rem',
+                fontWeight: '900',
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(59, 130, 246, 0.4)'
+              }}
+            >
+              {isUpdating ? '...' : 'CLAIM'}
+            </motion.button>
+          </motion.div>
+        )}
+
+        {claimStatus && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              margin: '0.5rem 1.25rem',
+              padding: '0.6rem 1rem',
+              borderRadius: '12px',
+              textAlign: 'center',
+              fontSize: '0.8rem',
+              fontWeight: '900',
+              background: claimStatus.success ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+              color: claimStatus.success ? '#10b981' : '#ef4444',
+              border: `1px solid ${claimStatus.success ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`
+            }}
+          >
+            {claimStatus.message}
+          </motion.div>
+        )}
       </header>
       <HamburgerDrawer isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
 

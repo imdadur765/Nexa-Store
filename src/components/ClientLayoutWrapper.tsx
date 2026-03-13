@@ -9,6 +9,7 @@ import { Github, Instagram, Send, Facebook } from "lucide-react";
 import { AuthProvider } from "@/context/AuthContext";
 import { AuthHint } from "@/components/AuthHint";
 import { NexaLoadingScreen } from "@/components/NexaLoadingScreen";
+import MidnightNebula from "./MidnightNebula";
 
 export default function ClientLayoutWrapper({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -45,6 +46,7 @@ export default function ClientLayoutWrapper({ children }: { children: React.Reac
 
     return (
         <AuthProvider>
+            <MidnightNebula />
             {isAppLoading && <NexaLoadingScreen onComplete={handleLoadingComplete} />}
 
             <AnimatePresence>
