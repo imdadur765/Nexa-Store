@@ -100,9 +100,8 @@ export default function Home() {
   return (
     <div style={{ paddingBottom: '8rem', maxWidth: '100%', margin: '0 auto', position: 'relative' }}>
 
-      {/* Primary Integrated Header */}
+      {/* Primary Integrated Header — iOS 26 Liquid Glass */}
       <header
-        className="ultra-glass"
         style={{
           padding: '0.6rem 1.25rem',
           position: 'sticky',
@@ -111,8 +110,18 @@ export default function Home() {
           display: 'flex',
           flexDirection: 'column',
           gap: '0.6rem',
-          background: 'rgba(5, 5, 5, 0.4)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.05)'
+          // ─── iOS 26 Liquid Glass Core ───
+          background: 'rgba(12, 12, 14, 0.35)',
+          backdropFilter: 'blur(48px) saturate(220%) brightness(1.08)',
+          WebkitBackdropFilter: 'blur(48px) saturate(220%) brightness(1.08)',
+          // Ultra-thin bottom border as separator
+          borderBottom: '0.5px solid rgba(255,255,255,0.06)',
+          // Top rimlight — the signature iOS glass highlight
+          boxShadow: `
+            inset 0 1px 0 rgba(255,255,255,0.12),
+            0 1px 0 rgba(0,0,0,0.3),
+            0 8px 32px rgba(0,0,0,0.2)
+          `,
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
