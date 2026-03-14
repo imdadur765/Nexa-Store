@@ -62,9 +62,8 @@ const ScreenshotItem = ({ src, index, onClick }: { src: string, index: number, o
 
     return (
         <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ delay: index * 0.1 }}
             className="screenshot-item liquid-glass ios-btn-haptic"
             whileHover={{ scale: 1.02 }}
@@ -300,8 +299,8 @@ export default function AppDetails({ params }: Props) {
 
             {/* Main App Header with Stretchy Logic */}
             <motion.header
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                 style={{
                     display: 'flex',
@@ -415,9 +414,8 @@ export default function AppDetails({ params }: Props) {
             {/* Premium "Available On" Section */}
             {app.storeSource && app.storeSource.length > 0 && (
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     style={{ marginBottom: '2.5rem' }}>
                     <div className="liquid-glass hw-accel" style={{
                         padding: '1rem 1.25rem',
@@ -461,9 +459,8 @@ export default function AppDetails({ params }: Props) {
                 ].map((stat, idx, arr) => (
                     <div key={idx} style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
                         <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
                             transition={{ delay: idx * 0.05 }}
                             style={{
                                 flex: 1,
@@ -512,9 +509,8 @@ export default function AppDetails({ params }: Props) {
 
             {/* Ratings & Distribution Chart */}
             <motion.section
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 style={{ padding: '0 1.25rem', marginBottom: '3rem' }}>
                 <SectionHeader
                     title="Ratings & Reviews"
@@ -558,9 +554,8 @@ export default function AppDetails({ params }: Props) {
             <div style={{ padding: '0 1.25rem', paddingBottom: '5rem' }}>
                 {app.whatsNew && (
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
                         style={{ marginBottom: '2.5rem' }}>
                         <SectionHeader
                             title="What's New"
@@ -580,9 +575,8 @@ export default function AppDetails({ params }: Props) {
                 {/* Description & Version History */}
                 <main style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: '4rem' }}>
                     <motion.section
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}>
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}>
                         <SectionHeader
                             title={readmeContent ? 'Documentation' : 'Description'}
                             marginTop="0"
@@ -647,9 +641,8 @@ export default function AppDetails({ params }: Props) {
                     </motion.section>
                     {/* Time Machine Version History */}
                     <motion.section
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}>
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}>
                         <SectionHeader
                             title="Time Machine"
                             subtitle="Version History"
@@ -716,9 +709,8 @@ export default function AppDetails({ params }: Props) {
 
                 {/* Fun Footer Section */}
                 <motion.div 
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     style={{ 
                         marginTop: '4rem', 
                         textAlign: 'center', 

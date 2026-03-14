@@ -204,9 +204,9 @@ export default function AppsPage() {
                             gap: '0.75rem'
                         }}>
                             <motion.div
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                transition={{ duration: 0.5 }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.3 }}
                                 className="ultra-glass haptic-scale"
                                 style={{
                                     padding: '1rem',
@@ -235,9 +235,9 @@ export default function AppsPage() {
                             </motion.div>
 
                             <motion.div
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                transition={{ duration: 0.5, delay: 0.1 }}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.3, delay: 0.1 }}
                                 className="ultra-glass haptic-scale"
                                 style={{
                                     padding: '1rem',
@@ -269,12 +269,36 @@ export default function AppsPage() {
 
                     {/* App Rows (Tag-Based Curated Collections) */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4rem' }}>
-                        {topPicksApps.length > 0 && <GamingRow title="Top Picks for You" games={topPicksApps} seeAllHref="/apps/top-picks" />}
-                        {trendingApps.length > 0 && <GamingRow title="Trending Now" games={trendingApps} seeAllHref="/apps/trending" />}
-                        {essentialApps.length > 0 && <GamingRow title="Essential Utilities" games={essentialApps} seeAllHref="/apps/essential" />}
-                        {productivityApps.length > 0 && <GamingRow title="Professional Suite" games={productivityApps} seeAllHref="/apps/productivity" />}
-                        {entertainmentApps.length > 0 && <GamingRow title="Entertainment Hub" games={entertainmentApps} seeAllHref="/apps/entertainment" />}
-                        {newApps.length > 0 && <GamingRow title="Recent Discoveries" games={newApps} seeAllHref="/apps/new" />}
+                        {topPicksApps.length > 0 && (
+                          <div className="cv-auto">
+                            <GamingRow title="Top Picks for You" games={topPicksApps} seeAllHref="/apps/top-picks" />
+                          </div>
+                        )}
+                        {trendingApps.length > 0 && (
+                          <div className="cv-auto">
+                            <GamingRow title="Trending Now" games={trendingApps} seeAllHref="/apps/trending" />
+                          </div>
+                        )}
+                        {essentialApps.length > 0 && (
+                          <div className="cv-auto">
+                            <GamingRow title="Essential Utilities" games={essentialApps} seeAllHref="/apps/essential" />
+                          </div>
+                        )}
+                        {productivityApps.length > 0 && (
+                          <div className="cv-auto">
+                            <GamingRow title="Professional Suite" games={productivityApps} seeAllHref="/apps/productivity" />
+                          </div>
+                        )}
+                        {entertainmentApps.length > 0 && (
+                          <div className="cv-auto">
+                            <GamingRow title="Entertainment Hub" games={entertainmentApps} seeAllHref="/apps/entertainment" />
+                          </div>
+                        )}
+                        {newApps.length > 0 && (
+                          <div className="cv-auto">
+                            <GamingRow title="Recent Discoveries" games={newApps} seeAllHref="/apps/new" />
+                          </div>
+                        )}
                     </div>
                 </>
             ) : (

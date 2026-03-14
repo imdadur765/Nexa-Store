@@ -1,255 +1,91 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
-import { appsData, AppEntry } from '@/data/apps';
-import { isValidUrl } from '@/lib/utils';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { AppEntry, appsData } from '@/data/apps';
+import { getCached, setCached } from '@/lib/appCache';
+import { fetchAppsFromSource } from '@/lib/appsFetcher';
 
-interface SupabaseAppRow {
-    id: number;
-    name: string;
-    category?: string;
-    version?: string;
-    description?: string;
-    rating?: number;
-    downloads?: string;
-    tags?: string[];
-    is_featured?: boolean;
-    icon_url?: string;
-    download_url?: string;
-    developer?: string;
-    screenshots?: any; // Can be string or string[]
-    github_url?: string;
-    trending?: boolean;
-    is_editor_choice?: boolean;
-    age_rating?: string;
-    package_size?: string;
-    is_game?: boolean;
-    platforms?: any; // Can be string or string[]
-    accent_color?: string;
-    hero_image?: string;
-    is_hero?: boolean;
-    priority?: number;
-    whats_new?: string;
-    status?: string;
-    // Technical Info
-    package_name?: string;
-    sha256?: string;
-    certificate_signature?: string;
-    min_android_version?: string;
-    permissions?: any;
-    languages?: any;
-    older_versions?: any;
-    icon_url_external?: string;
-    screenshots_external?: string;
-    slider_image_url?: string;
-    // Editorial Analysis
-    editors_verdict?: string;
-    pros?: any;
-    cons?: any;
-    editorial_rating?: number;
-    is_safety_verified?: boolean;
+// ─── Types ──────────────────────────────────────────────────────────────────
+interface UseAppsResult {
+  apps: AppEntry[];
+  loading: boolean;       
+  revalidating: boolean;  
+  error: Error | null;
+  refetch: () => void;    
 }
 
-// Helper to safely parse screenshots
-const parseScreenshotsRaw = (data: unknown): string[] => {
-    if (Array.isArray(data)) return data as string[];
-    if (typeof data === 'string') {
-        try {
-            // Try parsing as JSON first
-            const parsed = JSON.parse(data);
-            return Array.isArray(parsed) ? parsed : [];
-        } catch (e) {
-            // If JSON fails, try Postgres array format {url,url}
-            if (data.startsWith('{') && data.endsWith('}')) {
-                const parsed = data
-                    .slice(1, -1) // Remove { }
-                    .split(',') // Split by comma
-                    .map(s => s.trim().replace(/^"|"$/g, '')) // Remove quotes if present
-                    .filter(s => s.length > 0);
-                return parsed;
-            }
-            return [];
-        }
+// ─── Constants ──────────────────────────────────────────────────────────────
+const CACHE_KEY = 'apps_all';
+const CACHE_TTL = 30 * 60 * 1000;   // 30 min
+const FETCH_TIMEOUT = 15_000;        // 15s timeout
+
+// ─── Deduplication ──────────────────────────────────────────────────────────
+let inflightFetch: Promise<AppEntry[]> | null = null;
+
+// ─── Hook ────────────────────────────────────────────────────────────────────
+export function useApps(): UseAppsResult {
+  const cached = getCached<AppEntry[]>(CACHE_KEY, CACHE_TTL);
+
+  const [apps, setApps]                 = useState<AppEntry[]>(cached?.data ?? appsData);
+  const [loading, setLoading]           = useState(!cached);
+  const [revalidating, setRevalidating] = useState(false);
+  const [error, setError]               = useState<Error | null>(null);
+
+  const abortRef = useRef<AbortController | null>(null);
+
+  const doFetch = useCallback(async (isBackground: boolean) => {
+    if (isBackground) setRevalidating(true);
+    else setLoading(true);
+
+    setError(null);
+
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
+
+    try {
+      if (!inflightFetch) {
+        inflightFetch = fetchAppsFromSource().finally(() => {
+          inflightFetch = null;
+        });
+      }
+
+      const fresh = await inflightFetch;
+
+      setApps(prev => {
+        if (prev.length === fresh.length && prev[0]?.id === fresh[0]?.id && prev[prev.length-1]?.id === fresh[fresh.length-1]?.id) return prev;
+        return fresh;
+      });
+
+      setCached(CACHE_KEY, fresh);
+
+    } catch (err) {
+      if ((err as Error).name === 'AbortError') return;
+      const error = err instanceof Error ? err : new Error('Fetch failed');
+      setError(error);
+      console.warn('[useApps] Fetch failed, serving cached data:', error.message);
+    } finally {
+      clearTimeout(timeoutId);
+      setLoading(false);
+      setRevalidating(false);
     }
-    return [];
-};
+  }, []);
 
-const safeParseScreenshots = (data: unknown): string[] => {
-    const raw = parseScreenshotsRaw(data);
-    return raw.filter(url => isValidUrl(url));
-};
+  useEffect(() => {
+    const cached = getCached<AppEntry[]>(CACHE_KEY, CACHE_TTL);
 
-const VALID_PLATFORMS = ['Android', 'iOS', 'Windows', 'PS', 'Xbox', 'Steam'];
-
-const safeParsePlatforms = (data: unknown): string[] => {
-    let raw: string[] = [];
-
-    if (Array.isArray(data)) {
-        raw = data as string[];
-    } else if (typeof data === 'string') {
-        let str = data.trim();
-        // Handle Postgres array literal: {PS,Windows,Xbox}
-        if (str.startsWith('{') && str.endsWith('}')) {
-            str = str.slice(1, -1);
-        }
-        // Handle JSON array: ["PS","Windows"]
-        try {
-            const parsed = JSON.parse(data);
-            if (Array.isArray(parsed)) {
-                raw = parsed;
-            } else {
-                raw = str.split(',').map(s => s.trim().replace(/^"|"$/g, ''));
-            }
-        } catch {
-            raw = str.split(',').map(s => s.trim().replace(/^"|"$/g, ''));
-        }
-    }
-
-    // Only keep valid platform names (case-insensitive match, return canonical name)
-    const result = raw
-        .map(p => VALID_PLATFORMS.find(v => v.toLowerCase() === p.trim().toLowerCase()))
-        .filter((p): p is string => !!p);
-
-    return result.length > 0 ? result : ['Android'];
-};
-
-
-const safeParseTags = (data: unknown, category?: string): string[] => {
-    let raw: string[] = [];
-
-    if (Array.isArray(data)) {
-        raw = data as string[];
-    } else if (typeof data === 'string') {
-        let str = data.trim();
-        // Handle Postgres array literal: {tag1,tag2}
-        if (str.startsWith('{') && str.endsWith('}')) {
-            str = str.slice(1, -1);
-        }
-        try {
-            const parsed = JSON.parse(str);
-            if (Array.isArray(parsed)) {
-                raw = parsed;
-            } else {
-                raw = str.split(',').map(s => s.trim().replace(/^"|"$/g, ''));
-            }
-        } catch {
-            raw = str.split(',').map(s => s.trim().replace(/^"|"$/g, ''));
-        }
+    if (!cached) {
+      doFetch(false);
+    } else if (cached.isStale) {
+      doFetch(true);
     }
 
-    const filtered = raw.filter(s => s.length > 0);
-    return filtered.length > 0 ? filtered : [category || 'Tools'];
-};
+    return () => abortRef.current?.abort();
+  }, [doFetch]);
 
+  const refetch = useCallback(() => doFetch(false), [doFetch]);
 
-const safeParseList = (data: unknown): string[] => {
-    let raw: string[] = [];
-    if (Array.isArray(data)) {
-        raw = data as string[];
-    } else if (typeof data === 'string') {
-        let str = data.trim();
-        if (str.startsWith('{') && str.endsWith('}')) str = str.slice(1, -1);
-        try {
-            const parsed = JSON.parse(str);
-            if (Array.isArray(parsed)) raw = parsed;
-            else raw = str.split(',').map(s => s.trim().replace(/^"|"$/g, ''));
-        } catch {
-            raw = str.split(',').map(s => s.trim().replace(/^"|"$/g, ''));
-        }
-    }
-    return raw.filter(s => s.length > 0);
-};
-
-export function useApps() {
-    const [apps, setApps] = useState<AppEntry[]>(appsData);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        async function fetchApps() {
-            try {
-                if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
-                    setLoading(false);
-                    return;
-                }
-
-                const { data, error } = await supabase
-                    .from('apps')
-                    .select('*')
-                    .or('status.eq.approved,status.is.null')
-                    .order('created_at', { ascending: false });
-
-                if (error) {
-                    console.warn("Supabase fetch error (using fallback data):", error.message);
-                    return;
-                }
-
-                if (data && data.length > 0) {
-                    const mappedApps: AppEntry[] = (data as SupabaseAppRow[]).map((item) => ({
-                        id: 10000 + item.id,
-                        name: item.name,
-                        category: item.category || 'Tools',
-                        version: item.version || '1.0.0',
-                        description: item.description || '',
-                        rating: item.rating || 4.5,
-                        downloads: item.downloads || '0',
-                        iconId: 'zap' as const,
-                        gradient: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
-                        tags: safeParseTags(item.tags, item.category),
-                        isTopChart: item.is_featured || false,
-                        ...((item.icon_url || item.icon_url_external) && { iconUrl: item.icon_url || item.icon_url_external }),
-                        ...(item.download_url && { downloadUrl: item.download_url }),
-                        ...(item.developer && { developer: item.developer }),
-                        ...(item.screenshots && { screenshots: safeParseScreenshots(item.screenshots) }),
-                        ...(item.github_url && { githubUrl: item.github_url }),
-                        trending: item.trending || false,
-                        isEditorChoice: item.is_editor_choice || false,
-                        ageRating: item.age_rating || '4+',
-                        packageSize: item.package_size || '45MB',
-                        isGame: item.is_game || false,
-                        platforms: safeParsePlatforms(item.platforms) as any,
-                        accentColor: item.accent_color,
-                        heroImage: isValidUrl(item.hero_image || '') ? item.hero_image : undefined,
-                        isHero: item.is_hero || false,
-                        priority: item.priority || 0,
-                        ...(item.whats_new && { whatsNew: item.whats_new }),
-                        status: item.status as any,
-                        // Technical Info
-                        package_name: item.package_name,
-                        sha256: item.sha256,
-                        certificate_signature: item.certificate_signature,
-                        min_android_version: item.min_android_version,
-                        permissions: safeParseList(item.permissions),
-                        languages: safeParseList(item.languages),
-                        older_versions: Array.isArray(item.older_versions) ? item.older_versions : [],
-                        // Editorial Analysis
-                        editors_verdict: item.editors_verdict,
-                        pros: Array.isArray(item.pros) ? item.pros : [],
-                        cons: Array.isArray(item.cons) ? item.cons : [],
-                        editorial_rating: item.editorial_rating,
-                        is_safety_verified: item.is_safety_verified,
-                        icon_url_external: item.icon_url_external,
-                        screenshots_external: item.screenshots_external,
-                        slider_image_url: item.slider_image_url,
-                        created_at: (item as any).created_at,
-                        realId: item.id,
-                    }));
-
-                    // Deduplicate: If an app exists in both Supabase and static data, prefer Supabase
-                    const supabaseNames = new Set(mappedApps.map(a => a.name.toLowerCase()));
-                    const uniqueStaticApps = appsData.filter(a => !supabaseNames.has(a.name.toLowerCase()));
-
-                    setApps([...mappedApps, ...uniqueStaticApps]);
-                }
-            } catch (err) {
-                console.warn("Error fetching apps:", err);
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        fetchApps();
-    }, []);
-
-    return { apps, loading };
+  return { apps, loading, revalidating, error, refetch };
 }

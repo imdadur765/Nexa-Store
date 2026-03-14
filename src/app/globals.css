@@ -16,10 +16,10 @@
 
 :root {
   /* Color Palette - Premium Sapphire Dark Theme */
+  /* True Black & Dark Gray Theme */
   --bg-primary: #000000;
-  /* Deepest Sapphire Black */
-  --bg-secondary: #a9bcf0;
-  --bg-tertiary: #527ece;
+  --bg-secondary: #121214;
+  --bg-tertiary: #1a1a1e;
 
   --accent-primary: #007AFF;
   /* Authentic iOS Blue */
@@ -48,7 +48,8 @@
   --glass-bg: rgba(15, 17, 21, 0.85);
   --glass-border: rgba(255, 255, 255, 0.12);
 
-  --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 0.2s ease-out;
+  --transition-bounce: 0.4s cubic-bezier(0.17, 0.67, 0.83, 0.67);
 
   /* Font Variables */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -105,11 +106,7 @@ body::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background:
-    radial-gradient(circle at 50% -20%, var(--dynamic-ambient-aura, rgba(0, 122, 255, 0.25)) 0%, transparent 70%),
-    radial-gradient(circle at 100% 100%, var(--dynamic-ambient-aura, rgba(0, 122, 255, 0.1)) 0%, transparent 60%),
-    #010205;
-  /* Removed background-attachment: fixed — causes repaint on every scroll frame */
+  background: #000000;
   z-index: -2;
   pointer-events: none;
   transform: translateZ(0);
@@ -119,13 +116,11 @@ body::before {
 
 /* --- Nexa Design System (iOS-Grade) --- */
 .ultra-glass {
-  background: rgba(10, 20, 45, 0.3);
+  background: rgba(20, 20, 22, 0.85);
   backdrop-filter: blur(40px) saturate(210%) contrast(105%);
   -webkit-backdrop-filter: blur(40px) saturate(210%) contrast(105%);
   border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow:
-    0 10px 40px -10px rgba(0, 0, 0, 0.6),
-    inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   transform: translateZ(0);
 }
 
@@ -636,7 +631,7 @@ body::before {
     radial-gradient(circle at 0% 0%, var(--dynamic-accent-glow) 0%, transparent 40%),
     radial-gradient(circle at 100% 100%, rgba(139, 92, 246, 0.1) 0%, transparent 40%);
   pointer-events: none;
-  filter: blur(40px);
+  /* filter removed for scroll performance */
 }
 
 /* Premium Typography Tools */
@@ -808,9 +803,52 @@ body::before {
   display: none;
 }
 
-[style*="scroll-snap-type: x mandatory"] {
-  scroll-behavior: smooth;
+/* Avoid forcing smooth scrolling globally (can cause jank on fast scroll) */
+
+/* GamingRow carousel (moved out of per-row <style> for perf) */
+.modern-horizontal-carousel {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-left: 1.25rem;
+  padding: 0 1.25rem 1rem 1.25rem;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.modern-horizontal-carousel::-webkit-scrollbar {
+  display: none;
+}
+.carousel-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+.carousel-cover-column,
+.carousel-list-column {
+  width: 85vw;
+  max-width: 380px;
+}
+@media (min-width: 768px) {
+  .modern-horizontal-carousel {
+    scroll-padding-left: 2rem;
+    padding: 0 2rem 1.5rem 2rem;
+    gap: 1.5rem;
+  }
+  .carousel-cover-column,
+  .carousel-list-column {
+    max-width: 400px;
+  }
+}
+
+/* ── Native CSS Virtualization (Play Store Style) ── */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 520px; /* Uses previous actual sizes to prevent blanking */
 }
 
 /* Header Row Adjustments */
@@ -1054,7 +1092,8 @@ header {
   height: 4px;
   background: white;
   border-radius: 10px;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: 0.2s ease-out;
+  --transition-bounce: 0.4s cubic-bezier(0.17, 0.67, 0.83, 0.67);
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 

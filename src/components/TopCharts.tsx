@@ -39,7 +39,7 @@ export default function TopCharts() {
         <div style={{ marginTop: '2.5rem', padding: '0 1rem' }}>
             <SectionHeader
                 title="Top Charts"
-                seeAllHref="/top-charts"
+                seeAllHref={`/app/${filteredTopApps[0]?.id}`}
                 marginTop="0"
                 marginBottom="1.25rem"
             />
@@ -134,17 +134,17 @@ export default function TopCharts() {
                                 zIndex: 3
                             }}>
                                 {app.storeSource?.includes('playstore') && (
-                                    <div style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', padding: '3px', borderRadius: '5px', border: '1px solid rgba(255,255,255,0.15)', display: 'flex' }}>
+                                    <div style={{ background: 'rgba(255,255,255,0.15)', padding: '3px', borderRadius: '5px', border: '1px solid rgba(255,255,255,0.15)', display: 'flex' }}>
                                         <Image src="/platforms/playstore_logo.png" alt="Play Store" width={12} height={12} style={{ objectFit: 'contain' }} />
                                     </div>
                                 )}
                                 {app.storeSource?.includes('appstore') && (
-                                    <div style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', padding: '3px', borderRadius: '5px', border: '1px solid rgba(255,255,255,0.15)', display: 'flex' }}>
+                                    <div style={{ background: 'rgba(255,255,255,0.15)', padding: '3px', borderRadius: '5px', border: '1px solid rgba(255,255,255,0.15)', display: 'flex' }}>
                                         <Image src="/platforms/appstore_logo.png" alt="App Store" width={12} height={12} style={{ objectFit: 'contain' }} />
                                     </div>
                                 )}
                                 {app.storeSource?.includes('steam') && (
-                                    <div style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', padding: '3px', borderRadius: '5px', border: '1px solid rgba(255,255,255,0.15)', display: 'flex' }}>
+                                    <div style={{ background: 'rgba(255,255,255,0.15)', padding: '3px', borderRadius: '5px', border: '1px solid rgba(255,255,255,0.15)', display: 'flex' }}>
                                         <Image src="/platforms/steam_logo.png" alt="Steam" width={12} height={12} style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
                                     </div>
                                 )}

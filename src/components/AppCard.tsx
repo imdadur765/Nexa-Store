@@ -50,29 +50,9 @@ function AppCardInner({ app, isLoading }: { app: AppEntry; isLoading?: boolean }
         );
     }
 
-    const hoverTimeout = React.useRef<NodeJS.Timeout | null>(null);
-
-    const handleMouseEnter = () => {
-        // Clear any pending reset
-        if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
-        
-        // Delay theme change to avoid thrashing during scroll/fast hover
-        hoverTimeout.current = setTimeout(() => {
-            setTheme(app.gradient);
-        }, 150);
-    };
-
-    const handleMouseLeave = () => {
-        if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
-        resetAccent();
-    };
-
     return (
         <div
-            className="liquid-glass app-card glass-reflection"
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            onTouchStart={handleMouseEnter}
+            className="app-card"
             style={{
                 position: 'relative',
                 overflow: 'hidden',
@@ -82,11 +62,8 @@ function AppCardInner({ app, isLoading }: { app: AppEntry; isLoading?: boolean }
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '0.75rem',
-                background: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                backdropFilter: 'blur(24px)',
-                WebkitBackdropFilter: 'blur(24px)',
-                boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 4px 20px rgba(0, 0, 0, 0.2)'
+                background: 'rgba(255, 255, 255, 0.06)',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
             }}
         >
             {/* Absolute Link covering the card except the save button */}
@@ -107,7 +84,7 @@ function AppCardInner({ app, isLoading }: { app: AppEntry; isLoading?: boolean }
                     borderRadius: '12px'
                 }}>
                     {getProxiedImageUrl(app.iconUrl || app.icon_url_external) ? (
-                        <Image src={getProxiedImageUrl(app.iconUrl || app.icon_url_external)!} alt={app.name} width={48} height={48} style={{ objectFit: 'cover' }} loading="lazy" unoptimized={true} />
+                        <Image src={getProxiedImageUrl(app.iconUrl || app.icon_url_external)!} alt={app.name} width={48} height={48} style={{ objectFit: 'cover' }} loading="lazy" />
                     ) : (
                         <div style={{ color: 'white', opacity: 0.95, transform: 'scale(0.8)' }}>
                             {IconMap[app.iconId]}
@@ -117,17 +94,17 @@ function AppCardInner({ app, isLoading }: { app: AppEntry; isLoading?: boolean }
                     {/* Store Source Badges Overlay */}
                     <div style={{ position: 'absolute', bottom: '2px', right: '2px', display: 'flex', gap: '2px', zIndex: 3 }}>
                         {app.storeSource?.includes('playstore') && (
-                            <div style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', padding: '3px', borderRadius: '5px', border: '1px solid rgba(255,255,255,0.15)', display: 'flex' }}>
+                            <div style={{ background: 'rgba(255,255,255,0.15)', padding: '3px', borderRadius: '5px', border: '1px solid rgba(255,255,255,0.15)', display: 'flex' }}>
                                 <Image src="/platforms/playstore_logo.png" alt="Play Store" width={10} height={10} style={{ objectFit: 'contain' }} />
                             </div>
                         )}
                         {app.storeSource?.includes('appstore') && (
-                            <div style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', padding: '3px', borderRadius: '5px', border: '1px solid rgba(255,255,255,0.15)', display: 'flex' }}>
+                            <div style={{ background: 'rgba(255,255,255,0.15)', padding: '3px', borderRadius: '5px', border: '1px solid rgba(255,255,255,0.15)', display: 'flex' }}>
                                 <Image src="/platforms/appstore_logo.png" alt="App Store" width={10} height={10} style={{ objectFit: 'contain' }} />
                             </div>
                         )}
                         {app.storeSource?.includes('steam') && (
-                            <div style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(12px)', padding: '3px', borderRadius: '5px', border: '1px solid rgba(255,255,255,0.15)', display: 'flex' }}>
+                            <div style={{ background: 'rgba(255,255,255,0.15)', padding: '3px', borderRadius: '5px', border: '1px solid rgba(255,255,255,0.15)', display: 'flex' }}>
                                 <Image src="/platforms/steam_logo.png" alt="Steam" width={10} height={10} style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)' }} />
                             </div>
                         )}

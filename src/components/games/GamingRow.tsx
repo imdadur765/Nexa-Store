@@ -38,14 +38,10 @@ const MotionLink = motion.create(Link);
 const GamingCoverItem = ({ game, index = 0 }: { game: AppEntry, index?: number }) => {
     const [imgError, setImgError] = React.useState(false);
     return (
-        <MotionLink
+        <Link
             key={game.id}
             href={`/app/${game.id}`}
             className="ios-btn-haptic"
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-30px" }}
-            transition={{ duration: 0.5, delay: Math.min(index * 0.04, 0.25), ease: [0.16, 1, 0.3, 1] }}
             style={{
                 textDecoration: 'none',
                 color: 'inherit',
@@ -82,7 +78,7 @@ const GamingCoverItem = ({ game, index = 0 }: { game: AppEntry, index?: number }
                 <div style={{
                     position: 'absolute', top: '0.6rem', right: '0.6rem',
                     padding: '0.25rem 0.55rem', borderRadius: '100px',
-                    background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)',
+                    background: 'rgba(0,0,0,0.7)',
                     display: 'flex', alignItems: 'center', gap: '0.3rem',
                     fontSize: '0.7rem', fontWeight: '800', color: '#fbbf24',
                     border: '1px solid rgba(255,255,255,0.1)'
@@ -113,7 +109,7 @@ const GamingCoverItem = ({ game, index = 0 }: { game: AppEntry, index?: number }
                     boxShadow: '0 3px 8px rgba(0,0,0,0.35)'
                 }}>
                     {getProxiedImageUrl(game.iconUrl || game.icon_url_external) && (
-                        <Image src={getProxiedImageUrl(game.iconUrl || game.icon_url_external)!} alt="" fill sizes="46px" style={{ objectFit: 'cover' }} unoptimized />
+                        <Image src={getProxiedImageUrl(game.iconUrl || game.icon_url_external)!} alt="" fill sizes="46px" style={{ objectFit: 'cover' }} />
                     )}
                 </div>
 
@@ -145,7 +141,7 @@ const GamingCoverItem = ({ game, index = 0 }: { game: AppEntry, index?: number }
                     GET
                 </div>
             </div>
-        </MotionLink>
+        </Link>
     );
 };
 
@@ -200,7 +196,6 @@ const AppListItem = ({ app, rank }: { app: AppEntry; rank?: number }) => {
                         sizes="58px"
                         style={{ objectFit: 'cover' }}
                         loading="lazy"
-                        unoptimized={true}
                     />
                 ) : (
                     <div style={{ color: 'white', opacity: 0.95, transform: 'scale(1.15)' }}>
@@ -301,49 +296,6 @@ function GamingRowInner({ title, games, seeAllHref }: GamingRowProps) {
             </div>
 
             <div className="modern-horizontal-carousel">
-                <style dangerouslySetInnerHTML={{__html: `
-                    .modern-horizontal-carousel {
-                        display: flex;
-                        flex-direction: row;
-                        gap: 1rem;
-                        overflow-x: auto;
-                        overscroll-behavior-x: contain;
-                        scroll-snap-type: x mandatory;
-                        scroll-padding-left: 1.25rem;
-                        padding: 0 1.25rem 1rem 1.25rem;
-                        -webkit-overflow-scrolling: touch;
-                        scrollbar-width: none;
-                    }
-                    .modern-horizontal-carousel::-webkit-scrollbar {
-                        display: none;
-                    }
-                    .carousel-column {
-                        display: flex;
-                        flex-direction: column;
-                        gap: 0;
-                        scroll-snap-align: start;
-                        flex-shrink: 0;
-                    }
-                    .carousel-cover-column {
-                        width: 85vw;
-                        max-width: 380px;
-                    }
-                    .carousel-list-column {
-                        width: 85vw;
-                        max-width: 380px;
-                    }
-                    @media (min-width: 768px) {
-                        .modern-horizontal-carousel {
-                            scroll-padding-left: 2rem;
-                            padding: 0 2rem 1.5rem 2rem;
-                            gap: 1.5rem;
-                        }
-                        .carousel-cover-column, .carousel-list-column {
-                            max-width: 400px;
-                        }
-                    }
-                `}} />
-
                 {columns.map((col, colIdx) => {
                     if ('cover' in col) {
                         return (

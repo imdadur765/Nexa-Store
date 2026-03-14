@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import ClientLayoutWrapper from "@/components/ClientLayoutWrapper";
+import { AppCacheProvider } from "@/components/AppCacheProvider";
 
 export const metadata: Metadata = {
   title: {
@@ -40,11 +41,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ThemeProvider>
-          <ClientLayoutWrapper>
-            {children}
-          </ClientLayoutWrapper>
-        </ThemeProvider>
+        <AppCacheProvider>
+          <ThemeProvider>
+            <ClientLayoutWrapper>
+              {children}
+            </ClientLayoutWrapper>
+          </ThemeProvider>
+        </AppCacheProvider>
       </body>
     </html>
   );

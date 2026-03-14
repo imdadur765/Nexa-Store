@@ -72,10 +72,9 @@ function InfoRow({ icon, label, value, sub, accent }: {
 function SectionBlock({ title, icon, children }: { title: string; icon: React.ReactNode; children: React.ReactNode }) {
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
             className="liquid-glass"
             style={{ padding: "1.25rem 1.5rem", borderRadius: "24px", marginBottom: "1.25rem" }}
         >
@@ -159,9 +158,8 @@ export function AppInfoSections({ app, latestRelease }: AppInfoSectionsProps) {
 
             {/* ── Editor's Analysis ─────────────────────────── */}
             <motion.div
-                initial={{ opacity: 0, scale: 0.98 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 className="liquid-glass"
                 style={{
                     padding: "2rem",
@@ -306,9 +304,8 @@ export function AppInfoSections({ app, latestRelease }: AppInfoSectionsProps) {
 
             {/* ── Why on Nexa Store? ────────────────────────── */}
             <motion.div
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 className="liquid-glass"
                 style={{ padding: "1.25rem 1.5rem", borderRadius: "24px", marginBottom: "1.25rem", borderLeft: "3px solid var(--accent-primary)" }}
             >
@@ -366,9 +363,8 @@ export function AppInfoSections({ app, latestRelease }: AppInfoSectionsProps) {
 
             {/* ── Nexa Turbo Ad ─────────────────────────────── */}
             <motion.div
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 style={{
                     marginBottom: "1.25rem",
                     background: "linear-gradient(135deg, rgba(245,158,11,0.12), rgba(239,68,68,0.08))",
@@ -430,9 +426,8 @@ export function AppInfoSections({ app, latestRelease }: AppInfoSectionsProps) {
 
             {/* ── Rate & Wishlist Actions ───────────────────── */}
             <motion.div
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 className="liquid-glass"
                 style={{ padding: "1.5rem", borderRadius: "24px", marginBottom: "1.25rem" }}
             >

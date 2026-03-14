@@ -13,6 +13,15 @@ const nextConfig: NextConfig = {
         hostname: '**',
       },
     ],
+    localPatterns: [
+      {
+        pathname: '/api/image-proxy',
+        search: '?url=**',
+      },
+      {
+        pathname: '/**',
+      },
+    ],
   },
 };
 

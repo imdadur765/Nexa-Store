@@ -45,13 +45,10 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
                             fontSize: '0.75rem',
                             fontWeight: '900',
                             textDecoration: 'none',
-                            background: 'rgba(0, 122, 255, 0.08)',
-                            border: '1px solid rgba(0, 122, 255, 0.15)',
+                            background: 'rgba(0, 122, 255, 0.12)',
+                            border: '1px solid rgba(0, 122, 255, 0.3)',
                             padding: '0.4rem 1rem',
                             borderRadius: '100px',
-                            backdropFilter: 'blur(10px)',
-                            WebkitBackdropFilter: 'blur(10px)',
-                            boxShadow: '0 4px 12px rgba(0, 122, 255, 0.1)',
                             transition: 'var(--transition-smooth)'
                         }}
                     >
