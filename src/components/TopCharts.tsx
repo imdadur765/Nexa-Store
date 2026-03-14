@@ -175,13 +175,6 @@ export default function TopCharts() {
                                 color: 'var(--accent-primary)',
                                 border: '1px solid rgba(59, 130, 246, 0.3)'
                             }}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                const url = app.downloadUrl || app.githubUrl;
-                                if (url) window.open(url, '_blank');
-                                else alert('Download link not available.');
-                            }}
                         >
                             GET
                         </div>

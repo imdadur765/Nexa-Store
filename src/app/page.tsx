@@ -176,20 +176,20 @@ const ForYouTab = memo(function ForYouTab({
       <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
         {rareFinds.length > 0 && (
           <div className="cv-auto">
-            <GamingRow title="💎 Rare Finds" games={rareFinds.slice(0, 18)} seeAllHref={`/app/${rareFinds[0]?.id}`} />
+            <GamingRow title="💎 Rare Finds" games={rareFinds.slice(0, 18)} seeAllHref="/categories/rare" />
             <Divider />
           </div>
         )}
 
         {editorsChoice.length > 0 && (
           <div className="cv-auto">
-            <GamingRow title="✨ Editor's Choice" games={editorsChoice.slice(0, 18)} seeAllHref={`/app/${editorsChoice[0]?.id}`} />
+            <GamingRow title="✨ Editor's Choice" games={editorsChoice.slice(0, 18)} seeAllHref="/suggested" />
             <Divider />
           </div>
         )}
 
         <div className="cv-auto">
-          <GamingRow title="Recommended for you" games={consumerApps.slice(0, 12)} seeAllHref={`/app/${consumerApps[0]?.id}`} />
+          <GamingRow title="Recommended for you" games={consumerApps.slice(0, 12)} seeAllHref="/suggested" />
           <Divider />
         </div>
 
@@ -207,7 +207,7 @@ const ForYouTab = memo(function ForYouTab({
 
         {moduleApps.length > 0 && (
           <div className="cv-auto">
-            <GamingRow title="Root Workshop" games={moduleApps.slice(0, 24)} seeAllHref={`/app/${moduleApps[0]?.id}`} />
+            <GamingRow title="Root Workshop" games={moduleApps.slice(0, 24)} seeAllHref="/modules" />
             <div style={{ margin: "0 1.25rem 4.5rem", height: "1px", background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.08) 80%, transparent)" }} />
           </div>
         )}
@@ -218,19 +218,19 @@ const ForYouTab = memo(function ForYouTab({
           if (!games?.length) return null;
           return (
             <div key={cat} className="cv-auto">
-              <GamingRow title={`Discover ${cat}`} games={games.slice(0, 18)} seeAllHref={`/app/${games[0]?.id}`} />
+              <GamingRow title={`Discover ${cat}`} games={games.slice(0, 18)} seeAllHref={`/categories/${cat.toLowerCase()}`} />
               <div style={{ margin: "0 1.25rem 2.5rem", height: "1px", background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.08) 80%, transparent)" }} />
             </div>
           );
         })}
 
         <div className="cv-auto">
-          <GamingRow title="Trending Powerhouses" games={consumerApps.filter(a => a.trending).slice(0, 18)} seeAllHref={`/app/${consumerApps.find(a => a.trending)?.id || consumerApps[0]?.id}`} />
+          <GamingRow title="Trending Powerhouses" games={consumerApps.filter(a => a.trending).slice(0, 18)} seeAllHref="/trending" />
         </div>
       </div>
 
       <section style={{ marginTop: "4rem" }}>
-        <GamingGrid title="More to discover" games={discoveryApps} limit={12} seeAllHref={`/app/${discoveryApps[0]?.id}`} />
+        <GamingGrid title="More to discover" games={discoveryApps} limit={12} seeAllHref="/discover" />
       </section>
     </>
   );
@@ -356,9 +356,9 @@ export default function Home() {
               ))}
             </div>
           </div>
-          <GamingRow title="Wear OS Essentials"    games={toolsApps}         seeAllHref={`/app/${toolsApps[0]?.id}`} />
+          <GamingRow title="Wear OS Essentials"    games={toolsApps}         seeAllHref="/tools" />
           <div style={{ height: "2rem" }} />
-          <GamingRow title="Android TV Must-Haves" games={entertainmentApps} seeAllHref={`/app/${entertainmentApps[0]?.id}`} />
+          <GamingRow title="Android TV Must-Haves" games={entertainmentApps} seeAllHref="/categories/entertainment" />
         </div>
       );
 
@@ -369,9 +369,9 @@ export default function Home() {
             <h2 style={{ fontSize: "1.5rem", fontWeight: "900", marginBottom: "0.5rem" }}>Teacher Approved</h2>
             <p style={{ color: "rgba(255,255,255,0.9)", fontSize: "0.9rem", maxWidth: "300px", margin: "0 auto" }}>Safe, fun, and educational apps for growing minds.</p>
           </div>
-          <GamingRow title="Ages 5 & Under" games={kidsApps} seeAllHref={`/app/${kidsApps[0]?.id}`} />
+          <GamingRow title="Ages 5 & Under" games={kidsApps} seeAllHref="/categories/education" />
           <div style={{ height: "2rem" }} />
-          <GamingRow title="Ages 6–8" games={kidsGames} seeAllHref={`/app/${kidsGames[0]?.id}`} />
+          <GamingRow title="Ages 6–8" games={kidsGames} seeAllHref="/games" />
         </div>
       );
 
@@ -462,7 +462,7 @@ export default function Home() {
       <HamburgerDrawer isOpen={menuOpen} onClose={handleCloseMenu} />
 
       {/* Tab bar */}
-      <div style={{ padding: "0 1rem", position: "sticky", top: "4.5rem", zIndex: 90, marginBottom: "2rem" }}>
+      <div style={{ padding: "0 1rem", position: "sticky", top: "5.5rem", marginTop: "1rem", zIndex: 90, marginBottom: "2rem" }}>
         <div className="liquid-glass no-scrollbar" style={{ display: "flex", gap: "0.4rem", overflowX: "auto", padding: "0.4rem", borderRadius: "100px", width: "fit-content", maxWidth: "100%", margin: "0 auto", position: "relative" }}>
           {TABS.map(tab => (
             <TabPill key={tab} label={tab} isActive={activeTab === tab} onClick={() => setActiveTab(tab)} />
@@ -476,7 +476,7 @@ export default function Home() {
           {renderTabContent()}
           {activeTab === "For you" && (
             <section style={{ marginTop: "4rem" }}>
-              <GamingGrid title="More to discover" games={discoveryApps} limit={12} seeAllHref={`/app/${discoveryApps[0]?.id}`} />
+              <GamingGrid title="More to discover" games={discoveryApps} limit={12} seeAllHref="/discover" />
             </section>
           )}
         </div>
