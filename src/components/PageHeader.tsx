@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, ShoppingBag, Search, LucideIcon } from 'lucide-react';
+import { ArrowLeft, Search } from 'lucide-react';
 import Link from 'next/link';
 
 interface PageHeaderProps {
@@ -12,6 +12,7 @@ interface PageHeaderProps {
     searchHref?: string;
     searchPlaceholder?: string;
     showBackButton?: boolean;
+    showTitle?: boolean;
     backText?: string;
     accentColor?: string;
     rightElement?: React.ReactNode;
@@ -24,6 +25,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
     searchHref = "/search",
     searchPlaceholder = "Search for apps & games",
     showBackButton = true,
+    showTitle = false,
     backText = "Store",
     accentColor = "var(--accent-primary)",
     rightElement
@@ -70,7 +72,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
                         }}
                     >
                         <ArrowLeft size={16} />
-                        <ShoppingBag size={18} /> {backText}
+                        {backText}
                     </button>
                 ) : <div />}
 
@@ -80,23 +82,25 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
                     gap: '0.75rem'
                 }}>
                     {rightElement}
-                    <div className="liquid-glass hw-accel" style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.35rem',
-                        padding: '0.35rem 0.85rem',
-                        borderRadius: '100px',
-                        fontSize: '0.75rem',
-                        fontWeight: '800',
-                        color: 'white',
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        backdropFilter: 'blur(40px) saturate(150%)',
-                        WebkitBackdropFilter: 'blur(40px) saturate(150%)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-                    }}>
-                        {icon} {title}
-                    </div>
+                    {showTitle && (
+                        <div className="liquid-glass hw-accel" style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.35rem',
+                            padding: '0.35rem 0.85rem',
+                            borderRadius: '100px',
+                            fontSize: '0.75rem',
+                            fontWeight: '800',
+                            color: 'white',
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            backdropFilter: 'blur(40px) saturate(150%)',
+                            WebkitBackdropFilter: 'blur(40px) saturate(150%)',
+                            border: '1px solid rgba(255, 255, 255, 0.15)',
+                            boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                        }}>
+                            {icon} {title}
+                        </div>
+                    )}
                 </div>
             </div>
 

@@ -2,11 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Star, Zap, Download, ShoppingBag, Layout, Shield, Search, Flame, Terminal, Play, Cpu, Compass, Gamepad2, Users, Rocket, Palette } from "lucide-react";
+import { ArrowLeft, Star, Zap, Layout, Shield, Flame, Terminal, Play, Cpu, Compass, Gamepad2, Users, Rocket, Palette } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { appsData as staticApps } from "@/data/apps";
 import { useApps } from "@/hooks/useApps";
-import { isValidUrl } from "@/lib/utils";
+
 import AppCard from "@/components/AppCard";
 import React from "react";
 import { motion } from "framer-motion";
@@ -164,6 +164,16 @@ export default function CategoryPage({ params }: { params: Promise<{ id: string 
         return matchCategory || matchTag || matchId;
     });
 
+    // If no specific apps found, fill with popular apps from the whole pool
+    // so no category page ever appears empty.
+    const displayApps = filteredApps.length > 0
+        ? filteredApps
+        : activeApps
+            .filter(app => app.rating >= 4)
+            .sort((a, b) => b.rating - a.rating)
+            .slice(0, 24);
+    const isFilledWithFallback = filteredApps.length === 0 && displayApps.length > 0;
+
     return (
         <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', paddingBottom: '6rem', position: 'relative', overflow: 'hidden' }}>
             {/* Immersive Background Orbs */}
@@ -220,62 +230,55 @@ export default function CategoryPage({ params }: { params: Promise<{ id: string 
                     {categoryInfo.desc}
                 </p>
 
-                <div style={{ marginTop: '1.5rem', display: 'flex', gap: '0.5rem', position: 'relative', zIndex: 1 }}>
+                <div style={{ marginTop: '1.5rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center', position: 'relative', zIndex: 1 }}>
                     <div className="liquid-glass" style={{ padding: '0.5rem 1.25rem', borderRadius: '100px', fontSize: '0.75rem', fontWeight: '800', color: 'white' }}>
-                        {filteredApps.length} Curated Apps
+                        {displayApps.length} {isFilledWithFallback ? 'Top Picks' : 'Curated Apps'}
                     </div>
+                    {isFilledWithFallback && (
+                        <div className="liquid-glass" style={{ padding: '0.5rem 1.25rem', borderRadius: '100px', fontSize: '0.75rem', fontWeight: '700', color: 'rgba(255,255,255,0.6)' }}>
+                            ✨ Top Rated
+                        </div>
+                    )}
                 </div>
             </motion.section>
 
             {/* ── Grid Layout ── */}
-            <div style={{ padding: '0 1.25rem' }}>
-                {filteredApps.length > 0 ? (
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
-                        gap: '1rem'
-                    }}>
-                        {filteredApps.map((app, index) => (
-                            <motion.div
-                                key={app.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.05, duration: 0.4 }}
-                            >
-                                <AppCard app={app} />
-                            </motion.div>
-                        ))}
-                    </div>
-                ) : (
+            <div style={{ padding: '0 1rem' }}>
+                {isFilledWithFallback && (
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="liquid-glass animate-float"
+                        initial={{ opacity: 0, y: -8 }}
+                        animate={{ opacity: 1, y: 0 }}
                         style={{
-                            padding: '4rem 2rem',
-                            borderRadius: '32px',
-                            textAlign: 'center',
-                            border: '1px dashed rgba(255, 255, 255, 0.2)',
-                            marginTop: '2rem'
-                        }}>
-                        <div style={{
-                            width: '64px',
-                            height: '64px',
+                            marginBottom: '1rem',
+                            padding: '0.6rem 1rem',
+                            borderRadius: '12px',
                             background: `${categoryInfo.color}15`,
-                            borderRadius: '20px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            margin: '0 auto 1.5rem auto'
-                        }}>
-                            <Search size={32} color={categoryInfo.color} opacity={0.7} />
-                        </div>
-                        <h3 style={{ fontSize: '1.25rem', fontWeight: '800', marginBottom: '0.5rem' }}>Empty Universe</h3>
-                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', maxWidth: '240px', margin: '0 auto' }}>
-                            We couldn't find any specific payload in the {categoryInfo.label} sector.
-                        </p>
+                            border: `1px solid ${categoryInfo.color}33`,
+                            fontSize: '0.75rem',
+                            fontWeight: '700',
+                            color: 'rgba(255,255,255,0.7)',
+                            textAlign: 'center'
+                        }}
+                    >
+                        Showing top-rated picks while we curate {categoryInfo.label} apps
                     </motion.div>
                 )}
+                <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+                    gap: '0.65rem'
+                }}>
+                    {displayApps.map((app, index) => (
+                        <motion.div
+                            key={app.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.04, duration: 0.35 }}
+                        >
+                            <AppCard app={app} />
+                        </motion.div>
+                    ))}
+                </div>
             </div>
         </div>
     );

@@ -1,5 +1,5 @@
 "use client";
-import React from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import { AppEntry } from '@/data/apps';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -256,6 +256,17 @@ const AppListItem = ({ app, rank }: { app: AppEntry; rank?: number }) => {
 function GamingRowInner({ title, games, seeAllHref }: GamingRowProps) {
     if (!games || games.length === 0) return null;
 
+    // Scroll progress state
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const [scrollPct, setScrollPct] = useState(0);
+
+    const handleScroll = useCallback(() => {
+        const el = scrollRef.current;
+        if (!el) return;
+        const max = el.scrollWidth - el.clientWidth;
+        setScrollPct(max > 0 ? el.scrollLeft / max : 0);
+    }, []);
+
     // --- Build column groups ---
     // Every "column" in the carousel is: [GamingCoverItem] + up to 2 [AppListItem]s below it
     // We build groups of 3 apps (1 hero + 2 below), then trail the rest as pure app columns of 3
@@ -295,7 +306,11 @@ function GamingRowInner({ title, games, seeAllHref }: GamingRowProps) {
                 />
             </div>
 
-            <div className="modern-horizontal-carousel">
+            <div
+                ref={scrollRef}
+                className="modern-horizontal-carousel"
+                onScroll={handleScroll}
+            >
                 {columns.map((col, colIdx) => {
                     if ('cover' in col) {
                         return (
@@ -320,6 +335,30 @@ function GamingRowInner({ title, games, seeAllHref }: GamingRowProps) {
                         );
                     }
                 })}
+            </div>
+
+            {/* ── Scroll Progress Bar ── */}
+            <div style={{ padding: '0.6rem 1.25rem 0' }}>
+                <div style={{
+                    position: 'relative',
+                    height: '3px',
+                    borderRadius: '100px',
+                    background: 'rgba(255,255,255,0.07)',
+                    overflow: 'hidden',
+                }}>
+                    {/* Animated fill */}
+                    <div style={{
+                        position: 'absolute',
+                        left: 0,
+                        top: 0,
+                        height: '100%',
+                        width: `${Math.max(14, scrollPct * 100)}%`,
+                        borderRadius: '100px',
+                        background: 'linear-gradient(90deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.55) 100%)',
+                        boxShadow: '0 0 8px rgba(255,255,255,0.35)',
+                        transition: 'width 0.2s cubic-bezier(0.16,1,0.3,1)',
+                    }} />
+                </div>
             </div>
         </section>
     );
