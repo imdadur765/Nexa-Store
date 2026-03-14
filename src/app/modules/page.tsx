@@ -17,14 +17,14 @@ export default function ModulesPage() {
     return (
         <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', paddingBottom: '5rem' }}>
             <PageHeader
-                title="Root Workshop"
+                title="Featured Apps"
                 accentColor="#10b981"
             />
 
             <div style={{ padding: '1.5rem 1.25rem' }}>
                 <div style={{ marginBottom: '2rem' }}>
-                    <h2 style={{ fontSize: '1.5rem', fontWeight: '800', marginBottom: '0.5rem' }}>System Modules</h2>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Powerful tools for performance and root access.</p>
+                    <h2 style={{ fontSize: '1.5rem', fontWeight: '800', marginBottom: '0.5rem' }}>System & Utility Apps</h2>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Powerful tools for performance and productivity.</p>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>

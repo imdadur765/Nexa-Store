@@ -22,7 +22,7 @@ const CategoryMap: Record<string, { label: string, desc: string, icon: React.Rea
     },
     'system': {
         label: 'System Tools',
-        desc: 'Advanced tweaks, modules, and root solutions.',
+        desc: 'Supercharge your device with powerful utility apps.',
         icon: <Cpu size={48} />,
         color: '#0ea5e9',
         categories: ['System', 'Modules'],
@@ -38,7 +38,7 @@ const CategoryMap: Record<string, { label: string, desc: string, icon: React.Rea
     },
     'rare': {
         label: 'Rare Finds',
-        desc: 'Exclusive, hard-to-find modified masterpieces.',
+        desc: 'Exclusive, hard-to-find premium collections.',
         icon: <Star size={48} />,
         color: '#fbbf24',
         categories: ['Rare'],
@@ -102,7 +102,7 @@ const CategoryMap: Record<string, { label: string, desc: string, icon: React.Rea
     },
     'tools': {
         label: 'Power Tools',
-        desc: 'Unleash the full potential of your device.',
+        desc: 'Essential utility apps to boost your productivity.',
         icon: <Terminal size={48} />,
         color: '#f59e0b',
         categories: ['Tools', 'System', 'Utilities'],

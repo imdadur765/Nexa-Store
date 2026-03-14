@@ -61,11 +61,11 @@ import { XPPill } from "@/components/XPPill";
 
 const HOME_CATEGORIES = [
   { id: "customization", label: "Customization", icon: <Palette size={18} />, color: "#f472b6", desc: "Theming & Layouts" },
-  { id: "system",        label: "System Tools",  icon: <Cpu      size={18} />, color: "#3ddc84", desc: "Performance & Root" },
+  { id: "system",        label: "System Tools",  icon: <Cpu      size={18} />, color: "#3ddc84", desc: "Performance & Speed" },
   { id: "productivity",  label: "Productivity",  icon: <Rocket   size={18} />, color: "#60a5fa", desc: "Work & Efficiency" },
-  { id: "rare",          label: "Rare Finds",    icon: <Gem      size={18} />, color: "#fbbf24", desc: "Exclusive Modules" },
+  { id: "rare",          label: "Rare Finds",    icon: <Gem      size={18} />, color: "#fbbf24", desc: "Exclusive Picks" },
   { id: "security",      label: "Security",      icon: <Shield   size={18} />, color: "#ef4444", desc: "Privacy & Protection" },
-  { id: "gaming",        label: "Gaming",        icon: <Gamepad2 size={18} />, color: "#8b5cf6", desc: "Tweak & Play" },
+  { id: "gaming",        label: "Gaming",        icon: <Gamepad2 size={18} />, color: "#8b5cf6", desc: "Games & Fun" },
 ] as const;
 
 const TABS = ["For you", "Top charts", "Other devices", "Kids"] as const;
@@ -207,7 +207,7 @@ const ForYouTab = memo(function ForYouTab({
 
         {moduleApps.length > 0 && (
           <div className="cv-auto">
-            <GamingRow title="Root Workshop" games={moduleApps.slice(0, 24)} seeAllHref="/modules" />
+            <GamingRow title="Featured Apps" games={moduleApps.slice(0, 24)} seeAllHref="/modules" />
             <div style={{ margin: "0 1.25rem 4.5rem", height: "1px", background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.08) 80%, transparent)" }} />
           </div>
         )}
@@ -483,7 +483,7 @@ export default function Home() {
       ) : (
         <section style={{ padding: "5rem 2rem", textAlign: "center", background: "rgba(255,255,255,0.02)", borderRadius: "32px", border: "1px dashed var(--glass-border)", margin: "2rem 1.25rem" }}>
           <Rocket size={48} style={{ margin: "0 auto 1.5rem auto", opacity: 0.3 }} />
-          <h2 style={{ fontSize: "1.5rem", fontWeight: "800" }}>No modules found</h2>
+          <h2 style={{ fontSize: "1.5rem", fontWeight: "800" }}>No apps found</h2>
           <p style={{ color: "var(--text-secondary)", marginTop: "0.5rem" }}>We couldn&apos;t find any results for &quot;{searchQuery}&quot;.</p>
           <button onClick={handleClearSearch} style={{ marginTop: "1.5rem", color: "var(--accent-primary)", fontWeight: "700", background: "none", border: "none", cursor: "pointer" }}>Clear all filters</button>
         </section>
@@ -502,7 +502,7 @@ export default function Home() {
       <section style={{ marginTop: "2rem", padding: "2.5rem 1.5rem", borderRadius: "32px", background: "linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05))", border: "1px solid rgba(59, 130, 246, 0.1)", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem" }}>
         <Terminal size={32} color="#8b5cf6" />
         <h2 style={{ fontSize: "1.5rem", fontWeight: "900" }}>Want to Publish?</h2>
-        <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.9rem", maxWidth: "400px" }}>Join our developer ecosystem and get your modules in front of thousands of power users.</p>
+        <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.9rem", maxWidth: "400px" }}>Join our developer ecosystem and reach thousands of users with your apps and creations.</p>
         <Link href="/publish" style={{ textDecoration: "none" }}>
           <button style={{ padding: "0.8rem 2rem", borderRadius: "100px", background: "white", color: "black", border: "none", fontWeight: "900", fontSize: "0.9rem", cursor: "pointer", boxShadow: "0 10px 20px rgba(0,0,0,0.2)" }}>Developer Portal</button>
         </Link>

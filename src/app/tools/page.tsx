@@ -91,7 +91,7 @@ export default function ToolsPage() {
                 icon={<Wrench size={14} />}
                 showSearch={true}
                 searchHref="/search?type=tools"
-                searchPlaceholder="Search tools & root..."
+                searchPlaceholder="Search apps & tools..."
                 accentColor="#f59e0b"
             />
 
@@ -119,7 +119,7 @@ export default function ToolsPage() {
                     <Search size={18} color={searchFocused ? '#007AFF' : 'rgba(255,255,255,0.5)'} style={{ transition: 'color 0.3s ease', flexShrink: 0 }} />
                     <input
                         type="text"
-                        placeholder="Search Magisk, LSPosed, Termux..."
+                        placeholder="Search apps, tools, utilities..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onFocus={() => setSearchFocused(true)}
@@ -207,14 +207,14 @@ export default function ToolsPage() {
                         color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.2)',
                         marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '1px'
                     }}>
-                        <Zap size={12} /> Power User Arsenal
+                        <Zap size={12} /> App Collection
                     </div>
 
                     <h2 style={{ fontSize: '1.8rem', fontWeight: '900', marginBottom: '0.5rem', letterSpacing: '-0.5px' }}>
                         Android Toolbox
                     </h2>
                     <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', maxWidth: '360px', margin: '0 auto', lineHeight: '1.5' }}>
-                        Root modules, system tweaks, privacy tools, developer utilities — everything you need to unlock your device&apos;s full potential.
+                        Productivity apps, security tools, entertainment, utilities — everything you need to get the most out of your device.
                     </p>
 
                     <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', marginTop: '1.5rem', flexWrap: 'wrap' }}>

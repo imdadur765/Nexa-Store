@@ -134,14 +134,14 @@ function SearchContent() {
         const t = type?.toLowerCase();
         if (t === 'games') return { title: "Games Search", icon: <Gamepad2 size={14} color="white" />, placeholder: "Search the gaming universe..." };
         if (t === 'apps') return { title: "Apps Search", icon: <Layout size={14} color="white" />, placeholder: "Search premium apps..." };
-        if (t === 'tools') return { title: "Tools Search", icon: <Wrench size={14} color="white" />, placeholder: "Search root & system tools..." };
+        if (t === 'tools') return { title: "Tools Search", icon: <Wrench size={14} color="white" />, placeholder: "Search apps & utilities..." };
         return { title: "Nexa Search", icon: <Download size={14} color="white" />, placeholder: "Search the entire library..." };
     };
 
     const ctx = getContextInfo();
     const trendingSearches = type === 'games'
         ? ["PUBG Mobile", "Genshin Impact", "Cyberpunk", "Minecraft", "GTA"]
-        : (type === 'tools' ? ["Magisk", "LSPosed", "Termux", "Root", "Debloater"] : ["WhatsApp", "Instagram", "Spotify", "Netflix", "Truecaller"]);
+        : (type === 'tools' ? ["Termux", "Tasker", "Nova Launcher", "SD Maid", "CPU-Z"] : ["WhatsApp", "Instagram", "Spotify", "Netflix", "Truecaller"]);
 
     return (
         <div className="no-scrollbar" style={{ minHeight: '100vh', background: 'var(--bg-primary)', paddingBottom: '5rem', position: 'relative', overflow: 'hidden' }}>

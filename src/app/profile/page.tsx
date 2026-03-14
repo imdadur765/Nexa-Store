@@ -247,7 +247,7 @@ function ProfileContent() {
                                     <Shield size={20} /> The Nexa Mission
                                 </h3>
                                 <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-                                    Nexa Store is a community-driven paradise for power users. We provide verified modules, root tools, and premium modifications that actually unlock your device's potential. Zero bloat, maximum performance.
+                                    Nexa Store is a community-driven platform for app lovers. We provide verified apps, games, and premium collections that unlock great experiences on your device. Zero bloat, maximum quality.
                                 </p>
                             </div>
 
@@ -343,7 +343,7 @@ function ProfileContent() {
                                         )}
                                     </div>
 
-                                    <h3 style={{ fontSize: '1.1rem', fontWeight: '900' }}>Saved Modules</h3>
+                                    <h3 style={{ fontSize: '1.1rem', fontWeight: '900' }}>Saved Apps</h3>
                                     {savedApps.length > 0 ? (
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                             {savedApps.map(app => <AppCard key={app.id} app={app} />)}
@@ -360,7 +360,7 @@ function ProfileContent() {
                     {activeTab === "developer" && (
                         <motion.div key="developer" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}>
                             {!user ? (
-                                <AuthRequiredUI message="Want to publish your own tweaks? Join our developer circle." />
+                                <AuthRequiredUI message="Want to publish your own apps? Join our developer circle." />
                             ) : (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>

@@ -7,13 +7,13 @@ import { AppCacheProvider } from "@/components/AppCacheProvider";
 export const metadata: Metadata = {
   title: {
     template: "%s | Nexa Store",
-    default: "Nexa Store | Premium App & Game Repository",
+    default: "Nexa Store | Premium App & Game Store",
   },
-  description: "Download rare, latest, and old versions of apps. Explore Magisk & LSPosed modules, trending games, and premium applications.",
+  description: "Download the latest apps, trending games, and exclusive collections. Your one-stop app store for Android.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://nexastore.vercel.app'),
   openGraph: {
-    title: "Nexa Store | Premium App & Game Repository",
-    description: "Download rare, latest, and old versions of apps. Explore Magisk & LSPosed modules, trending games, and premium applications.",
+    title: "Nexa Store | Premium App & Game Store",
+    description: "Download the latest apps, trending games, and exclusive collections. Your one-stop app store for Android.",
     url: "/",
     siteName: "Nexa Store",
     images: [
@@ -28,8 +28,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Nexa Store | Premium App & Game Repository",
-    description: "Download rare, latest, and old versions of apps. Explore Magisk & LSPosed modules, trending games, and premium applications.",
+    title: "Nexa Store | Premium App & Game Store",
+    description: "Download the latest apps, trending games, and exclusive collections. Your one-stop app store for Android.",
   },
 };
 

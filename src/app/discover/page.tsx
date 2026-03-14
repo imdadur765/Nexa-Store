@@ -51,7 +51,7 @@ export default function DiscoverPage() {
             <div style={{ padding: '1.5rem 1.25rem' }}>
                 <div style={{ marginBottom: '2rem' }}>
                     <h2 style={{ fontSize: '1.5rem', fontWeight: '800', marginBottom: '0.5rem' }}>More to Discover</h2>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Endless modules for your Nexa experience.</p>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Discover great apps for every need.</p>
                 </div>
 
                 <div style={{

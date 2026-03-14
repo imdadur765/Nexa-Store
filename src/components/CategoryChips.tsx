@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTheme } from "@/context/ThemeContext";
 
-const categories = ["All", "Tools", "Games", "Modules", "Rare", "Social", "Finance", "Productivity"];
+const categories = ["All", "Tools", "Games", "Utilities", "Rare", "Social", "Finance", "Productivity"];
 
 interface CategoryChipsProps {
     activeCategory?: string;
