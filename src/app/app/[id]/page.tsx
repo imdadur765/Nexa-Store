@@ -120,11 +120,22 @@ export default function AppDetails({ params }: Props) {
     const appIconUrl = getProxiedImageUrl(app?.iconUrl || app?.icon_url_external);
 
     const handleDownload = () => {
-        const url = latestRelease?.assets?.[0]?.browser_download_url || app?.downloadUrl || app?.githubUrl;
+        let url = latestRelease?.assets?.[0]?.browser_download_url || app?.downloadUrl || app?.githubUrl;
         if (url) {
+            // Force HTTPS to prevent mixed-content blocks
+            if (url.startsWith('http://')) {
+                url = url.replace('http://', 'https://');
+            }
             setDownloading(true);
             setTimeout(() => {
-                window.open(url, '_blank');
+                const a = document.createElement('a');
+                a.href = url as string;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
                 setTimeout(() => setDownloading(false), 2000);
             }, 800);
         } else {
