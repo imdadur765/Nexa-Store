@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState, useEffect } from "react";
+import { use, useState, useEffect, useRef, useCallback } from "react";
 import { useApps } from "@/hooks/useApps";
 import {
     Star, Download, Share2, Info, CheckCircle2,
@@ -58,41 +58,83 @@ const SmallIconMap = {
 type Props = { params: Promise<{ id: string }> };
 
 const ScreenshotItem = ({ src, index, onClick }: { src: string, index: number, onClick: () => void }) => {
-    const [aspectRatio, setAspectRatio] = useState<'v' | 'h' | null>(null);
+    const [dims, setDims] = useState<{ w: number, h: number } | null>(null);
+
+    const isHorizontal = dims ? dims.w > dims.h : false;
+    
+    // Dynamic sizing logic to match Play Store/App Store
+    let finalWidth: string;
+    let finalHeight: string;
+
+    if (dims) {
+        if (isHorizontal) {
+            // Landscape: Width is master (clamped to screen), Height follows aspect ratio
+            const maxWidth = 620; // Increased for "Mega Widescreen" feel
+            const targetWidth = Math.min(window.innerWidth - 40, maxWidth); 
+            const targetHeight = (targetWidth * dims.h) / dims.w;
+            
+            finalWidth = `${targetWidth}px`;
+            finalHeight = `${targetHeight}px`;
+        } else {
+            // Portrait: Height is master, Width follows aspect ratio
+            const targetHeight = 480;
+            const targetWidth = (targetHeight * dims.w) / dims.h;
+            
+            finalWidth = `min(calc(100vw - 2.5rem), ${targetWidth}px)`;
+            finalHeight = `${targetHeight}px`;
+        }
+    } else {
+        // Placeholder sizes before dimensions load
+        finalWidth = isHorizontal ? 'min(calc(100vw - 2.5rem), 620px)' : '270px';
+        finalHeight = isHorizontal ? '320px' : '480px';
+    }
 
     return (
         <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: index * 0.1 }}
-            className="screenshot-item liquid-glass ios-btn-haptic"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ 
+                duration: 0.5,
+                delay: index * 0.1,
+                ease: [0.16, 1, 0.3, 1]
+            }}
+            className="screenshot-item haptic-scale"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={onClick}
             style={{
-                minWidth: aspectRatio === 'h' ? 'min(calc(100vw - 3rem), 550px)' : '220px', 
-                height: aspectRatio === 'h' ? '310px' : '440px',
+                width: finalWidth, 
+                height: finalHeight,
                 borderRadius: '24px', 
                 overflow: 'hidden',
                 position: 'relative',
                 flexShrink: 0,
                 cursor: 'pointer',
-                boxShadow: '0 8px 30px -8px rgba(0,0,0,0.6)',
-                transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)'
+                boxShadow: '0 12px 40px -12px rgba(0,0,0,0.7)',
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                scrollSnapAlign: 'start'
             }}
         >
             <Image 
                 src={src} 
                 alt={`Screenshot ${index + 1}`} 
                 fill 
-                style={{ objectFit: 'cover', borderRadius: '24px' }}
-                onLoad={(e) => {
-                    const img = e.currentTarget;
+                sizes="(max-width: 768px) 100vw, 50vw"
+                style={{ 
+                    objectFit: 'cover', 
+                    borderRadius: '24px',
+                    transition: 'opacity 0.5s ease'
+                }}
+                onLoadingComplete={(img) => {
                     if (img.naturalWidth && img.naturalHeight) {
-                        setAspectRatio(img.naturalWidth > img.naturalHeight ? 'h' : 'v');
+                        setDims({ w: img.naturalWidth, h: img.naturalHeight });
                     }
                 }}
             />
+            {!dims && (
+                <div className="shimmer" style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.02)' }} />
+            )}
         </motion.div>
     );
 };
@@ -115,6 +157,17 @@ export default function AppDetails({ params }: Props) {
     const [iconError, setIconError] = useState(false);
     const [downloading, setDownloading] = useState(false);
     const [showMore, setShowMore] = useState(false);
+    
+    // Scroll progress for screenshot carousel
+    const previewScrollRef = useRef<HTMLDivElement>(null);
+    const [previewScrollPct, setPreviewScrollPct] = useState(0);
+
+    const handlePreviewScroll = useCallback(() => {
+        const el = previewScrollRef.current;
+        if (!el) return;
+        const max = el.scrollWidth - el.clientWidth;
+        setPreviewScrollPct(max > 0 ? el.scrollLeft / max : 0);
+    }, []);
 
     // Auto-upgrade HTTP to HTTPS, then run it through our proxy so external servers don't block Vercel
     const appIconUrl = getProxiedImageUrl(app?.iconUrl || app?.icon_url_external);
@@ -345,9 +398,25 @@ export default function AppDetails({ params }: Props) {
                             <h1 className="ios-text-gradient" style={{ fontSize: 'clamp(1.5rem, 5.5vw, 2.4rem)', fontWeight: '900', lineHeight: '1.1', letterSpacing: '-0.5px' }}>{app.name}</h1>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.4rem', flexWrap: 'wrap' as const }}>
-                            <p style={{ color: 'var(--accent-primary)', fontSize: '1rem', fontWeight: '500', opacity: 0.9, margin: 0 }}>
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', fontWeight: '500', opacity: 0.9, margin: 0 }}>
                                 {app.category}
                             </p>
+                            {app.developer && (
+                                <>
+                                    <span style={{ color: 'rgba(255,255,255,0.2)' }}>•</span>
+                                    <Link 
+                                        href={`/developer/${encodeURIComponent(app.developer)}`}
+                                        style={{ 
+                                            color: 'var(--accent-primary)', 
+                                            fontSize: '1rem', 
+                                            fontWeight: '700',
+                                            textDecoration: 'none'
+                                        }}
+                                    >
+                                        {app.developer}
+                                    </Link>
+                                </>
+                            )}
                             <Link href="/services/safety" style={{ textDecoration: 'none' }}>
                                 <motion.div
                                     whileHover={{ scale: 1.05, background: 'rgba(61, 220, 132, 0.15)' }}
@@ -505,7 +574,11 @@ export default function AppDetails({ params }: Props) {
                         marginTop="0"
                         marginBottom="1.5rem"
                     />
-                    <div className="screenshot-carousel no-scrollbar">
+                    <div 
+                        ref={previewScrollRef}
+                        className="screenshot-carousel no-scrollbar"
+                        onScroll={handlePreviewScroll}
+                    >
                         {app.screenshots.filter(s => isValidUrl(s)).map((src, i) => (
                             <ScreenshotItem 
                                 key={i} 
@@ -515,6 +588,43 @@ export default function AppDetails({ params }: Props) {
                             />
                         ))}
                     </div>
+
+                    {/* Scroll Dots Indicator */}
+                    {app.screenshots.filter(s => isValidUrl(s)).length > 1 && (
+                        <div style={{ display: 'flex', justifyContent: 'center', padding: '1.5rem 0 0' }}>
+                            <div className="liquid-glass" style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                padding: '6px 14px',
+                                borderRadius: '100px',
+                                background: 'rgba(255, 255, 255, 0.03)',
+                                backdropFilter: 'blur(10px)',
+                                WebkitBackdropFilter: 'blur(10px)',
+                                border: '1px solid rgba(255, 255, 255, 0.05)',
+                                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
+                            }}>
+                                {app.screenshots.filter(s => isValidUrl(s)).map((_, i, arr) => {
+                                    const isActive = Math.min(arr.length - 1, Math.floor(previewScrollPct * (arr.length - 0.1))) === i;
+                                    return (
+                                        <div
+                                            key={i}
+                                            style={{
+                                                height: '6px',
+                                                width: isActive ? '20px' : '6px',
+                                                borderRadius: '100px',
+                                                background: isActive 
+                                                    ? 'linear-gradient(90deg, var(--accent-primary), #60a5fa)' 
+                                                    : 'rgba(255, 255, 255, 0.12)',
+                                                boxShadow: isActive ? '0 0 12px var(--dynamic-accent-glow)' : 'none',
+                                                transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                                            }}
+                                        />
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
                 </section>
             )}
 

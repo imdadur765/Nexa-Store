@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { useComments } from "@/hooks/useComments";
 import { formatDistanceToNow } from "date-fns";
+import Link from "next/link";
 
 interface AppInfoSectionsProps {
     app: {
@@ -224,7 +225,20 @@ export function AppInfoSections({ app, latestRelease }: AppInfoSectionsProps) {
 
             {/* ── Basic Information ─────────────────────────── */}
             <SectionBlock title="Basic Information" icon={<User size={14} />}>
-                <InfoRow icon={<User size={14} />} label="Developer" value={app.developer || "Nexa Labs"} />
+                <InfoRow 
+                    icon={<User size={14} />} 
+                    label="Developer" 
+                    value={
+                        app.developer ? (
+                            <Link 
+                                href={`/developer/${encodeURIComponent(app.developer)}`}
+                                style={{ color: 'var(--accent-primary)', textDecoration: 'none' }}
+                            >
+                                {app.developer}
+                            </Link>
+                        ) : "Nexa Labs"
+                    } 
+                />
                 <InfoRow icon={<Scale size={14} />} label="License" value="Free" accent />
                 <InfoRow icon={<Tag size={14} />} label="Category" value={app.category} />
                 <InfoRow icon={<Star size={14} />} label="Rating" value={app.rating > 0 ? `${app.rating} / 5` : "Not yet rated"} />

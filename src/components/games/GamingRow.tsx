@@ -148,15 +148,17 @@ const GamingCoverItem = ({ game, index = 0 }: { game: AppEntry, index?: number }
 // Premium Compact App List Item with Rank Number
 const AppListItem = ({ app, rank }: { app: AppEntry; rank?: number }) => {
     return (
-        <Link href={`/app/${app.id}`} className="ios-btn-haptic" style={{
+        <div className="ios-btn-haptic-parent" style={{
+            position: 'relative',
             display: 'flex',
             alignItems: 'center',
-            textDecoration: 'none',
-            color: 'inherit',
             gap: '0.75rem',
             padding: '0.65rem 0',
             borderBottom: '1px solid rgba(255,255,255,0.04)',
         }}>
+            {/* Primary Click target for the app */}
+            <Link href={`/app/${app.id}`} style={{ position: 'absolute', inset: 0, zIndex: 1 }} />
+
             {/* Optional Rank Number */}
             {typeof rank === 'number' && (
                 <span style={{
@@ -168,7 +170,9 @@ const AppListItem = ({ app, rank }: { app: AppEntry; rank?: number }) => {
                     flexShrink: 0,
                     letterSpacing: '-1px',
                     fontVariantNumeric: 'tabular-nums',
-                    lineHeight: 1
+                    lineHeight: 1,
+                    position: 'relative',
+                    zIndex: 2
                 }}>
                     {rank}
                 </span>
@@ -186,7 +190,8 @@ const AppListItem = ({ app, rank }: { app: AppEntry; rank?: number }) => {
                 overflow: 'hidden',
                 borderRadius: '14px',
                 flexShrink: 0,
-                boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+                boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                zIndex: 2
             }}>
                 {getProxiedImageUrl(app.iconUrl || app.icon_url_external) ? (
                     <Image
@@ -209,7 +214,7 @@ const AppListItem = ({ app, rank }: { app: AppEntry; rank?: number }) => {
             </div>
 
             {/* Details */}
-            <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ flex: 1, minWidth: 0, position: 'relative', zIndex: 2 }}>
                 <h4 style={{
                     fontSize: '0.9rem',
                     fontWeight: '800',
@@ -222,8 +227,31 @@ const AppListItem = ({ app, rank }: { app: AppEntry; rank?: number }) => {
                 }}>
                     {app.name}
                 </h4>
-                <div style={{ fontSize: '0.7rem', fontWeight: '600', color: 'rgba(255,255,255,0.4)', marginBottom: '0.15rem', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                    {app.category}
+                <div style={{ fontSize: '0.7rem', fontWeight: '600', color: 'rgba(255,255,255,0.4)', marginBottom: '0.15rem', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                    <span>{app.category}</span>
+                    {app.developer && (
+                        <>
+                            <span style={{ opacity: 0.5 }}>•</span>
+                            <Link 
+                                href={`/developer/${encodeURIComponent(app.developer)}`}
+                                style={{ 
+                                    color: 'var(--accent-primary)', 
+                                    textDecoration: 'none',
+                                    pointerEvents: 'auto',
+                                    position: 'relative',
+                                    zIndex: 10,
+                                    fontWeight: '700'
+                                }}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    window.location.href = `/developer/${encodeURIComponent(app.developer!)}`;
+                                }}
+                            >
+                                {app.developer}
+                            </Link>
+                        </>
+                    )}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                     {[1,2,3,4,5].map(s => (
@@ -245,11 +273,13 @@ const AppListItem = ({ app, rank }: { app: AppEntry; rank?: number }) => {
                 color: 'white',
                 fontSize: '0.75rem',
                 fontWeight: '900',
-                letterSpacing: '0.3px'
+                letterSpacing: '0.3px',
+                position: 'relative',
+                zIndex: 2
             }}>
                 GET
             </div>
-        </Link>
+        </div>
     );
 };
 
@@ -337,29 +367,45 @@ function GamingRowInner({ title, games, seeAllHref }: GamingRowProps) {
                 })}
             </div>
 
-            {/* ── Scroll Progress Bar ── */}
-            <div style={{ padding: '0.6rem 1.25rem 0' }}>
-                <div style={{
-                    position: 'relative',
-                    height: '3px',
-                    borderRadius: '100px',
-                    background: 'rgba(255,255,255,0.07)',
-                    overflow: 'hidden',
-                }}>
-                    {/* Animated fill */}
+            {/* ── Scroll Progress Dots ── */}
+            {columns.length > 1 && (
+                <div style={{ display: 'flex', justifyContent: 'center', padding: '1rem 0 0' }}>
                     <div style={{
-                        position: 'absolute',
-                        left: 0,
-                        top: 0,
-                        height: '100%',
-                        width: `${Math.max(14, scrollPct * 100)}%`,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        padding: '6px 14px',
                         borderRadius: '100px',
-                        background: 'linear-gradient(90deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.55) 100%)',
-                        boxShadow: '0 0 8px rgba(255,255,255,0.35)',
-                        transition: 'width 0.2s cubic-bezier(0.16,1,0.3,1)',
-                    }} />
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        backdropFilter: 'blur(10px)',
+                        WebkitBackdropFilter: 'blur(10px)',
+                        border: '1px solid rgba(255, 255, 255, 0.05)',
+                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
+                    }}>
+                        {columns.map((_, i) => {
+                            // Map scroll percentage to active dot index
+                            const dotThreshold = 1 / columns.length;
+                            const isActive = Math.min(columns.length - 1, Math.floor(scrollPct * (columns.length - 0.1))) === i;
+                            
+                            return (
+                                <div
+                                    key={i}
+                                    style={{
+                                        height: '6px',
+                                        width: isActive ? '20px' : '6px',
+                                        borderRadius: '100px',
+                                        background: isActive 
+                                            ? 'linear-gradient(90deg, #3b82f6, #60a5fa)' 
+                                            : 'rgba(255, 255, 255, 0.12)',
+                                        boxShadow: isActive ? '0 0 12px rgba(59, 130, 246, 0.4)' : 'none',
+                                        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                                    }}
+                                />
+                            );
+                        })}
+                    </div>
                 </div>
-            </div>
+            )}
         </section>
     );
 }

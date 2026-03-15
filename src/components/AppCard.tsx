@@ -117,14 +117,38 @@ function AppCardInner({ app, isLoading }: { app: AppEntry; isLoading?: boolean }
                     </div>
                 )}
 
-                <div style={{ flex: 1, minWidth: 0, pointerEvents: 'none' }}>
+                <div style={{ flex: 1, minWidth: 0, position: 'relative', zIndex: 1 }}>
                     <h3 style={{ fontSize: '0.85rem', fontWeight: '800', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'white', marginBottom: '0.1rem', letterSpacing: '-0.2px' }}>
                         {app.name}
                     </h3>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', marginBottom: '0.1rem' }}>
                         <p style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: '600' }}>
                             {app.category}
                         </p>
+                        {app.developer && (
+                            <>
+                                <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.2)' }}>•</span>
+                                <Link 
+                                    href={`/developer/${encodeURIComponent(app.developer)}`}
+                                    style={{ 
+                                        fontSize: '0.65rem', 
+                                        color: 'var(--accent-primary)', 
+                                        fontWeight: '700',
+                                        textDecoration: 'none',
+                                        pointerEvents: 'auto',
+                                        position: 'relative',
+                                        zIndex: 10
+                                    }}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        window.location.href = `/developer/${encodeURIComponent(app.developer!)}`;
+                                    }}
+                                >
+                                    {app.developer}
+                                </Link>
+                            </>
+                        )}
                         {app.trending && (
                             <span className="pulse-soft" style={{ fontSize: '0.55rem', background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', padding: '1px 4px', borderRadius: '4px', fontWeight: '800' }}>🔥 Hot</span>
                         )}

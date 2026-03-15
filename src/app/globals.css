@@ -453,8 +453,6 @@ body::before {
 }
 
 .screenshot-item {
-  flex: 0 0 200px;
-  aspect-ratio: 9/16;
   border-radius: 16px;
   background: var(--bg-tertiary);
   scroll-snap-align: start;
