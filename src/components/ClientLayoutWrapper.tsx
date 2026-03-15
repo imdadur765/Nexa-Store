@@ -7,6 +7,8 @@ import Navbar from "@/components/Navbar";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { Github, Instagram, Send, Facebook } from "lucide-react";
 import { AuthProvider } from "@/context/AuthContext";
+import { ComparisonProvider } from "@/context/ComparisonContext";
+import { ComparisonPill } from "@/components/ComparisonPill";
 import { AuthHint } from "@/components/AuthHint";
 import { NexaLoadingScreen } from "@/components/NexaLoadingScreen";
 
@@ -45,14 +47,20 @@ export default function ClientLayoutWrapper({ children }: { children: React.Reac
 
     return (
         <AuthProvider>
-            {isAppLoading && <NexaLoadingScreen onComplete={handleLoadingComplete} />}
+            <ComparisonProvider>
+                {isAppLoading && <NexaLoadingScreen onComplete={handleLoadingComplete} />}
 
-            <AnimatePresence>
+            <AnimatePresence mode="wait">
                 {!isAppLoading && (
                     <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                        key={pathname}
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -15 }}
+                        transition={{ 
+                            duration: 0.4, 
+                            ease: [0.33, 1, 0.68, 1] // Apple-style easing
+                        }}
                         style={{ width: '100%' }}
                     >
                         {!isFullScreen && <Navbar />}
@@ -94,6 +102,8 @@ export default function ClientLayoutWrapper({ children }: { children: React.Reac
             </AnimatePresence>
 
             <AuthHint />
+            <ComparisonPill />
+            </ComparisonProvider>
         </AuthProvider>
     );
 }

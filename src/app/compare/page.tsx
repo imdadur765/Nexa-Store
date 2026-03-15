@@ -3,6 +3,7 @@
 import { useState, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useApps } from "@/hooks/useApps";
+import { useComparison } from "@/context/ComparisonContext";
 import { PageHeader } from "@/components/PageHeader";
 import {
     GitCompare, X, Plus, ChevronRight, Shield,
@@ -57,23 +58,38 @@ function ComparisonContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { apps, loading } = useApps();
+    const { comparisonQueue } = useComparison();
 
     const idA = searchParams.get("a");
     const idB = searchParams.get("b");
 
-    const appA = useMemo(() => apps.find(a => a.id.toString() === idA), [apps, idA]);
-    const appB = useMemo(() => apps.find(a => a.id.toString() === idB), [apps, idB]);
+    const appA = useMemo(() => {
+        if (idA) return apps.find(a => a.id.toString() === idA);
+        return comparisonQueue[0];
+    }, [apps, idA, comparisonQueue]);
+
+    const appB = useMemo(() => {
+        if (idB) return apps.find(a => a.id.toString() === idB);
+        return comparisonQueue[1];
+    }, [apps, idB, comparisonQueue]);
 
     const [isSelectingB, setIsSelectingB] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
 
     const availableForB = useMemo(() => {
-        return apps.filter(a => a.id.toString() !== idA && (!searchQuery || a.name.toLowerCase().includes(searchQuery.toLowerCase())));
-    }, [apps, idA, searchQuery]);
+        const idToExclude = appA?.id?.toString() || idA;
+        return apps.filter(a => a.id.toString() !== idToExclude && (!searchQuery || a.name.toLowerCase().includes(searchQuery.toLowerCase())));
+    }, [apps, idA, appA, searchQuery]);
 
-    const getWinner = (valA: number, valB: number) => {
-        if (valA > valB) return 'a';
-        if (valB > valA) return 'b';
+    const getWinner = (valA: any, valB: any, reverse = false) => {
+        if (!valA && !valB) return null;
+        if (!valA) return 'b';
+        if (!valB) return 'a';
+        
+        if (typeof valA === 'number' && typeof valB === 'number') {
+            if (valA === valB) return null;
+            return reverse ? (valA < valB ? 'a' : 'b') : (valA > valB ? 'a' : 'b');
+        }
         return null;
     };
 
@@ -84,6 +100,13 @@ function ComparisonContent() {
         if (d.toLowerCase().includes('m')) return val * 1000000;
         if (d.toLowerCase().includes('k')) return val * 1000;
         return val;
+    };
+
+    const parseSize = (s: string | undefined) => {
+        if (!s) return 0;
+        const val = parseFloat(s.replace(/[^0-9.]/g, ''));
+        if (s.toLowerCase().includes('gb')) return val * 1024;
+        return val; // Assume MB
     };
 
     if (loading) return (
@@ -232,6 +255,22 @@ function ComparisonContent() {
                                 </div>
                                 <div style={{ borderRadius: '24px', overflow: 'hidden' }}>
                                     <ComparisonRow
+                                        label="Signature Check"
+                                        valA={<span style={{ fontSize: '0.6rem', opacity: 0.4, fontFamily: 'monospace', wordBreak: 'break-all' }}>{appA.sha256?.substring(0, 16) || 'SEC_VERIFIED'}...</span>}
+                                        valB={<span style={{ fontSize: '0.6rem', opacity: 0.4, fontFamily: 'monospace', wordBreak: 'break-all' }}>{appB.sha256?.substring(0, 16) || 'SEC_VERIFIED'}...</span>}
+                                    />
+                                    <ComparisonRow
+                                        label="Package Size"
+                                        valA={appA.packageSize || 'Varies'}
+                                        valB={appB.packageSize || 'Varies'}
+                                        winner={getWinner(parseSize(appA.packageSize), parseSize(appB.packageSize), true)}
+                                    />
+                                    <ComparisonRow
+                                        label="Min OS"
+                                        valA={appA.min_android_version || 'Android 8.0+'}
+                                        valB={appB.min_android_version || 'Android 8.0+'}
+                                    />
+                                    <ComparisonRow
                                         label="ID"
                                         valA={<span style={{ fontSize: '0.65rem', opacity: 0.5, fontFamily: 'monospace' }}>{appA.package_name || 'com.nexa.app'}</span>}
                                         valB={<span style={{ fontSize: '0.65rem', opacity: 0.5, fontFamily: 'monospace' }}>{appB.package_name || 'com.nexa.target'}</span>}
@@ -304,7 +343,8 @@ function ComparisonContent() {
                                     <button
                                         key={app.id}
                                         onClick={() => {
-                                            router.push(`/compare?a=${idA}&b=${app.id}`);
+                                            const currentA = appA?.id || idA;
+                                            router.push(`/compare?a=${currentA}&b=${app.id}`);
                                             setIsSelectingB(false);
                                         }}
                                         style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', textAlign: 'left', color: 'inherit' }}

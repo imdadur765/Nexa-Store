@@ -110,8 +110,8 @@ export default function BulkImportPage() {
         for (let i = 0; i < queue.length; i++) {
             const currentItem = queue[i];
             
-            // Skip if already success
-            if (currentItem.status === 'success') continue;
+            // Skip if already success or skipped (duplicate)
+            if (currentItem.status === 'success' || currentItem.status === 'skipped') continue;
 
             const updateItem = (updates: Partial<QueueItem>) => {
                 setQueue(prev => prev.map((item, idx) => idx === i ? { ...item, ...updates } : item));
@@ -337,23 +337,35 @@ export default function BulkImportPage() {
         <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', paddingBottom: '100px' }}>
             <header className="ultra-glass" style={{
                 position: 'sticky', top: 0, zIndex: 100,
-                padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                borderBottom: '1px solid rgba(59, 130, 246, 0.2)',
-                background: 'rgba(10, 10, 15, 0.8)', backdropFilter: 'blur(20px)'
+                padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                borderBottom: '1px solid rgba(59, 130, 246, 0.3)',
+                background: 'rgba(5, 5, 10, 0.85)', backdropFilter: 'blur(30px)',
+                boxShadow: '0 4px 30px rgba(0, 0, 0, 0.5)'
             }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <button onClick={() => router.back()} style={{ background: 'none', border: 'none', color: 'white' }}>
-                        <ArrowLeft size={24} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+                    <button onClick={() => router.back()} className="ios-btn-haptic" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', width: '40px', height: '40px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <ArrowLeft size={20} />
                     </button>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                        <Server size={22} color="#3b82f6" />
-                        <h1 style={{ fontSize: '1.25rem', fontWeight: '900', letterSpacing: '-0.5px' }}>Bulk App Importer</h1>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <div style={{ background: 'linear-gradient(135deg, #3b82f6, #60a5fa)', padding: '0.6rem', borderRadius: '12px', boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)' }}>
+                            <Server size={22} color="white" />
+                        </div>
+                        <div>
+                            <h1 style={{ fontSize: '1.2rem', fontWeight: '900', letterSpacing: '-0.5px', marginBottom: '0.1rem' }}>AI Bulk Importer</h1>
+                            <div style={{ fontSize: '0.65rem', fontWeight: '800', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>Process & Sync Engine</div>
+                        </div>
                     </div>
                 </div>
-                {isProcessing && <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(59, 130, 246, 0.1)', padding: '0.4rem 1rem', borderRadius: '100px', border: '1px solid rgba(59, 130, 246, 0.3)' }}>
-                    <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#3b82f6' }}>Processing {stats.total - stats.pending}/{stats.total}</span>
-                    <Loader2 size={14} color="#3b82f6" className="spin-fast" />
-                </div>}
+                {isProcessing && (
+                    <motion.div 
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', background: 'rgba(59, 130, 246, 0.1)', padding: '0.5rem 1.25rem', borderRadius: '100px', border: '1px solid rgba(59, 130, 246, 0.3)' }}
+                    >
+                        <span style={{ fontSize: '0.8rem', fontWeight: '900', color: '#60a5fa' }}>Processing {stats.total - stats.pending}/{stats.total}</span>
+                        <Loader2 size={16} color="#60a5fa" className="spin-fast" />
+                    </motion.div>
+                )}
             </header>
 
             <div style={{ padding: '1.5rem', maxWidth: '1000px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) minmax(400px, 1.5fr)', gap: '1.5rem', alignItems: 'start' }}>
@@ -386,63 +398,69 @@ export default function BulkImportPage() {
                     </div>
 
                     <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                            <h3 style={{ fontSize: '0.9rem', fontWeight: '900', color: 'white', letterSpacing: '1px', textTransform: 'uppercase' }}>2. Package IDs</h3>
-                            <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', fontWeight: '700' }}>Comma or Line separated</span>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                            <h3 style={{ fontSize: '0.8rem', fontWeight: '900', color: 'rgba(255,255,255,0.5)', letterSpacing: '1.5px', textTransform: 'uppercase' }}>2. Data Stream</h3>
+                            <span style={{ fontSize: '0.7rem', color: 'var(--accent-primary)', fontWeight: '800', background: 'rgba(59, 130, 246, 0.1)', padding: '2px 8px', borderRadius: '4px' }}>VERIFIED SOURCES</span>
                         </div>
                         <textarea 
                             value={rawInput}
                             onChange={(e) => setRawInput(e.target.value)}
                             disabled={isProcessing || queue.length > 0}
-                            placeholder="com.whatsapp&#10;com.tencent.ig&#10;com.mojang.minecraftpe"
+                            placeholder="Paste Package IDs here (e.g., com.facebook.katana)"
+                            className="custom-scrollbar"
                             style={{ 
-                                width: '100%', height: '200px', background: 'rgba(0,0,0,0.3)', 
-                                border: '1px solid rgba(255,255,255,0.1)', padding: '1rem', 
-                                borderRadius: '20px', color: '#3b82f6', fontFamily: 'monospace', fontSize: '0.85rem',
-                                outline: 'none', resize: 'vertical', lineHeight: '1.6'
+                                width: '100%', height: '180px', background: 'rgba(0,0,0,0.4)', 
+                                border: '1px solid rgba(255,255,255,0.1)', padding: '1.25rem', 
+                                borderRadius: '24px', color: '#60a5fa', fontFamily: 'monospace', fontSize: '0.85rem',
+                                outline: 'none', resize: 'none', lineHeight: '1.6',
+                                transition: 'border-color 0.3s ease',
+                                borderLeft: '4px solid #3b82f6'
                             }} 
                         />
                     </div>
                     
                     {queue.length === 0 ? (
                         <button onClick={handleParse} disabled={!rawInput.trim() || checkingDuplicates}
+                            className="ios-btn-haptic"
                             style={{
-                                width: '100%', padding: '1rem', borderRadius: '20px',
+                                width: '100%', padding: '1.1rem', borderRadius: '24px',
                                 background: 'white', color: 'black', border: 'none',
-                                fontSize: '0.9rem', fontWeight: '900', cursor: (rawInput.trim() && !checkingDuplicates) ? 'pointer' : 'not-allowed',
+                                fontSize: '0.95rem', fontWeight: '900', cursor: (rawInput.trim() && !checkingDuplicates) ? 'pointer' : 'not-allowed',
                                 opacity: (rawInput.trim() && !checkingDuplicates) ? 1 : 0.5,
-                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem',
+                                boxShadow: '0 10px 30px rgba(255,255,255,0.1)'
                             }}>
                             {checkingDuplicates ? (
-                                <><Loader2 size={18} className="spin-fast" /> Validating DB...</>
+                                <><Loader2 size={20} className="spin-fast" /> Validating Database...</>
                             ) : (
-                                <>Parse {rawInput.split(/[\n,\s]+/).filter(p => p.trim()).length} Packages</>
+                                <><Database size={20} /> Initialize Import Queue</>
                             )}
                         </button>
                     ) : (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                             <button onClick={startProcessing} disabled={isProcessing || stats.pending === 0}
+                                className="ios-btn-haptic pulse-premium"
                                 style={{
-                                    width: '100%', padding: '1rem', borderRadius: '20px',
+                                    width: '100%', padding: '1.1rem', borderRadius: '24px',
                                     background: 'linear-gradient(135deg, #3b82f6, #2563eb)', color: 'white', border: 'none',
-                                    fontSize: '0.9rem', fontWeight: '900', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                                    boxShadow: '0 8px 24px rgba(59, 130, 246, 0.4)', cursor: isProcessing ? 'not-allowed' : 'pointer',
+                                    fontSize: '0.95rem', fontWeight: '900', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem',
+                                    boxShadow: '0 12px 30px rgba(59, 130, 246, 0.4)', cursor: isProcessing ? 'not-allowed' : 'pointer',
                                     opacity: (isProcessing || stats.pending === 0) ? 0.7 : 1
                                 }}>
                                 {isProcessing ? (
-                                    <><Loader2 size={18} className="spin-fast" /> Processing Data...</>
+                                    <><Loader2 size={20} className="spin-fast" /> Syncing with Cloud...</>
                                 ) : (
-                                    <><Play size={18} fill="currentColor" /> Start Cloud Import</>
+                                    <><Play size={20} fill="currentColor" /> Execute AI Sync</>
                                 )}
                             </button>
                             {!isProcessing && (
                                 <button onClick={() => setQueue([])}
                                     style={{
-                                        width: '100%', padding: '0.8rem', borderRadius: '16px', background: 'transparent',
+                                        width: '100%', padding: '0.9rem', borderRadius: '20px', background: 'rgba(255,255,255,0.03)',
                                         color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.1)',
-                                        fontSize: '0.8rem', fontWeight: '700', cursor: 'pointer'
+                                        fontSize: '0.8rem', fontWeight: '800', cursor: 'pointer', transition: '0.3s'
                                     }}>
-                                    Clear Queue & Reset
+                                    Flush Queue & Restart
                                 </button>
                             )}
                         </div>
@@ -459,22 +477,22 @@ export default function BulkImportPage() {
 
                 {/* RIGHT: Live Queue View */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <div style={{ display: 'flex', gap: '1rem' }}>
-                        <div className="glass" style={{ flex: 1, padding: '1rem', borderRadius: '24px', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                            <span style={{ fontSize: '1.5rem', fontWeight: '900', color: 'white' }}>{stats.total}</span>
-                            <span style={{ fontSize: '0.7rem', fontWeight: '800', color: 'rgba(255,255,255,0.4)' }}>TOTAL IN QUEUE</span>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
+                        <div className="glass" style={{ padding: '1.25rem', borderRadius: '28px', border: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
+                            <div style={{ fontSize: '0.65rem', fontWeight: '900', color: 'rgba(255,255,255,0.4)', marginBottom: '0.5rem', letterSpacing: '1px' }}>TOTAL</div>
+                            <div style={{ fontSize: '1.4rem', fontWeight: '900', color: 'white' }}>{stats.total}</div>
                         </div>
-                        <div className="glass" style={{ flex: 1, padding: '1rem', borderRadius: '24px', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                            <span style={{ fontSize: '1.5rem', fontWeight: '900', color: '#10b981' }}>{stats.actualSuccess}</span>
-                            <span style={{ fontSize: '0.7rem', fontWeight: '800', color: 'rgba(16, 185, 129, 0.6)' }}>IMPORTED</span>
+                        <div className="glass" style={{ padding: '1.25rem', borderRadius: '28px', border: '1px solid rgba(16, 185, 129, 0.2)', textAlign: 'center', background: 'rgba(16, 185, 129, 0.03)' }}>
+                            <div style={{ fontSize: '0.65rem', fontWeight: '900', color: '#10b981', marginBottom: '0.5rem', letterSpacing: '1px' }}>NEW</div>
+                            <div style={{ fontSize: '1.4rem', fontWeight: '900', color: '#10b981' }}>{stats.pending + stats.actualSuccess + stats.failed}</div>
                         </div>
-                        <div className="glass" style={{ flex: 1, padding: '1rem', borderRadius: '24px', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                            <span style={{ fontSize: '1.5rem', fontWeight: '900', color: '#f59e0b' }}>{stats.skipped}</span>
-                            <span style={{ fontSize: '0.7rem', fontWeight: '800', color: 'rgba(245, 158, 11, 0.6)' }}>SKIPPED</span>
+                        <div className="glass" style={{ padding: '1.25rem', borderRadius: '28px', border: '1px solid rgba(245, 158, 11, 0.2)', textAlign: 'center', background: 'rgba(245, 158, 11, 0.03)' }}>
+                            <div style={{ fontSize: '0.65rem', fontWeight: '900', color: '#f59e0b', marginBottom: '0.5rem', letterSpacing: '1px' }}>EXISTING</div>
+                            <div style={{ fontSize: '1.4rem', fontWeight: '900', color: '#f59e0b' }}>{stats.skipped}</div>
                         </div>
-                        <div className="glass" style={{ flex: 1, padding: '1rem', borderRadius: '24px', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                            <span style={{ fontSize: '1.5rem', fontWeight: '900', color: '#ef4444' }}>{stats.failed}</span>
-                            <span style={{ fontSize: '0.7rem', fontWeight: '800', color: 'rgba(239, 68, 68, 0.6)' }}>FAILED</span>
+                        <div className="glass" style={{ padding: '1.25rem', borderRadius: '28px', border: '1px solid rgba(239, 68, 68, 0.2)', textAlign: 'center', background: 'rgba(239, 68, 68, 0.03)' }}>
+                            <div style={{ fontSize: '0.65rem', fontWeight: '900', color: '#ef4444', marginBottom: '0.5rem', letterSpacing: '1px' }}>ERRORS</div>
+                            <div style={{ fontSize: '1.4rem', fontWeight: '900', color: '#ef4444' }}>{stats.failed}</div>
                         </div>
                     </div>
 
@@ -549,6 +567,13 @@ export default function BulkImportPage() {
                 .ultra-glass { background: rgba(10, 10, 15, 0.8); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); }
                 .spin-fast { animation: spin 0.6s linear infinite; }
                 @keyframes spin { 100% { transform: rotate(360deg); } }
+                
+                .pulse-premium { animation: pulse 2s infinite; }
+                @keyframes pulse {
+                    0% { transform: scale(1); box-shadow: 0 12px 30px rgba(59, 130, 246, 0.4); }
+                    50% { transform: scale(1.02); box-shadow: 0 12px 40px rgba(59, 130, 246, 0.6); }
+                    100% { transform: scale(1); box-shadow: 0 12px 30px rgba(59, 130, 246, 0.4); }
+                }
                 
                 .custom-scrollbar::-webkit-scrollbar { width: 6px; }
                 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }

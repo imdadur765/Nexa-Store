@@ -2,11 +2,13 @@
 
 import { use, useState, useEffect, useRef, useCallback } from "react";
 import { useApps } from "@/hooks/useApps";
+import { useComparison } from "@/context/ComparisonContext";
 import {
     Star, Download, Share2, Info, CheckCircle2,
     ArrowLeft, MessageCircle, Play, Music, Camera,
     ShoppingBag, Gamepad2, Zap, Shield, Flame,
-    Terminal, Rocket, Globe, ChevronRight, Clock, History, GitCompare, ShieldCheck
+    Terminal, Rocket, Globe, ChevronRight, Clock, History, GitCompare, ShieldCheck,
+    ArrowLeftRight
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -161,6 +163,9 @@ export default function AppDetails({ params }: Props) {
     // Scroll progress for screenshot carousel
     const previewScrollRef = useRef<HTMLDivElement>(null);
     const [previewScrollPct, setPreviewScrollPct] = useState(0);
+    
+    // Comparison system
+    const { addToCompare, removeFromCompare, isInCompare } = useComparison();
 
     const handlePreviewScroll = useCallback(() => {
         const el = previewScrollRef.current;
@@ -434,8 +439,14 @@ export default function AppDetails({ params }: Props) {
                         </div>
                     </div>
                     <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' as const }}>
-                        <Link
-                            href={`/compare?a=${app.id}`}
+                        <button
+                            onClick={() => {
+                                if (isInCompare(app.id)) {
+                                    removeFromCompare(app.id);
+                                } else {
+                                    addToCompare(app);
+                                }
+                            }}
                             className="ios-btn-haptic ultra-glass"
                             style={{
                                 width: '48px',
@@ -444,13 +455,15 @@ export default function AppDetails({ params }: Props) {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                color: 'var(--accent-primary)',
-                                border: '1px solid rgba(0, 122, 255, 0.2)',
-                                background: 'rgba(59, 130, 246, 0.05)'
+                                color: isInCompare(app.id) ? 'white' : 'var(--accent-primary)',
+                                border: isInCompare(app.id) ? 'none' : '1px solid rgba(0, 122, 255, 0.2)',
+                                background: isInCompare(app.id) ? 'var(--accent-primary)' : 'rgba(59, 130, 246, 0.05)',
+                                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                                boxShadow: isInCompare(app.id) ? '0 8px 16px rgba(59, 130, 246, 0.3)' : 'none'
                             }}
                         >
-                            <GitCompare size={22} />
-                        </Link>
+                            <ArrowLeftRight size={18} />
+                        </button>
                         <button
                             type="button"
                             className="btn-get-ios btn-premium-glow ios-btn-haptic"
